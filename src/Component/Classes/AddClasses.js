@@ -18,7 +18,7 @@ export default function AddClasses({ confirm, setConfirm }) {
           >
             &#8203;
           </span>
-          <div className="inline-block mx-auto w-full  bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle max-w-5xl">
+          <div className="inline-block mx-auto w-full  bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle max-w-xl md:max-w-3xl">
             <h3 className="mt-5 text-3xl text-left font-semibold text-gray-900">
               Add Classes
             </h3>

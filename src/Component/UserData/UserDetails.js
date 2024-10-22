@@ -4,16 +4,15 @@ import { LuPencilLine } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import OtpVerify from "../OtpVerify/OtpVerify";
 import Pagination from "../Pagination/Pagination";
 
 export default function UserDetails() {
   const navigate = useNavigate();
   function handleAddUser() {
-    navigate("/addUser");
+    navigate("addUser");
   }
   function handleEditUser() {
-    navigate("/editUser");
+    navigate("editUser");
   }
   return (
     <>
@@ -23,11 +22,10 @@ export default function UserDetails() {
           <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
             <div className="relative p-4 overflow-hidden rounded-t-xl text-slate-700 bg-white bg-clip-border">
               <div className="flex items-center justify-between ">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-800">
-                    Mobile User
-                  </h3>
-                </div>
+                <p className="text-2xl font-semibold text-slate-800">
+                  Mobile User
+                </p>
+
                 <button className="flex space-x-2 bg-orange-500 hover:bg-grey text-grey-darkest font-bold py-2 px-4 rounded items-center">
                   <svg
                     className="w-8 h-8 p-1 bg-white rounded-full text-orange-500"
@@ -690,7 +688,6 @@ export default function UserDetails() {
           </div>
         </div>
       </section>
-      <OtpVerify />
     </>
   );
 }

@@ -188,12 +188,12 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
                 <span>File type: jpg/jpeg/png</span>
               </p>
             </div>
-            <div>
+            <div className="flex  items-center justify-center">
               <button
                 type="submit"
                 onClick={setConfirm}
-                className="my-5 w-full flex justify-center bg-blue-500 text-gray-100 p-4  rounded-full tracking-wide
-                                    font-semibold  focus:outline-none focus:shadow-outline hover:bg-blue-600 shadow-lg cursor-pointer transition ease-in duration-300"
+                className=" bg-orange-500 text-gray-100 px-20 py-2  rounded-full tracking-wide
+                font-semibold  focus:outline-none focus:shadow-outline hover:bg-orange-600 cursor-pointer transition ease-in duration-300"
               >
                 Upload
               </button>

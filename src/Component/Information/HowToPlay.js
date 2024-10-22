@@ -112,12 +112,6 @@ export default function HowToPlay() {
           {/* pagination */}
           <Pagination/>
         </div>
-        {/* <div className={`${confirm === true ? "block" : "hidden"}`}>
-          <AddIntroduction
-            confirm={confirm}
-            setConfirm={() => handleNavigate()}
-          />
-        </div> */}
       </section>
     </>
   );

@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 export default function AddContest({ confirm, setConfirm }) {
   return (
     <>
-      <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">
+      <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out ">
         <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="fixed inset-0 transition-opacity" aria-hidden="true">
             <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -18,7 +18,7 @@ export default function AddContest({ confirm, setConfirm }) {
           >
             &#8203;
           </span>
-          <div className="inline-block mx-auto w-full  bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle max-w-5xl">
+          <div className="inline-block mx-auto w-full  bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle max-w-5xl md:max-w-2xl">
             <div className="text-left">
               <h3 className="mt-5 text-3xl font-semibold text-gray-900">
                 Add Introduction

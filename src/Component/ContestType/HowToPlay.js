@@ -56,7 +56,7 @@ export default function HowToPlay() {
                     </div>
                   </th>
                   <th className="px-2 py-4 text-center font-sans text-sm font-medium leading-none text-slate-800 transition-colors cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200">
-                    Name
+                    Contest Name
                   </th>
                   <th className="px-2 py-4 text-center font-sans text-sm font-medium leading-none text-slate-800 transition-colors cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200">
                     Action

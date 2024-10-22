@@ -6,10 +6,10 @@ import "react-toastify/dist/ReactToastify.css";
 function SideNavbar({ sidebarOpen, onStateChange }) {
   const { pathname } = useLocation();
   const nnavigationPage = [
-    { text: "Income Expense" ,to:"/incomeExpense"},
-    { text: "KYC" ,to:"/kyc"},
-    { text: "Report" ,to:"/report"},
-    { text: "Contestant Earning" ,to:"/contestEarning"},
+    { text: "Income Expense", to: "/incomeExpense" },
+    { text: "KYC", to: "/kyc" },
+    { text: "Report", to: "/report" },
+    { text: "Contestant Earning", to: "/contestEarning" },
     { text: "Content Type", to: "/contestType" },
     { text: "Classes", to: "/classes" },
     { text: "Information", to: "/information" },

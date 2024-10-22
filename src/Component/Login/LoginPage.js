@@ -6,6 +6,7 @@ import { RxEyeOpen } from "react-icons/rx";
 import { loginSuccess } from "../../Context/Action/Auth";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import OtpVerify from "../OtpVerify/OtpVerify";
 
 const staticObj = {
   email: "",
@@ -23,6 +24,10 @@ function LoginPage() {
   const spcl = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
 
   const [state, setState] = useState(staticObj);
+  const [confirm, setConfirm] = useState(false);
+  function handleNavigate() {
+    setConfirm(!confirm);
+  }
   const [show, setShow] = useState(false);
   const { email, password } = state;
 
@@ -53,9 +58,10 @@ function LoginPage() {
                 if (!password.match(lowerCaseLetters)) {
                   toast.warn("Must Include lowerCase Letters in Password!");
                 } else {
-                  navigate("/");
-                  dispatch(loginSuccess(state));
-                  toast.success("Login successfully");
+                  // navigate("/");
+                  handleNavigate();
+                  // dispatch(loginSuccess(state));
+                  // toast.success("Login successfully");
                 }
               }
             }
@@ -141,6 +147,9 @@ function LoginPage() {
           >
             log in
           </button>
+        </div>
+        <div className={`${confirm === true ? "block" : "hidden"}`}>
+          <OtpVerify confirm={confirm} setConfirm={() => handleNavigate()} />
         </div>
       </section>
       <ToastContainer

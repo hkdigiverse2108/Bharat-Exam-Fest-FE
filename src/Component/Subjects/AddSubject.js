@@ -5,7 +5,7 @@ import MultipleSelect from "../MultiselectUi/MultiSelection";
 export default function AddSubject() {
   return (
     <>
-      <section className="inline-block mx-auto w-full bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle ">
+      <section className="inline-block mx-auto w-full h-full bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle ">
         <div className="text-left">
           <h3 className="mt-5 text-3xl font-semibold text-gray-900">
             Add Subject

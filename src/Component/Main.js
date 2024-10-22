@@ -1,9 +1,14 @@
 import React from "react";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Routes,
+  Route,
+} from "react-router-dom";
 import { useSelector } from "react-redux";
 import SideNavbar from "./SideNavbar.js";
-
 import Navbar from "./Navigationbar/Navbar.js";
-import PageRouter from "./Router/PageRouter.js";
+import PageRouter from "./Router/RouteManger.js";
 import LoginPage from "./Login/LoginPage.js";
 
 function Mainpanel() {

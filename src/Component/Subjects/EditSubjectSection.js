@@ -5,7 +5,7 @@ import MultipleSelect from "../MultiselectUi/MultiSelection";
 export default function EditSubjectSection({ comfirm, setConfirm }) {
   return (
     <>
-      <section className="inline-block mx-auto w-full bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle ">
+      <section className="inline-block mx-auto h-full w-full bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle ">
         <div className="text-left">
           <h3 className="mt-5 text-3xl font-semibold text-gray-900">
             Edit Subject Section

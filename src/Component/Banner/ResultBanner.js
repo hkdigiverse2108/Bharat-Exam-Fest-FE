@@ -40,7 +40,7 @@ export default function ResultBanner() {
                   <td className="p-2 border-b border-slate-200 overflow-hidden text-ellipsis">
                     <p className="text-sm text-slate-500">001</p>
                   </td>
-                  <td className="p-2 border-b border-slate-200 overflow-hidden text-ellipsis ">
+                  <td className="p-2 border-b border-slate-200  overflow-hidden text-ellipsis ">
                     <img
                       src="i1.png"
                       alt="Foo eating a sandwich."
@@ -49,7 +49,7 @@ export default function ResultBanner() {
                   </td>
                   <td className="p-2 border-b border-slate-200 text-center overflow-hidden text-ellipsis">
                     <button
-                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-l text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
                       type="button"
                     >
                       <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
