@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import PageNotfound from "../Page404";
 import UserDetails from "../UserData/UserDetails";
 import Profilepage from "../ProfilePage";
@@ -22,6 +17,9 @@ import ReportHomePage from "../Report/ReportHomePage";
 import KYCHomePage from "../KYC/KYCHomePage";
 import ContestEarningHome from "../ContestEarning/ContestEarningHome";
 import Incomeboard from "../IncomeExpense/Incomeboard";
+import PasswordUpdate from "../NewPassword/PasswordUpdate";
+import CreateContest from "../AddContest/CreateContest";
+import AddContestHomepage from "../AddContest/AddContestHomepage";
 // import Loading from "../Loader/Loading";
 
 // const PageRouting = createBrowserRouter([
@@ -123,22 +121,24 @@ export default function RouteManger() {
   return (
     <>
       <Routes>
-        <Route exact path="/" element={<UserDetails />} />
-        <Route path="addUser" element={<AddUser />} />
-        <Route path="editUser" element={<EditUser />} />
-        <Route path="/incomeExpense" element={<Incomeboard />} />
+        <Route exact path="/" element={<Incomeboard />} />
         <Route path="/contestEarning" element={<ContestEarningHome />} />
         <Route path="/kyc" element={<KYCHomePage />} />
         <Route path="/report" element={<ReportHomePage />} />
-        <Route path="/banner" element={<HomeBanner />} />
+        <Route path="/addContest" element={<AddContestHomepage />} />
+        <Route path="/createContest" element={<CreateContest />} />
         <Route path="/subject" element={<SubjectData />} />
         <Route path="/addSubject" element={<AddSubject />} />
-        <Route path="/addIntroduction" element={<AddIntroduction />} />
+        <Route path="/editSubject" element={<EditSubjectSection />} />
         <Route path="/classes" element={<ClassesHomePage />} />
         <Route path="/contestType" element={<ContestHome />} />
         <Route path="/information" element={<InformationHome />} />
-        <Route path="/editSubject" element={<EditSubjectSection />} />
-        <Route exact path="/profile" element={<Profilepage />} />
+        <Route path="/addIntroduction" element={<AddIntroduction />} />
+        <Route path="/banner" element={<HomeBanner />} />
+        <Route path="/userDetails" element={<UserDetails />} />
+        <Route path="/addUser" element={<AddUser />} />
+        <Route path="/editUser" element={<EditUser />} />
+        <Route exact path="/resetpassword" element={<PasswordUpdate />} />
         <Route path="*" element={<PageNotfound />} />
       </Routes>
     </>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GoSearch } from "react-icons/go";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
@@ -8,28 +8,43 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Navbar() {
   const navigationPage = [
-    { text: "Income Expense", to: "/incomeExpense" },
-    { text: "KYC", to: "/kyc" },
-    { text: "Report", to: "/report" },
-    { text: "Contestant Earning" ,to:"/contestEarning"},
-    { text: "Content Type", to: "/contestType" },
-    { text: "Classes", to: "/classes" },
-    { text: "Information", to: "/information" },
-    { text: "Subject", to: "/subject" },
-    { text: "Banner", to: "/banner" },
-    { text: "User", to: "/" },
+    { id: 1, text: "Income Expense", to: "/" },
+    { id: 2, text: "KYC", to: "/kyc" },
+    { id: 3, text: "Report", to: "/report" },
+    { id: 4, text: "Add Contest", to: "/addContest" },
+    { id: 5, text: "Contestant Earning", to: "/contestEarning" },
+    { id: 6, text: "Content Type", to: "/contestType" },
+    { id: 7, text: "Classes", to: "/classes" },
+    { id: 8, text: "Information", to: "/information" },
+    { id: 9, text: "Subject", to: "/subject" },
+    { id: 10, text: "Banner", to: "/banner" },
+    { id: 11, text: "User", to: "/userDetails" },
   ];
   const drpodownItems = [
-    { text: "Profile", to: "/profile" },
-    { text: "Setting" },
+    { id: 12, text: "Reset Password", to: "/resetPassword" },
   ];
   const navigate = useNavigate();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [toggle, setToggle] = useState(false);
   const { pathname } = useLocation();
+  const [active, setActive] = useState();
+  const handleClick = (event) => {
+    setActive(event);
+    localStorage.setItem("activeTab", active);
+  };
   function Navigation() {
-    navigate("/profile");
+    setToggle(!toggle);
   }
+
+  useEffect(() => {
+    const storedTab = localStorage.getItem("activeTab");
+    if (storedTab) {
+      setActive(storedTab);
+    } else {
+      setActive(1);
+    }
+  }, []);
   // const userLogout = () => {
   //   try {
   //     console.log("logout");
@@ -138,10 +153,14 @@ function Navbar() {
             {navigationPage.map((value, index) => {
               return (
                 <NavLink to={value.to}>
-                  <li className="flex gap-x-5" Key={index.toString()}>
+                  <li
+                    className="flex gap-x-5"
+                    onClick={() => handleClick(value.id)}
+                    Key={index.toString()}
+                  >
                     <span
                       className={`${
-                        pathname === value.to
+                        active === value.id
                           ? "border-l-4 border-orange-500"
                           : "border-none"
                       } rounded-r-lg `}
@@ -149,7 +168,7 @@ function Navbar() {
                     <button
                       type="button"
                       className={`${
-                        pathname === value.to
+                        active === value.id
                           ? "text-white bg-orange-400"
                           : "text-black"
                       }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize `}
@@ -167,7 +186,7 @@ function Navbar() {
       <div
         className={`${
           toggle === true
-            ? " absolute overflow-hidden w-52  duration-300 ease-linear origin-top-right right-2 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent"
+            ? " absolute overflow-hidden w-52  duration-300 ease-linear origin-top-right right-2 dark:bg-gray-800 bg-white rounded-lg shadow-xl border dark:border-transparent"
             : "hidden"
         } `}
       >
@@ -175,20 +194,14 @@ function Navbar() {
           {drpodownItems.map((value, index) => {
             return (
               <NavLink to={value.to}>
-                <li
-                  key={index}
-                  className="flex gap-x-5"
-                  onClick={() => {
-                    Navigation();
-                  }}
-                >
+                <li key={index} className="flex gap-x-5" onClick={Navigation}>
                   <button
                     type="button"
                     className={`${
-                      pathname === value.to
+                      active === value.id
                         ? "text-white bg-gray-600"
                         : "text-black"
-                    }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize `}
+                    }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600`}
                   >
                     {value.text}
                   </button>

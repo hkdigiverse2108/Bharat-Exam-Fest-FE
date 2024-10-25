@@ -9,63 +9,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function ImgUpdatePage({ confirm, setConfirm }) {
   // const navigate = useNavigate();
-  // function handleNavigate() {
-  //   navigate("/banner");
-  // }
-  // const staticObj = {
-  //     id: "",
-  //     username: "",
-  //     address: "",
-  //     email: "",
-  //     phone: "",
-  //     password: "",
-  //     age: "",
-  //     country: "india",
-  //     hobbies: "",
-  //     photoURL:
-  //       "https://th.bing.com/th?id=OIP.FTgrJyVFtgBnlReUwwkLSgHaHS&w=252&h=247&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
-  //   };
-  // const imgs = [
-  //   "https://th.bing.com/th?id=OIP.FTgrJyVFtgBnlReUwwkLSgHaHS&w=252&h=247&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
-  //   "https://th.bing.com/th?id=OIP.audMX4ZGbvT2_GJTx2c4GgHaHw&w=244&h=255&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
-  //   "https://th.bing.com/th?id=OIP.inXSw5jbycIIlXC1dIXdiwHaIL&w=237&h=262&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
-  //   "https://th.bing.com/th/id/OIP.53tpipDfpRLX8XWq8Z-egQHaHZ?w=200&h=199&c=7&r=0&o=5&pid=1.7",
-  //   "https://th.bing.com/th/id/OIP.BAdrtOmCjHMDXWlyWKB3YAHaHa?w=200&h=200&c=7&r=0&o=5&pid=1.7",
-  //   "https://th.bing.com/th/id/OIP.B42mmL001bNfILjXjuoAyQHaHx?w=190&h=199&c=7&r=0&o=5&pid=1.7",
-  //   "https://th.bing.com/th/id/OIP.mrfb_atnkblnmsDiAbLNKwHaHa?w=198&h=199&c=7&r=0&o=5&pid=1.7",
-  //   "https://th.bing.com/th/id/OIP.ez7RzHW97bgoNBngoVliLgHaHX?w=206&h=205&c=7&r=0&o=5&pid=1.7",
-  //   "https://th.bing.com/th/id/OIP.t0A5oxtEOEuCVNzO5XDiXgHaHa?w=212&h=212&c=7&r=0&o=5&pid=1.7",
-  // ];
+
   //   const dispatch = useDispatch();
   //   const userInfo = useSelector((state) => state.userConfig);
   //   const loginInfo = useSelector((state) => state.authConfig);
-  //   const [currentUser, setCurrentUser] = useState(staticObj);
-  //   const {
-  //     _id,
-  //     username,
-  //     address,
-  //     email,
-  //     phone,
-  //     country,
-  //     hobbies,
-  //     language,
-  //     photoURL,
-  //     age,
-  //   } = currentUser;
-  // const [toggle, setToggle] = useState(false);
-  // const [trainer, setTrainer] = useState(false);
-  //   const [demo, setDemo] = useState();
-  // console.log(demo);
-
-  // function handleChange(e) {
-  //   const { name, value, src } = e.target;
-
-  //   if (name === "photoURL") {
-  //     setCurrentUser({ ...currentUser, [name]: src });
-  //   } else {
-  //     setCurrentUser({ ...currentUser, [name]: value });
-  //   }
-  // }
 
   //   async function UploadData() {
   //     try {
@@ -110,18 +57,6 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
   //     }
   //   }
 
-  //   useEffect(() => {
-  //     try {
-  //       if (loginInfo.isLoggedIn === true) {
-  //         setCurrentUser(userInfo.User[0]);
-  //       } else {
-  //         console.log(loginInfo);
-  //       }
-  //     } catch (error) {
-  //       console.warn(error.message);
-  //     }
-  //   }, [loginInfo, userInfo]);
-
   return (
     <>
       <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">
@@ -137,10 +72,11 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
             &#8203;
           </span>
           <div className="inline-block mx-auto w-full bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle max-w-2xl">
-            <h3 className="mt-5 text-left text-3xl font-semibold text-gray-900">
+            <p className="text-3xl text-left font-medium text-gray-900">
               Edit Image
-            </h3>
-            <div className="space-y-3 border border-slate-300 rounded-lg p-4">
+            </p>
+            <div className="space-y-3 border border-[#808836] rounded-lg p-4">
+            
               <div className="grid grid-cols-1 space-y-2">
                 <label
                   htmlFor="editimg"
@@ -149,39 +85,31 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
                   Edit Image
                 </label>
                 <input
-                  className="text-base p-2 border-b border-gray-400 focus:outline-none focus:border-indigo-500"
+                  className="border-b w-full block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
                   type=""
                   id="editimg"
                   placeholder="Image"
                 />
               </div>
-              <div className="p-4 w-full h-fit border border-slate-300 bg-white shadow-sm rounded-xl">
-                <div className=" space-y-4">
-                  <p
-                    className="flex  text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                    htmlFor="file_input"
-                  >
-                    Banner Image
-                  </p>
-                  <input
-                    type="file"
-                    name="file"
-                    id="file"
-                    className="sr-only"
-                  />
-                  <label
-                    htmlFor="file"
-                    className="relative flex items-center justify-start gap-x-4 text-center cursor-pointer"
-                  >
-                    <span className="inline-flex rounded border border-[#e0e0e0] py-2 px-8 text-base capitalize font-medium text-[#07074D]">
-                      choose file
-                    </span>
+              <div className="p-4 w-full h-fit border border-[#65B741] bg-white shadow-sm rounded-xl">
+              <div className=" space-y-2">
+                <p className="text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+                  Banner Image
+                </p>
+                <input type="file" name="file" id="file" className="sr-only" />
+                <label
+                  htmlFor="file"
+                  className="relative flex items-center justify-start  gap-x-4 text-center cursor-pointer"
+                >
+                  <span className=" rounded-md border border-[#5F8670] py-2 px-8 text-base capitalize text-slate-700">
+                    choose file
+                  </span>
 
-                    <span className="mb-2 block text-md  capitalize font-semibold text-[#07074D]">
-                      no file chosen
-                    </span>
-                  </label>
-                </div>
+                  <span className="text-md capitalize text-[#5F8670 ]">
+                    no file chosen
+                  </span>
+                </label>
+              </div>
               </div>
 
               <p className="text-base text-gray-500">

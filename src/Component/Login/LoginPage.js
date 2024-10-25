@@ -33,8 +33,6 @@ function LoginPage() {
 
   function handleChange(e) {
     const { name, value } = e.target;
-    console.log(name, value);
-
     setState({ ...state, [name]: value });
   }
 
@@ -58,9 +56,9 @@ function LoginPage() {
                 if (!password.match(lowerCaseLetters)) {
                   toast.warn("Must Include lowerCase Letters in Password!");
                 } else {
-                  // navigate("/");
+                  navigate("/");
                   handleNavigate();
-                  // dispatch(loginSuccess(state));
+                  dispatch(loginSuccess(state));
                   // toast.success("Login successfully");
                 }
               }
@@ -105,7 +103,7 @@ function LoginPage() {
                 value={password || ""}
                 onChange={(e) => handleChange(e)}
                 placeholder="Enter Your Password"
-                autoComplete="off"
+                autoComplete="off"  
               />
               <button
                 type="button"

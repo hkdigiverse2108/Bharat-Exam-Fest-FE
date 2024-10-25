@@ -85,10 +85,10 @@ export default function Unverified() {
                   <td className="p-3 whitespace-nowrap">
                     <img src="i1.png" alt="img" className="w-42  h-10" />
                   </td>
-                  <td class="p-3 whitespace-nowrap">
+                  <td className="p-3 whitespace-nowrap">
                     <select
                       name="status"
-                      defaultValue={status}
+                      value={status}
                       className={`${
                         status === "Verified"
                           ? "bg-green-100  text-green-600"
@@ -97,7 +97,7 @@ export default function Unverified() {
                           : status === "Unverified"
                           ? "bg-red-100  text-red-600"
                           : "bg-gray-100  text-gray-900"
-                      } text-md text-center rounded-full cursor-pointer appearance-none focus:outline-none block w-full px-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white `}
+                      } text-md text-center rounded-full cursor-pointer appearance-none focus:outline-none block max-w-md px-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white `}
                       onChange={(e) => setStatus(e.target.value)}
                     >
                       <option

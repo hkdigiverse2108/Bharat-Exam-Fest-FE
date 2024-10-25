@@ -1,6 +1,6 @@
 import React from "react";
 import { VscSaveAs } from "react-icons/vsc";
-import MultipleSelect from "../MultiselectUi/MultiSelection";
+import MultipleSelect from "../Ui/MultiSelection";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

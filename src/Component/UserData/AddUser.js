@@ -3,38 +3,38 @@ import { VscSaveAs } from "react-icons/vsc";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { VscEyeClosed } from "react-icons/vsc";
-import MultipleSelection from "../MultiselectUi/MultiSelection";
+import MultipleSelection from "../Ui/MultiSelection";
 
 export default function Adduser() {
   return (
     <>
       <section className=" p-6 space-y-6 border border-slate-300 bg-white rounded-xl h-full">
-        <div className="space-y-3">
-          <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white">
-            Add User
-          </p>
-          <p className="text-lg tracking-tight font-medium text-left text-gray-500 dark:text-white">
+        <div className="text-left space-y-2">
+          <p className=" text-3xl font-semibold text-gray-900">Add User</p>
+          <p className=" text-md text-gray-600">
             Fill in the data for profile. It will take a couple of minutes.
           </p>
         </div>
-        <div className="p-6 w-full h-fit border border-slate-300 bg-white rounded-xl space-y-10">
-          <div className="space-y-3">
-            <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white ">
+
+        <div className="p-6 w-full h-fit border-2 border-[#216123] bg-white rounded-xl space-y-10">
+          <div className="text-left space-y-2">
+            <p className=" text-xl font-semibold text-gray-900">
               Personal data
             </p>
-            <p className="text-lg tracking-tight font-medium text-left text-gray-500 dark:text-white">
+            <p className=" text-md text-gray-600">
               Specify exactly as in your passport
             </p>
           </div>
+
           <div className=" space-y-2">
             <div className=" space-y-4 text-gray-700">
               {/* name */}
-              <div>
+              <div className="text-left">
                 <label
-                  className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                  className="text-gray-700 font-medium dark:text-gray-200"
                   htmlFor="name"
                 >
-                  Full name
+                  Full Name
                 </label>
                 <input
                   type="text"
@@ -44,14 +44,14 @@ export default function Adduser() {
                   defaultValue=""
                   // value={username || ""}
                   // onChange={(e) => handleChange(e)}
-                  className="mt-1 block w-full px-3 py-2 bg-white border-b border-slate-300 text-sm placeholder-slate-500
+                  className="mt-1 block w-full px-3 py-2 bg-white border-b border-black text-sm placeholder-slate-500
                             focus:outline-none focus:border-b focus:border-sky-500 focus:ring-b-1 focus:ring-sky-500"
                 />
               </div>
               {/* gmail */}
-              <div>
+              <div className="text-left">
                 <label
-                  className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                  className="text-gray-700 font-medium dark:text-gray-200"
                   htmlFor="gmail"
                 >
                   Gmail
@@ -64,7 +64,7 @@ export default function Adduser() {
                   defaultValue=""
                   // value={address || ""}
                   // onChange={(e) => handleChange(e)}
-                  className="mt-1 block w-full px-3 py-2 bg-white border-b border-slate-300 text-sm placeholder-slate-500
+                  className="mt-1 block w-full px-3 py-2 bg-white border-b border-black text-sm placeholder-slate-500
                             focus:outline-none focus:border-b focus:border-sky-500 focus:ring-b-1 focus:ring-sky-500"
                 />
               </div>
@@ -73,7 +73,7 @@ export default function Adduser() {
                 {/* password */}
                 <div className="relative w-full ">
                   <input
-                    className="text-black text-md px-4 py-4 border-2 border-gray-200 h-10 w-full rounded-lg"
+                    className="text-black text-md px-4 py-4 border border-gray-600 h-10 w-full rounded-lg focus:outline-none focus:border focus:border-sky-500 focus:ring-b-1 focus:ring-sky-500"
                     type="password"
                     name="password"
                     defaultValue=""

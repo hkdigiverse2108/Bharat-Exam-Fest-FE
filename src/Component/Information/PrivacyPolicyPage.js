@@ -1,12 +1,14 @@
 import React from "react";
 import { FaPlus, FaRegImage } from "react-icons/fa6";
 
+import TextEditor from "./TextEditor";
+
 export default function PrivacyPolicyPage() {
   return (
     <>
       <div className="bg-white overflow-hidden shadow rounded-2xl border">
         <div className="space-y-4 p-4">
-          <h3 className="text-3xl  text-left leading-10 font-bold text-gray-900">
+          <h3 className="text-3xl capitalize text-left leading-10 font-semibold text-slate-800">
             Privacy Policy
           </h3>
           <div className="relative p-4 overflow-hidden text-slate-700 bg-white rounded-t-xl bg-clip-border">
@@ -27,7 +29,7 @@ export default function PrivacyPolicyPage() {
             </div>
           </div>
         </div>
-    
+        <TextEditor />
       </div>
     </>
   );

@@ -103,9 +103,17 @@ export default function PasswordUpdate() {
     <>
       <section className=" p-3 space-y-6">
         <div className="p-6 w-full h-fit border border-slate-300 bg-white rounded-xl space-y-10">
-          <div className="grid md:grid-cols-2 gap-3 text-sm">
+          <div class="space-y-1 w-full px-4 py-2 overflow-hidden text-slate-700 bg-white bg-clip-border">
+            <p class="text-2xl text-left w-full font-semibold text-slate-800 ">
+              Change Password
+            </p>
+            <p class="text-lg text-left font-normal text-slate-600">
+              Change password and make secure your website
+            </p>
+          </div>
+          <div className="max-w-xl text-sm mx-auto">
             {/* new password */}
-            <div className="px-4">
+            <div className="px-4 space-y-4">
               <div className="flex items-center justify-between space-y-1">
                 <label
                   className="flex  text-start capitalize text-xl font-medium text-gray-700 dark:text-white"
@@ -120,44 +128,39 @@ export default function PasswordUpdate() {
                   Required
                 </button>
               </div>
-              <p className="text-lg tracking-tight font-medium text-left text-gray-500 dark:text-white">
-                Enter your current password to verify your identity.
-              </p>
-            </div>
-
-            {/* new password */}
-            <div className="relative w-full mt-4">
-              <input
-                className="text-black text-md px-4 py-6 border-2 border-gray-200  w-full h-12 rounded-lg"
-                // type={show ? "text" : "password"}
-                type="password"
-                name="password"
-                // value={password || ""}
-                // onChange={(e) => handleChange(e)}
-                placeholder="Enter new assword"
-                autoComplete="off"
-              />
-              <button
-                type="button"
-                // onClick={() => setShow(!show)}
-                className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
+              <div className="relative w-full">
+                <input
+                  className="text-black text-md px-4 py-6 border-2 border-gray-200  w-full h-12 rounded-lg"
+                  // type={show ? "text" : "password"}
+                  type="password"
+                  name="password"
+                  // value={password || ""}
+                  // onChange={(e) => handleChange(e)}
+                  placeholder="Enter new assword"
+                  autoComplete="off"
+                />
+                <button
+                  type="button"
+                  // onClick={() => setShow(!show)}
+                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 16 16">
-                  <VscEyeClosed title="Show Password" />
-                  {/* {show ? (
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 16 16">
+                    <VscEyeClosed title="Show Password" />
+                    {/* {show ? (
                   ) : (
                     <RxEyeOpen title="Hide Password" />
                   )} */}
-                </svg>
-              </button>
-              <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">
-                Enter a strong password.
-              </p>
+                  </svg>
+                </button>
+                <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">
+                  Enter a strong password.
+                </p>
+              </div>
             </div>
 
             {/* confirm password */}
-            <div className="px-4">
+            <div className="px-4  space-y-4">
               <div className="flex items-center justify-between space-y-1">
                 <label
                   className="flex  text-start capitalize text-xl font-medium text-gray-700 dark:text-white"
@@ -172,40 +175,35 @@ export default function PasswordUpdate() {
                   Required
                 </button>
               </div>
-              <p className="text-lg tracking-tight font-medium text-left text-gray-500 dark:text-white">
-                Enter your current password to verify your identity.
-              </p>
-            </div>
-
-            {/* confirm password */}
-            <div className="relative w-full  mt-4">
-              <input
-                className="text-black text-md px-4 py-6 border-2 border-gray-200 h-12 w-full rounded-lg"
-                // type={show ? "text" : "password"}
-                type="password"
-                name="password"
-                // value={password || ""}
-                // onChange={(e) => handleChange(e)}
-                placeholder="Enter confirm password"
-                autoComplete="off"
-              />
-              <button
-                type="button"
-                // onClick={() => setShow(!show)}
-                className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
+              <div className="relative w-full">
+                <input
+                  className="text-black text-md px-4 py-6 border-2 border-gray-200  w-full h-12 rounded-lg"
+                  // type={show ? "text" : "password"}
+                  type="password"
+                  name="password"
+                  // value={password || ""}
+                  // onChange={(e) => handleChange(e)}
+                  placeholder="Enter new assword"
+                  autoComplete="off"
+                />
+                <button
+                  type="button"
+                  // onClick={() => setShow(!show)}
+                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 16 16">
-                  <VscEyeClosed title="Show Password" />
-                  {/* {show ? (
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 16 16">
+                    <VscEyeClosed title="Show Password" />
+                    {/* {show ? (
                   ) : (
                     <RxEyeOpen title="Hide Password" />
                   )} */}
-                </svg>
-              </button>
-              <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">
-                Enter a strong password.
-              </p>
+                  </svg>
+                </button>
+                <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">
+                  Enter a strong password.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -228,7 +226,7 @@ export default function PasswordUpdate() {
             <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
               <VscSaveAs />
             </svg>
-            <p className=" font-semibold">save changes</p>
+            <p className=" font-semibold">Reset password</p>
           </button>
         </div>
       </section>

@@ -1,23 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function SideNavbar({ sidebarOpen, onStateChange }) {
+function SideNavbar() {
   const { pathname } = useLocation();
-  const nnavigationPage = [
-    { text: "Income Expense", to: "/incomeExpense" },
-    { text: "KYC", to: "/kyc" },
-    { text: "Report", to: "/report" },
-    { text: "Contestant Earning", to: "/contestEarning" },
-    { text: "Content Type", to: "/contestType" },
-    { text: "Classes", to: "/classes" },
-    { text: "Information", to: "/information" },
-    { text: "Subject", to: "/subject" },
-    { text: "Banner", to: "/banner" },
-    { text: "User", to: "/" },
+  const [active, setActive] = useState();
+  const handleClick = (event) => {
+    setActive(event);
+    localStorage.setItem("adminpanel", active);
+  };
+
+  const navigationPage = [
+    { id: 1, text: "Income Expense", url: "/" },
+    { id: 2, text: "KYC", url: "/kyc" },
+    { id: 3, text: "Report", url: "/report" },
+    { id: 4, text: "Add Contest", url: "/addContest" },
+    { id: 5, text: "Contestant Earning", url: "/contestEarning" },
+    { id: 6, text: "Content Type", url: "/contestType" },
+    { id: 7, text: "Classes", url: "/classes" },
+    {
+      id: 8,
+      text: "Information",
+      url: "/information",
+    },
+    {
+      id: 9,
+      text: "Subject",
+      url: "/subject",
+    },
+    { id: 10, text: "Banner", url: "/banner" },
+    {
+      id: 11,
+      text: "User",
+      url: "/userDetails",
+    },
   ];
-  // const [menu, setMenu] = useState(false);
+
+  useEffect(() => {
+    const storedTab = localStorage.getItem("adminpanel");
+    if (storedTab) {
+      setActive(storedTab);
+    } else {
+      setActive(1);
+    }
+    
+  }, []);
+  console.log(active);
 
   return (
     <>
@@ -35,13 +64,17 @@ function SideNavbar({ sidebarOpen, onStateChange }) {
           <nav className="mt-5 pr-4">
             <div>
               <ul className="mb-6 flex flex-col gap-1">
-                {nnavigationPage.map((value, index) => {
+                {navigationPage.map((value, index) => {
                   return (
-                    <NavLink to={value.to}>
-                      <li className="flex gap-x-5" Key={index.toString()}>
+                    <NavLink to={value.url}>
+                      <li
+                        className="flex gap-x-5"
+                        onClick={() => handleClick(value.id)}
+                        Key={index.toString()}
+                      >
                         <span
                           className={`${
-                            pathname === value.to
+                            active === value.id
                               ? "border-l-4 border-orange-500"
                               : "border-none"
                           } rounded-r-lg `}
@@ -49,7 +82,7 @@ function SideNavbar({ sidebarOpen, onStateChange }) {
                         <button
                           type="button"
                           className={`${
-                            pathname === value.to
+                            active === value.id
                               ? "text-white bg-orange-400"
                               : "text-black"
                           }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize `}

@@ -1,5 +1,5 @@
 import React from "react";
-import MultiSelection from "../MultiselectUi/MultiSelection";
+import MultiSelection from "../Ui/MultiSelection";
 import { MdStar } from "react-icons/md";
 import { VscSaveAs } from "react-icons/vsc";
 

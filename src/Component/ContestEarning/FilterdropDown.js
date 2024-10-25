@@ -5,8 +5,8 @@ export default function FilterdropDown({ toggle, setToggle }) {
     <>
       <div
         className={`${
-          toggle === true
-            ? " absolute z-30 overflow-hidden max-w-xl transition duration-300 ease-in-out origin-top-right top-14 right-2 dark:bg-gray-800 bg-white rounded-lg shadow border border-gray-300 dark:border-transparent"
+          toggle
+            ? " absolute z-30 overflow-hidden max-w-xl transition duration-300 ease-in-out origin-top-right  right-2 dark:bg-gray-800 bg-white rounded-lg shadow border border-gray-300 dark:border-transparent"
             : "hidden"
         } `}
       >

@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import PasswordUpdate from "./NewPassword/PasswordUpdate";
 import { VscEyeClosed } from "react-icons/vsc";
 import { RxEyeOpen } from "react-icons/rx";
-import MultipleSelection from "./MultiselectUi/MultiSelection";
+import MultipleSelection from "./Ui/MultiSelection";
 
 export default function ProfilePage() {
   // const staticObj = {
