@@ -16,7 +16,7 @@ export default function AddSubject() {
         <div className="grid grid-cols-1 space-y-2 max-w-xs">
           <label
             htmlFor="subject"
-            className="text-gray-700 font-semibold dark:text-gray-200"
+            className="text-gray-700 text-lg font-semibold dark:text-gray-200"
           >
             Subject name
           </label>

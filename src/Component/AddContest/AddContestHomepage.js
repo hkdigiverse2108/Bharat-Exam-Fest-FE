@@ -4,18 +4,12 @@ import { FaPlus } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../Pagination/Pagination";
-import SelectDate from "./SelectDate";
-import Calander from "../Ui/Calander";
-import TimeSelector from "../Ui/TimeSelector";
 
 export default function AddContestHomepage() {
  
   const navigate = useNavigate();
   function handleAddContest() {
     navigate("/createContest");
-  }
-  function handleEditSubject() {
-    navigate("/editSubject");
   }
   return (
     <>
@@ -136,11 +130,9 @@ export default function AddContestHomepage() {
                     <button
                       className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                       type="button"
-                      onClick={() => handleEditSubject()}
                     >
                       <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
                         <svg
-                          xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 16 16"
                           className="w-5 h-5"
                         >

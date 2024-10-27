@@ -1,20 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { GoSearch } from "react-icons/go";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { IoNotificationsOutline } from "react-icons/io5";
 import { SlArrowDownCircle, SlArrowUpCircle } from "react-icons/sl";
 import { RiMenuLine } from "react-icons/ri";
 import "react-toastify/dist/ReactToastify.css";
 
 function Navbar() {
+  // const navigate = useNavigate();
+  // const { pathname } = useLocation();
+
+  const [active, setActive] = useState();
+  const handleClick = (event) => {
+    localStorage.setItem("lang", event);
+    setActive(event);
+  };
+  useEffect(() => {
+    const item = localStorage.getItem("lang");
+    if (item === null) {
+      setActive(localStorage.setItem("lang", "/"));
+    } else {
+      setActive(item);
+    }
+  }, [active]);
+
   const navigationPage = [
     { id: 1, text: "Income Expense", to: "/" },
     { id: 2, text: "KYC", to: "/kyc" },
     { id: 3, text: "Report", to: "/report" },
     { id: 4, text: "Add Contest", to: "/addContest" },
     { id: 5, text: "Contestant Earning", to: "/contestEarning" },
-    { id: 6, text: "Content Type", to: "/contestType" },
-    { id: 7, text: "Classes", to: "/classes" },
+    { id: 6, text: "Classes", to: "/classes" },
+    { id: 7, text: "Content Type", to: "/contestType" },
     { id: 8, text: "Information", to: "/information" },
     { id: 9, text: "Subject", to: "/subject" },
     { id: 10, text: "Banner", to: "/banner" },
@@ -23,28 +39,14 @@ function Navbar() {
   const drpodownItems = [
     { id: 12, text: "Reset Password", to: "/resetPassword" },
   ];
-  const navigate = useNavigate();
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [navbarOpen, setNavbarOpen] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const { pathname } = useLocation();
-  const [active, setActive] = useState();
-  const handleClick = (event) => {
-    setActive(event);
-    localStorage.setItem("activeTab", active);
-  };
+
   function Navigation() {
     setToggle(!toggle);
   }
 
-  useEffect(() => {
-    const storedTab = localStorage.getItem("activeTab");
-    if (storedTab) {
-      setActive(storedTab);
-    } else {
-      setActive(1);
-    }
-  }, []);
   // const userLogout = () => {
   //   try {
   //     console.log("logout");
@@ -130,7 +132,7 @@ function Navbar() {
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
           <button
             className=" text-md text-slate-500 p-2 mt-2 hover:bg-slate-500 hover:text-white rounded-full lg:hidden xl:hidden 2xl:hidden"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={() => setNavbarOpen(!navbarOpen)}
             title="Menu"
           >
             <svg viewBox="0 0 16 16" className="h-6 w-6">
@@ -140,9 +142,10 @@ function Navbar() {
         </div>
       </div>
 
+      {/* toggle navbar */}
       <div
         className={`${
-          sidebarOpen === true
+          navbarOpen === true
             ? "block lg:hidden w-full px-4 py-6 bg-gray-100 duration-300 ease-linear"
             : "hidden"
         }`}
@@ -155,12 +158,12 @@ function Navbar() {
                 <NavLink to={value.to}>
                   <li
                     className="flex gap-x-5"
-                    onClick={() => handleClick(value.id)}
-                    Key={index.toString()}
+                    onClick={() => handleClick(value.url)}
+                    Key={value.id}
                   >
                     <span
                       className={`${
-                        active === value.id
+                        active === value.url
                           ? "border-l-4 border-orange-500"
                           : "border-none"
                       } rounded-r-lg `}
@@ -168,7 +171,7 @@ function Navbar() {
                     <button
                       type="button"
                       className={`${
-                        active === value.id
+                        active === value.url
                           ? "text-white bg-orange-400"
                           : "text-black"
                       }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize `}
@@ -194,7 +197,11 @@ function Navbar() {
           {drpodownItems.map((value, index) => {
             return (
               <NavLink to={value.to}>
-                <li key={index} className="flex gap-x-5" onClick={Navigation}>
+                <li
+                  Key={value.id}
+                  className="flex gap-x-5"
+                  onClick={Navigation}
+                >
                   <button
                     type="button"
                     className={`${

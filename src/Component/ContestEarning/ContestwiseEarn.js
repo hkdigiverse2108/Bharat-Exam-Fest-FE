@@ -35,12 +35,18 @@ export default function ContestwiseEarn() {
           <table className="mt-4 w-full min-w-max table-auto text-left">
             <thead>
               <tr>
-                <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    Contact Name
+                <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    Contest Name
+                    <svg viewBox="0 0 24 24" className="h-4 w-4">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                      ></path>
+                    </svg>
                   </p>
                 </th>
-
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
                   <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
                     Count

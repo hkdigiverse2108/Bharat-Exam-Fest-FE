@@ -121,19 +121,19 @@ export default function RouteManger() {
   return (
     <>
       <Routes>
-        <Route exact path="/" element={<Incomeboard />} />
-        <Route path="/contestEarning" element={<ContestEarningHome />} />
+        <Route index exact path="/" element={<Incomeboard />} />
         <Route path="/kyc" element={<KYCHomePage />} />
         <Route path="/report" element={<ReportHomePage />} />
         <Route path="/addContest" element={<AddContestHomepage />} />
         <Route path="/createContest" element={<CreateContest />} />
-        <Route path="/subject" element={<SubjectData />} />
-        <Route path="/addSubject" element={<AddSubject />} />
-        <Route path="/editSubject" element={<EditSubjectSection />} />
+        <Route path="/contestEarning" element={<ContestEarningHome />} />
         <Route path="/classes" element={<ClassesHomePage />} />
         <Route path="/contestType" element={<ContestHome />} />
         <Route path="/information" element={<InformationHome />} />
         <Route path="/addIntroduction" element={<AddIntroduction />} />
+        <Route path="/subject" element={<SubjectData />} />
+        <Route path="/addSubject" element={<AddSubject />} />
+        <Route path="/editSubject" element={<EditSubjectSection />} />
         <Route path="/banner" element={<HomeBanner />} />
         <Route path="/userDetails" element={<UserDetails />} />
         <Route path="/addUser" element={<AddUser />} />

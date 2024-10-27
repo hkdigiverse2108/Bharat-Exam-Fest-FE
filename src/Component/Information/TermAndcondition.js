@@ -1,6 +1,7 @@
-import React from "react";
-import { FaPlus, FaRegImage } from "react-icons/fa6";
-import TextEditor from "./TextEditor";
+import React, { Suspense } from "react";
+import { FaRegImage } from "react-icons/fa6";
+import TextEditor from "../Ui/TextEditor";
+import Loading from "../Loader/Loading";
 
 export default function TermAndcondition() {
   return (
@@ -28,8 +29,9 @@ export default function TermAndcondition() {
             </div>
           </div>
         </div>
-        <TextEditor />
-
+        <Suspense fallback={<Loading />}>
+          <TextEditor />
+        </Suspense>
       </div>
     </>
   );

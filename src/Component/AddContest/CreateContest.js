@@ -94,7 +94,7 @@ export default function CreateContest() {
               </ul>
             </div>
             <div>
-              <ul className="text-start grid grid-cols-2 gap-2 md:grid-cols-2 2xl:grid-cols-4 2xl:gap-6">
+              <ul className="text-start grid grid-cols-2 gap-2 md:grid-cols-2 md:gap-4 2xl:grid-cols-4 2xl:gap-6">
                 <li>
                   <label
                     htmlFor="q1"

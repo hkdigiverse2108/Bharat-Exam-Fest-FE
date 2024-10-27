@@ -29,51 +29,27 @@ export default function Calander({ confirm, setConfirm }) {
                 </p>
               </div>
               <div className="flex items-center  justify-around border-t border-gray-600 w-full py-4">
+                {/* start date */}
                 <div className="border border-gray-400 rounded-lg p-2">
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateCalendar />
                   </LocalizationProvider>
-                  <div className="flex justify-center items-center space-x-4">
-                    <button
-                      onClick={setConfirm}
-                      data-modal-toggle="deleteModal"
-                      type="button"
-                      className="py-2 px-4 w-full text-md font-medium text-gray-500 bg-white rounded-lg border border-gray-400 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      onClick={setConfirm}
-                      className="py-2 px-4 w-full text-md font-medium text-center text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 dark:bg-orange-500 dark:hover:bg-orange-600 dark:focus:ring-orange-900"
-                    >
-                      Choose Time
-                    </button>
-                  </div>
                 </div>
+                {/* end date */}
                 <div className="border border-gray-400 rounded-lg p-2">
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateCalendar />
                   </LocalizationProvider>
-                  <div className="flex justify-center items-center space-x-4">
-                    <button
-                      onClick={setConfirm}
-                      data-modal-toggle="deleteModal"
-                      type="button"
-                      className="py-2 px-4 w-full text-md font-medium text-gray-500 bg-white rounded-lg border border-gray-400 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      onClick={setConfirm}
-                      className="py-2 px-4 w-full text-md font-medium text-center text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 dark:bg-orange-500 dark:hover:bg-orange-600 dark:focus:ring-orange-900"
-                    >
-                      Choose Time
-                    </button>
-                  </div>
                 </div>
               </div>
+              <button
+                onClick={setConfirm}
+                data-modal-toggle="deleteModal"
+                type="button"
+                className="py-2 px-24 max-w-md text-md font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-500 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+              >
+                Save
+              </button>
             </div>
           </div>
         </div>

@@ -68,14 +68,13 @@ export default function AddIntroduction({ setConfirm }) {
 
                 <input type="file" name="file" id="file" className="sr-only" />
                 <label
-                  htmlFor="file"
-                  className="relative flex items-center justify-start gap-x-4 text-center cursor-pointer"
+                  for="file"
+                  class="relative flex items-center justify-start  gap-x-4 text-center cursor-pointer"
                 >
-                  <span className="inline-flex rounded border border-[#e0e0e0] py-2 px-8 text-base capitalize font-medium text-[#07074D]">
+                  <span class="rounded-md border border-[#318973] py-2 px-8 text-base capitalize text-slate-700">
                     choose file
                   </span>
-
-                  <span className="mb-2 block text-md  capitalize font-semibold text-[#07074D]">
+                  <span class="text-md capitalize text-[#318973]">
                     no file chosen
                   </span>
                 </label>

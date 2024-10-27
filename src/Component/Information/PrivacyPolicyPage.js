@@ -1,7 +1,6 @@
 import React from "react";
 import { FaPlus, FaRegImage } from "react-icons/fa6";
-
-import TextEditor from "./TextEditor";
+import DemoEditor from "../Ui/TextEditor"
 
 export default function PrivacyPolicyPage() {
   return (
@@ -29,7 +28,7 @@ export default function PrivacyPolicyPage() {
             </div>
           </div>
         </div>
-        <TextEditor />
+        <DemoEditor />
       </div>
     </>
   );

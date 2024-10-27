@@ -28,6 +28,14 @@ function LoginPage() {
   function handleNavigate() {
     setConfirm(!confirm);
   }
+  
+  function handleLogin() {
+    setConfirm(!confirm);
+    navigate("/");
+    dispatch(loginSuccess(state));
+    toast.success("Login successfully");
+  }
+
   const [show, setShow] = useState(false);
   const { email, password } = state;
 
@@ -56,10 +64,7 @@ function LoginPage() {
                 if (!password.match(lowerCaseLetters)) {
                   toast.warn("Must Include lowerCase Letters in Password!");
                 } else {
-                  navigate("/");
                   handleNavigate();
-                  dispatch(loginSuccess(state));
-                  // toast.success("Login successfully");
                 }
               }
             }
@@ -103,7 +108,7 @@ function LoginPage() {
                 value={password || ""}
                 onChange={(e) => handleChange(e)}
                 placeholder="Enter Your Password"
-                autoComplete="off"  
+                autoComplete="off"
               />
               <button
                 type="button"
@@ -147,7 +152,7 @@ function LoginPage() {
           </button>
         </div>
         <div className={`${confirm === true ? "block" : "hidden"}`}>
-          <OtpVerify confirm={confirm} setConfirm={() => handleNavigate()} />
+          <OtpVerify confirm={confirm} setConfirm={() => handleLogin()} />
         </div>
       </section>
       <ToastContainer

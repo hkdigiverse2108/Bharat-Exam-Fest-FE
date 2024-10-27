@@ -4,12 +4,20 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function SideNavbar() {
-  const { pathname } = useLocation();
-  const [active, setActive] = useState();
+  // const { pathname } = useLocation();
+  const [active, setActive] = useState("/");
   const handleClick = (event) => {
+    localStorage.setItem("lang", event);
     setActive(event);
-    localStorage.setItem("adminpanel", active);
   };
+  useEffect(() => {
+    const item = localStorage.getItem("lang");
+    if (item === null) {
+      setActive(localStorage.setItem("lang", "/"));
+    } else {
+      setActive(item);
+    }
+  }, [active]);
 
   const navigationPage = [
     { id: 1, text: "Income Expense", url: "/" },
@@ -17,8 +25,8 @@ function SideNavbar() {
     { id: 3, text: "Report", url: "/report" },
     { id: 4, text: "Add Contest", url: "/addContest" },
     { id: 5, text: "Contestant Earning", url: "/contestEarning" },
-    { id: 6, text: "Content Type", url: "/contestType" },
-    { id: 7, text: "Classes", url: "/classes" },
+    { id: 6, text: "Classes", url: "/classes" },
+    { id: 7, text: "Content Type", url: "/contestType" },
     {
       id: 8,
       text: "Information",
@@ -37,17 +45,6 @@ function SideNavbar() {
     },
   ];
 
-  useEffect(() => {
-    const storedTab = localStorage.getItem("adminpanel");
-    if (storedTab) {
-      setActive(storedTab);
-    } else {
-      setActive(1);
-    }
-    
-  }, []);
-  console.log(active);
-
   return (
     <>
       <aside className="absolute left-0 top-0 z-20 flex h-screen w-full flex-col overflow-y-auto bg-inherite border-r duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 -translate-x-fullhidden lg:block xl:block 2xl:block">
@@ -62,19 +59,18 @@ function SideNavbar() {
 
         <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
           <nav className="mt-5 pr-4">
-            <div>
               <ul className="mb-6 flex flex-col gap-1">
                 {navigationPage.map((value, index) => {
                   return (
                     <NavLink to={value.url}>
                       <li
                         className="flex gap-x-5"
-                        onClick={() => handleClick(value.id)}
-                        Key={index.toString()}
+                        onClick={() => handleClick(value.url)}
+                        Key={value.id}
                       >
                         <span
                           className={`${
-                            active === value.id
+                            active === value.url
                               ? "border-l-4 border-orange-500"
                               : "border-none"
                           } rounded-r-lg `}
@@ -82,7 +78,7 @@ function SideNavbar() {
                         <button
                           type="button"
                           className={`${
-                            active === value.id
+                            active === value.url
                               ? "text-white bg-orange-400"
                               : "text-black"
                           }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize `}
@@ -94,7 +90,6 @@ function SideNavbar() {
                   );
                 })}
               </ul>
-            </div>
           </nav>
         </div>
       </aside>
