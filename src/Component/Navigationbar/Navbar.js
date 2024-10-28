@@ -7,45 +7,45 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Navbar() {
   // const navigate = useNavigate();
-  // const { pathname } = useLocation();
+  const { pathname } = useLocation();
 
-  const [active, setActive] = useState("/");
-  const handleClick = (event) => {
-    localStorage.setItem("lang", event);
-    setActive(event);
-  };
-  useEffect(() => {
-    const item = localStorage.getItem("lang");
-    if (item === null) {
-      setActive(localStorage.setItem("lang", "/"));
-    } else {
-      setActive(item);
-    }
-  }, [active]);
+  // const [active, setActive] = useState("/");
+  // const handleClick = (event) => {
+  //   localStorage.setItem("lang", event);
+  //   setActive(event);
+  // };
+  // useEffect(() => {
+  //   const item = localStorage.getItem("lang");
+  //   if (item === null) {
+  //     setActive(localStorage.setItem("lang", "/"));
+  //   } else {
+  //     setActive(item);
+  //   }
+  // }, [active]);
 
-  const navigationPage = [
-    { id: 1, text: "Income Expense", to: "/" },
-    { id: 2, text: "KYC", to: "/kyc" },
-    { id: 3, text: "Report", to: "/report" },
-    { id: 4, text: "Add Contest", to: "/addContest" },
-    { id: 5, text: "Contestant Earning", to: "/contestEarning" },
-    { id: 6, text: "Classes", to: "/classes" },
-    { id: 7, text: "Content Type", to: "/contestType" },
-    { id: 8, text: "Information", to: "/information" },
-    { id: 9, text: "Subject", to: "/subject" },
-    { id: 10, text: "Banner", to: "/banner" },
-    { id: 11, text: "User", to: "/userDetails" },
-  ];
-  const drpodownItems = [
-    { id: 12, text: "Reset Password", to: "/resetPassword" },
-  ];
+  // const navigationPage = [
+  //   { id: 1, text: "Income Expense", to: "/" },
+  //   { id: 2, text: "KYC", to: "/kyc" },
+  //   { id: 3, text: "Report", to: "/report" },
+  //   { id: 4, text: "Add Contest", to: "/addContest" },
+  //   { id: 5, text: "Contestant Earning", to: "/contestEarning" },
+  //   { id: 6, text: "Classes", to: "/classes" },
+  //   { id: 7, text: "Content Type", to: "/contestType" },
+  //   { id: 8, text: "Information", to: "/information" },
+  //   { id: 9, text: "Subject", to: "/subject" },
+  //   { id: 10, text: "Banner", to: "/banner" },
+  //   { id: 11, text: "User", to: "/userDetails" },
+  // ];
+  // const drpodownItems = [
+  //   { id: 12, text: "Reset Password", to: "/resetPassword" },
+  // ];
 
   const [navbarOpen, setNavbarOpen] = useState(false);
   const [toggle, setToggle] = useState(false);
 
-    function Navigation() {
-      setToggle(!toggle);
-    }
+  function Navigation() {
+    setToggle(!toggle);
+  }
 
   // const userLogout = () => {
   //   try {
@@ -66,7 +66,7 @@ function Navbar() {
 
   return (
     <>
-      <div className="h-16 flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11 ">
+      <div className="h-16 bg-white flex items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11 ">
         <div className="flex items-center justify-center lg:hidden text-3xl font-semibold px-6">
           <span className=" text-center  text-orange-600  whitespace-nowrap">
             Dash
@@ -76,7 +76,7 @@ function Navbar() {
           </span>
         </div>
 
-        <div className="hidden sm:block">
+        <div className="hidden sm:block ">
           <div className="relative ">
             <button className="absolute left-3 top-1/2 -translate-y-1/2">
               <svg
@@ -91,7 +91,7 @@ function Navbar() {
             <input
               type="text"
               placeholder="Type to search..."
-              className="w-full p-2 pl-8 text-md rounded-full bg-transparent border-2  focus:outline-none xl:w-125"
+              className="w-full p-2 pl-8 text-md rounded-full bg-transparent border-2  focus:outline-none  md:w-100 xl:w-125"
             />
           </div>
         </div>
@@ -129,9 +129,9 @@ function Navbar() {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
+        <div className="flex items-center gap-x-2 sm:gap-x-4 lg:hidden">
           <button
-            className=" text-md text-slate-500 p-2 mt-2 hover:bg-slate-500 hover:text-white rounded-full lg:hidden xl:hidden 2xl:hidden"
+            className=" text-md text-slate-500 p-2 hover:bg-slate-500 hover:text-white rounded-full lg:hidden xl:hidden 2xl:hidden"
             onClick={() => setNavbarOpen(!navbarOpen)}
             title="Menu"
           >
@@ -146,42 +146,269 @@ function Navbar() {
       <div
         className={`${
           navbarOpen === true
-            ? "block lg:hidden w-full px-4 py-6 bg-gray-100 duration-300 ease-linear"
+            ? "block lg:hidden w-full px-4 py-6 bg-slate-200 border-b shadow-default duration-300 ease-linear"
             : "hidden"
         }`}
         id="mobile-menu"
       >
         <nav className="flex flex-col h-full overflow-y-auto duration-300 ease-linear ">
-          <ul className=" flex flex-col text-md font-medium ">
-            {navigationPage.map((value, index) => {
-              return (
-                <NavLink to={value.to}>
-                  <li
-                    className="flex gap-x-5"
-                    onClick={() => handleClick(value.url)}
-                    Key={value.id}
-                  >
-                    <span
-                      className={`${
-                        active === value.url
-                          ? "border-l-4 border-orange-500"
-                          : "border-none"
-                      } rounded-r-lg `}
-                    ></span>
-                    <button
-                      type="button"
-                      className={`${
-                        active === value.url
-                          ? "text-white bg-orange-400"
-                          : "text-black"
-                      }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize `}
-                    >
-                      {value.text}
-                    </button>
-                  </li>
-                </NavLink>
-              );
-            })}
+          <ul className="mb-6 flex flex-col gap-1.5">
+            <li>
+              <NavLink
+                to="/"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/" && "text-white bg-orange-500"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  Income Expense
+                </span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/kyc"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/kyc"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/kyc" && "text-white bg-orange-500"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  KYC
+                </span>
+              </NavLink>
+            </li>
+            <li className="">
+              <NavLink
+                to="/report"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/report"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/report" && "text-white bg-orange-500"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  Report
+                </span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/addContest"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/addContest" || pathname === "/createContest"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/addContest" || pathname === "/createContest"
+                      ? "text-white bg-orange-500"
+                      : "text-black"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  add contest
+                </span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/contestEarning"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/contestEarning"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/contestEarning" && "text-white bg-orange-500"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  contest earning
+                </span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/classes"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/classes"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/classes" && "text-white bg-orange-500"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  classes
+                </span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/contestType"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/contestType"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/contestType" && "text-white bg-orange-500"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  contest Type
+                </span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/information"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/information" ||
+                    pathname === "/addIntroduction"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/information" ||
+                    pathname === "/addIntroduction"
+                      ? "text-white bg-orange-500"
+                      : "text-black"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  information
+                </span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/subject"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/subject" || pathname === "/addSubject"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/subject" || pathname === "/addSubject"
+                      ? "text-white bg-orange-500"
+                      : "text-black"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  subject
+                </span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/banner"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/banner"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/banner" && "text-white bg-orange-500"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  banner
+                </span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/userDetails"
+                className="
+                   flex space-x-3"
+              >
+                <span
+                  className={`${
+                    pathname === "/userDetails" ||
+                    pathname === "/addUser" ||
+                    pathname === "/editUser"
+                      ? "border-l-4 border-orange-500"
+                      : "border-none"
+                  } rounded-r-lg `}
+                ></span>
+                <span
+                  className={`${
+                    pathname === "/userDetails" ||
+                    pathname === "/addUser" ||
+                    pathname === "/editUser"
+                      ? "text-white bg-orange-500"
+                      : "text-black"
+                  } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                >
+                  user
+                </span>
+              </NavLink>
+            </li>
           </ul>
         </nav>
       </div>
@@ -189,33 +416,23 @@ function Navbar() {
       <div
         className={`${
           toggle === true
-            ? " absolute overflow-hidden w-52  duration-300 ease-linear origin-top-right right-2 dark:bg-gray-800 bg-white rounded-lg shadow-xl border dark:border-transparent"
+            ? " absolute overflow-hidden w-52  duration-300 ease-linear origin-top-right top-16 right-2  dark:bg-gray-800  rounded-lg shadow-xl border dark:border-transparent"
             : "hidden"
         } `}
       >
         <ul className="flex flex-col gap-y-1 dark:text-white text-left font-medium capitalize">
-          {drpodownItems.map((value, index) => {
-            return (
-              <NavLink to={value.to}>
-                <li
-                  Key={value.id}
-                  className="flex gap-x-5"
-                  onClick={Navigation}
-                >
-                  <button
-                    type="button"
-                    className={`${
-                      active === value.id
-                        ? "text-white bg-gray-600"
-                        : "text-black"
-                    }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600`}
-                  >
-                    {value.text}
-                  </button>
-                </li>
-              </NavLink>
-            );
-          })}
+          <li   onClick={Navigation}>
+            <NavLink to="/resetpassword">
+              <button
+                type="button"
+                className={`${
+                  pathname === "/resetpassword" ? "text-white bg-gray-600" : "text-black"
+                }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600`}
+              >
+                Reset Password
+              </button>
+            </NavLink>
+          </li>
         </ul>
       </div>
     </>
