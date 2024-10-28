@@ -9,37 +9,6 @@ function Navbar() {
   // const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  // const [active, setActive] = useState("/");
-  // const handleClick = (event) => {
-  //   localStorage.setItem("lang", event);
-  //   setActive(event);
-  // };
-  // useEffect(() => {
-  //   const item = localStorage.getItem("lang");
-  //   if (item === null) {
-  //     setActive(localStorage.setItem("lang", "/"));
-  //   } else {
-  //     setActive(item);
-  //   }
-  // }, [active]);
-
-  // const navigationPage = [
-  //   { id: 1, text: "Income Expense", to: "/" },
-  //   { id: 2, text: "KYC", to: "/kyc" },
-  //   { id: 3, text: "Report", to: "/report" },
-  //   { id: 4, text: "Add Contest", to: "/addContest" },
-  //   { id: 5, text: "Contestant Earning", to: "/contestEarning" },
-  //   { id: 6, text: "Classes", to: "/classes" },
-  //   { id: 7, text: "Content Type", to: "/contestType" },
-  //   { id: 8, text: "Information", to: "/information" },
-  //   { id: 9, text: "Subject", to: "/subject" },
-  //   { id: 10, text: "Banner", to: "/banner" },
-  //   { id: 11, text: "User", to: "/userDetails" },
-  // ];
-  // const drpodownItems = [
-  //   { id: 12, text: "Reset Password", to: "/resetPassword" },
-  // ];
-
   const [navbarOpen, setNavbarOpen] = useState(false);
   const [toggle, setToggle] = useState(false);
 

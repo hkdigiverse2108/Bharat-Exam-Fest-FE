@@ -1,49 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function SideNavbar() {
   const { pathname } = useLocation();
-  // const [pathname, setpathname] = useState("/");
-  // const handleClick = (event) => {
-  //   localStorage.setItem("lang", event);
-  //   setpathname(event);
-  // };
-  // useEffect(() => {
-  //   const item = localStorage.getItem("lang");
-  //   if (item === null) {
-  //     setpathname(localStorage.setItem("lang", "/"));
-  //   } else {
-  //     setpathname(item);
-  //   }
-  // }, [pathname]);
-
-  // const navigationPage = [
-  //   { id: 1, text: "Income Expense", url: "/" },
-  //   { id: 2, text: "KYC", url: "/kyc" },
-  //   { id: 3, text: "Report", url: "/report" },
-  //   { id: 4, text: "Add Contest", url: "/addContest" },
-  //   { id: 5, text: "Contestant Earning", url: "/contestEarning" },
-  //   { id: 6, text: "Classes", url: "/classes" },
-  //   { id: 7, text: "Content Type", url: "/contestType" },
-  //   {
-  //     id: 8,
-  //     text: "Information",
-  //     url: "/information",
-  //   },
-  //   {
-  //     id: 9,
-  //     text: "Subject",
-  //     url: "/subject",
-  //   },
-  //   { id: 10, text: "Banner", url: "/banner" },
-  //   {
-  //     id: 11,
-  //     text: "User",
-  //     url: "/userDetails",
-  //   },
-  // ];
 
   return (
     <>
