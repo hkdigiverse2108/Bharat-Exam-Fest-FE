@@ -1,12 +1,12 @@
 import React from "react";
 import "./App.css";
-import Mainpanel from "./Component/Main";
+import UserPanel from "./Component/Main";
 
 function App() {
   
   return (
     <div className="App font-sans">
-      <Mainpanel />
+      <UserPanel />
     </div>
   );
 }

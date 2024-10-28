@@ -121,7 +121,7 @@ export default function RouteManger() {
   return (
     <>
       <Routes>
-        <Route index exact path="/" element={<Incomeboard />} />
+        <Route  exact path="/" element={<Incomeboard />} />
         <Route path="/kyc" element={<KYCHomePage />} />
         <Route path="/report" element={<ReportHomePage />} />
         <Route path="/addContest" element={<AddContestHomepage />} />

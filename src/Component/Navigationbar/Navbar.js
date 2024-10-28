@@ -9,7 +9,7 @@ function Navbar() {
   // const navigate = useNavigate();
   // const { pathname } = useLocation();
 
-  const [active, setActive] = useState();
+  const [active, setActive] = useState("/");
   const handleClick = (event) => {
     localStorage.setItem("lang", event);
     setActive(event);
@@ -43,9 +43,9 @@ function Navbar() {
   const [navbarOpen, setNavbarOpen] = useState(false);
   const [toggle, setToggle] = useState(false);
 
-  function Navigation() {
-    setToggle(!toggle);
-  }
+    function Navigation() {
+      setToggle(!toggle);
+    }
 
   // const userLogout = () => {
   //   try {
