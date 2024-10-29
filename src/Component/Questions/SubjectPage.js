@@ -1,17 +1,14 @@
 import React from "react";
-import {
-  HiOutlineUserGroup,
-} from "react-icons/hi";
+import { HiOutlineUserGroup } from "react-icons/hi";
 import { FiBox } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 function SubjectPage() {
   const navigate = useNavigate();
   function handleSubject() {
     navigate("/subjectDetails");
-
   }
+  
   return (
     <>
       <section>
@@ -48,14 +45,13 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 polity & gov
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-yellow-200 w-16 h-16 text-yellow-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <FiBox />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-yellow-200 w-16 h-16 text-yellow-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <FiBox />
+              </svg>
             </div>
             <div className="text-left">
               <p className="font-medium text-slate-600 text-xl capitalize">
@@ -72,17 +68,16 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 geography
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <HiOutlineUserGroup />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <HiOutlineUserGroup />
+              </svg>
             </div>
             <div className="text-start">
-              <p className="font-medium text-slate-600 text-xl capitalize">
+              <p className="font-normal text-slate-700 text-xl capitalize">
                 total questions{" "}
               </p>
               <p className="text-2xl text-gray-800 font-medium ">70</p>
@@ -96,17 +91,16 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 refind pyq's
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <HiOutlineUserGroup />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <HiOutlineUserGroup />
+              </svg>
             </div>
             <div className="text-start">
-              <p className="font-medium text-slate-600 text-xl capitalize">
+              <p className="font-normal text-slate-700 text-xl capitalize">
                 total questions{" "}
               </p>
               <p className="text-2xl text-gray-800 font-medium ">70</p>
@@ -120,17 +114,16 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 modren history
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-yellow-200 w-16 h-16 text-yellow-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <FiBox />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-yellow-200 w-16 h-16 text-yellow-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <FiBox />
+              </svg>
             </div>
             <div className="text-start">
-              <p className="font-medium text-slate-600 text-xl capitalize">
+              <p className="font-normal text-slate-700 text-xl capitalize">
                 total questions{" "}
               </p>
               <p className="text-2xl text-gray-800 font-medium ">70</p>
@@ -144,17 +137,16 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 cureent affairs
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <HiOutlineUserGroup />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <HiOutlineUserGroup />
+              </svg>
             </div>
             <div className="text-start">
-              <p className="font-medium text-slate-600 text-xl capitalize">
+              <p className="font-normal text-slate-700 text-xl capitalize">
                 total questions{" "}
               </p>
               <p className="text-2xl text-gray-800 font-medium ">70</p>
@@ -168,17 +160,16 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 full length
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <HiOutlineUserGroup />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <HiOutlineUserGroup />
+              </svg>
             </div>
             <div className="text-start">
-              <p className="font-medium text-slate-600 text-xl capitalize">
+              <p className="font-normal text-slate-700 text-xl capitalize">
                 total questions{" "}
               </p>
               <p className="text-2xl text-gray-800 font-medium ">70</p>
@@ -192,17 +183,16 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 art and culture
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <HiOutlineUserGroup />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <HiOutlineUserGroup />
+              </svg>
             </div>
             <div className="text-start">
-              <p className="font-medium text-slate-600 text-xl capitalize">
+              <p className="font-normal text-slate-700 text-xl capitalize">
                 total questions{" "}
               </p>
               <p className="text-2xl text-gray-800 font-medium ">70</p>
@@ -216,17 +206,16 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 environment & agriculture
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-yellow-200 w-16 h-16 text-yellow-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <FiBox />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-yellow-200 w-16 h-16 text-yellow-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <FiBox />
+              </svg>
             </div>
             <div className="text-start">
-              <p className="font-medium text-slate-600 text-xl capitalize">
+              <p className="font-normal text-slate-700 text-xl capitalize">
                 total questions{" "}
               </p>
               <p className="text-2xl text-gray-800 font-medium ">70</p>
@@ -240,17 +229,16 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 ancient mediaeval history
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <HiOutlineUserGroup />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <HiOutlineUserGroup />
+              </svg>
             </div>
             <div className="text-start">
-              <p className="font-medium text-slate-600 text-xl capitalize">
+              <p className="font-normal text-slate-700 text-xl capitalize">
                 total questions{" "}
               </p>
               <p className="text-2xl text-gray-800 font-medium ">70</p>
@@ -264,17 +252,16 @@ function SubjectPage() {
               <p className="font-semibold text-left text-lg uppercase text-orange-500">
                 science and technology
               </p>
-              <div className=" pr-4">
-                <svg
-                  className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                  viewBox="0 0 22 22"
-                >
-                  <HiOutlineUserGroup />
-                </svg>
-              </div>
+
+              <svg
+                className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
+                viewBox="0 0 22 22"
+              >
+                <HiOutlineUserGroup />
+              </svg>
             </div>
             <div className="text-start">
-              <p className="font-medium text-slate-600 text-xl capitalize">
+              <p className="font-normal text-slate-700 text-xl capitalize">
                 total questions{" "}
               </p>
               <p className="text-2xl text-gray-800 font-medium ">70</p>

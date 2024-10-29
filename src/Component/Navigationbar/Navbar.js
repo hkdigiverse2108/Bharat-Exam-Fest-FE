@@ -1,21 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import { GoSearch } from "react-icons/go";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { IoNotificationsOutline } from "react-icons/io5";
-import { SlArrowDownCircle, SlArrowUpCircle } from "react-icons/sl";
+import React, { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { RiMenuLine } from "react-icons/ri";
 import "react-toastify/dist/ReactToastify.css";
 import DropdownUser from "./DropdownUser";
 
-function Navbar({ sidebarOpen, setSidebarOpen }) {
+function Navbar() {
   const location = useLocation();
   const { pathname } = location;
-
   const [navbarOpen, setNavbarOpen] = useState(false);
-  const [toggle, setToggle] = useState(false);
-  const QuesPath =
-    "/question" || "/subjectDetails" || "/addQuestion" || "/editQuestion";
-
   function Navigation() {
     setNavbarOpen(!navbarOpen);
   }
@@ -54,6 +46,7 @@ function Navbar({ sidebarOpen, setSidebarOpen }) {
                 </div>
               </NavLink>
             </div>
+            {/* navigationtab */}
             <nav className="flex items-center justify-start duration-300 ease-linear  md:hidden lg:block xl:block 2xl:block ">
               <ul className=" flex gap-x-1.5">
                 <li>
@@ -68,9 +61,9 @@ function Navbar({ sidebarOpen, setSidebarOpen }) {
                 </li>
                 <li>
                   <NavLink
-                    to="/question"
+                    to="/subjects"
                     className={` ${
-                      pathname === "/question" ||
+                      pathname === "/subjects" ||
                       pathname === "/subjectDetails" ||
                       pathname === "/addQuestion" ||
                       pathname === "/editQuestion"
@@ -102,6 +95,7 @@ function Navbar({ sidebarOpen, setSidebarOpen }) {
           </div>
         </div>
       </header>
+      {/* toggle menu */}
       <div
         className={`${
           navbarOpen === true
@@ -124,9 +118,9 @@ function Navbar({ sidebarOpen, setSidebarOpen }) {
             </li>
             <li>
               <NavLink
-                to="/question"
+                to="/subjects"
                 className={` ${
-                  pathname === "/question" ||
+                  pathname === "/subjects" ||
                   pathname === "/subjectDetails" ||
                   pathname === "/addQuestion" ||
                   pathname === "/editQuestion"

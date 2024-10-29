@@ -1,14 +1,13 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-
 import { Route, Routes, useLocation } from "react-router-dom";
 import LoginPage from "./Component/Login/LoginPage";
-import SubjectPage from "./Component/Subjects/SubjectPage";
+import SubjectPage from "./Component/Questions/SubjectPage";
 import DefaultLayout from "./Component/layout/DefaultLayout";
 import DashboardMain from "./Component/Dashboard/DashboardMain";
-import SubjectDetails from "./Component/Subjects/SubjectDetails";
-import AddQuestion from "./Component/Subjects/AddQuestion";
-import EditQuestion from "./Component/Subjects/EditQuestion";
+import SubjectDetails from "./Component/Questions/SubjectDetails";
+import AddQuestion from "./Component/Questions/AddQuestion";
+import EditQuestion from "./Component/Questions/EditQuestion";
 import ProfilePage from "./Component/ProfilePage";
 import Loading from "./Component/Loader/Loading";
 
@@ -39,7 +38,7 @@ function App() {
         <DefaultLayout>
           <Routes>
             <Route exact path="/" element={<DashboardMain />} />
-            <Route path="/question" element={<SubjectPage />} />
+            <Route path="/subjects" element={<SubjectPage />} />
             <Route path="/subjectDetails" element={<SubjectDetails />} />
             <Route path="/addQuestion" element={<AddQuestion />} />
             <Route path="/editQuestion" element={<EditQuestion />} />

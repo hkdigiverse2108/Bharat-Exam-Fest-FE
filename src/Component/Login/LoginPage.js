@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { VscEyeClosed } from "react-icons/vsc";
@@ -16,7 +16,7 @@ const staticObj = {
 function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  // patterns
   const emailpatton = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const lowerCaseLetters = /[a-z]/g;
   const upperCaseLetters = /[A-Z]/g;
@@ -25,15 +25,17 @@ function LoginPage() {
 
   const [state, setState] = useState(staticObj);
   const [confirm, setConfirm] = useState(false);
+
   function handleNavigate() {
     setConfirm(!confirm);
   }
-  
   function handleLogin() {
     setConfirm(!confirm);
-    navigate("/");
-    dispatch(loginSuccess(state));
     toast.success("Login successfully");
+    dispatch(loginSuccess(state));
+    setTimeout(() => {
+      navigate("/");
+    }, [1000]);
   }
 
   const [show, setShow] = useState(false);

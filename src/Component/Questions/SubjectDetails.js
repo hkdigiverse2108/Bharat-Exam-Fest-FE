@@ -1,18 +1,14 @@
 import React, { useState } from "react";
 import { TfiPlus, TfiFilter, TfiPencil } from "react-icons/tfi";
-import { SlArrowDownCircle, SlArrowUpCircle } from "react-icons/sl";
 import { AiOutlineDelete } from "react-icons/ai";
 import ConfirmationPage from "./ConfirmationPage";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FilterSide from "../Filterpage/FilterSide";
 import MultiSelection from "../Ui/MultiSelection";
 
 function SubjectDetails() {
   const navigate = useNavigate();
-
-  const [toggle, setToggle] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [filter, setFilter] = useState(false);
   function handleCheck() {
@@ -30,7 +26,7 @@ function SubjectDetails() {
 
   return (
     <>
-      <section className=" font-sans bg-white p-4 rounded-lg border border-slate-300">
+      <section className=" font-sans bg-white h-full p-4 rounded-lg border border-slate-300">
         <div className="space-y-10 ">
           <div className=" space-y-4">
             <div className="flex items-center 2xl:justify-end xl:justify-end  lg:justify-end md:justify-end sm:justify-center space-x-4">

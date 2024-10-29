@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 // import { useSelector, useDispatch } from "react-redux";
 // import Axios from "axios";
 import { VscSaveAs } from "react-icons/vsc";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import { updateData } from "../../Context/Action/index";
-import { VscEyeClosed } from "react-icons/vsc";
+import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import MultipleSelection from "./Ui/MultiSelection";
 
 export default function ProfilePage() {
+  const [toggle, setToggle] = useState(false);
+
   return (
     <>
       <section className=" p-6 space-y-6 border border-slate-300 bg-white rounded-xl h-full">
@@ -86,15 +88,16 @@ export default function ProfilePage() {
                   />
                   <button
                     type="button"
+                    onClick={() => setToggle(!toggle)}
                     className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 16 16">
-                      <VscEyeClosed title="Show Password" />
-                      {/* {show ? (
-                  ) : (
-                    <RxEyeOpen title="Hide Password" />
-                  )} */}
+                      {toggle ? (
+                        <VscEyeClosed title="Show Password" />
+                      ) : (
+                        <VscEye title="Hide Password" />
+                      )}
                     </svg>
                   </button>
                   <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">

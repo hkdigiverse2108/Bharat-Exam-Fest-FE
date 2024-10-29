@@ -5,6 +5,11 @@ import FilterdropDown from "../Ui/FilterdropDown";
 
 export default function ContestwiseEarn() {
   const [toggle, setToggle] = useState(false);
+  const [filtertype, setFiltertype] = useState();
+
+  function handleChange(e) {
+    setFiltertype(e.target.innerText);
+  }
   function handleShow() {
     setToggle(!toggle);
   }
@@ -24,7 +29,12 @@ export default function ContestwiseEarn() {
           </button>
         </div>
         <div className={`${toggle === true ? "block" : "hidden"}`}>
-          <FilterdropDown toggle={toggle} setToggle={() => handleShow()} />
+          <FilterdropDown
+            toggle={toggle}
+            setToggle={() => handleShow()}
+            filtertype={filtertype}
+            valueChange={(e) => handleChange(e)}
+          />
         </div>
         <div className="bg-white overflow-auto rounded-xl px-0">
           <table className="w-full min-w-max table-auto  text-left">
