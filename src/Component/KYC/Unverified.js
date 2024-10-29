@@ -6,19 +6,26 @@ export default function Unverified() {
 
   return (
     <>
-      <section>
-        <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
-          <h3 className="bg-white p-4 text-2xl rounded-t-xl text-left font-semibold text-slate-800">
-            Unverified
-          </h3>
-          <div className="overflow-y-auto">
+      <section className="shadow-md">
+          <div className="bg-white  rounded-xl overflow-auto px-0">
+            <p className="px-4 py-2 text-2xl text-left font-medium text-slate-800 uppercase">
+              Unverified
+            </p>
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
-                <tr className="text-center">
-                  <th className="px-2 py-4 w-20 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    <p className="flex items-center justify-between gap-2 font-sans text-sm font-medium leading-none text-slate-800">
+                <tr>
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
                       S/N
-                      <svg viewBox="0 0 24 24" className="w-4 h-4">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                        className="h-4 w-4"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -27,10 +34,19 @@ export default function Unverified() {
                       </svg>
                     </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    <p className="flex items-center justify-between gap-2 font-sans text-sm font-medium leading-none text-slate-800">
+
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
                       Name
-                      <svg viewBox="0 0 24 24" className="w-4 h-4">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                        className="h-4 w-4"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -39,32 +55,51 @@ export default function Unverified() {
                       </svg>
                     </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer font-sans text-sm font-medium leading-none text-slate-800 border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    DOB
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
+                      DOB
+                    </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer font-sans text-sm font-medium leading-none text-slate-800 border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    Gmail
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
+                      Gmail
+                    </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer font-sans text-sm font-medium leading-none text-slate-800 border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    Contact
+
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
+                      Contect
+                    </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer font-sans text-sm font-medium leading-none text-slate-800 border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    Proof Type
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
+                      Proof Type
+                    </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer font-sans text-sm font-medium leading-none text-slate-800 border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    Proof Number
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
+                      Proof Number
+                    </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer font-sans text-sm font-medium leading-none text-slate-800 border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    Front Image
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
+                      Front Image
+                    </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer font-sans text-sm font-medium leading-none text-slate-800 border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    Back Image
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
+                      Back Image
+                    </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer font-sans text-sm font-medium leading-none text-slate-800 border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    Status
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
+                      Status
+                    </p>
                   </th>
-                  <th className="px-2 py-4 transition-colors cursor-pointer font-sans text-sm font-medium leading-none text-slate-800 border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                    Save
+                  <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-x-2 font-normal">
+                      Save
+                    </p>
                   </th>
                 </tr>
               </thead>
@@ -113,7 +148,6 @@ export default function Unverified() {
                         Pending
                       </option>
                       <option
-                        selected
                         className="px-2 text-sm leading-5 font-semibold rounded-full bg-red-100 text-red-500"
                         value="Unverified"
                       >
@@ -131,7 +165,6 @@ export default function Unverified() {
             </table>
           </div>
           <Pagination />
-        </div>
       </section>
     </>
   );

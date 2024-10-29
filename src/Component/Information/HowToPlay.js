@@ -41,7 +41,7 @@ export default function HowToPlay() {
             <thead>
               <tr>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     S/N
                     <svg viewBox="0 0 24 24" className="h-4 w-4">
                       <path

@@ -6,6 +6,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 import AddClasses from "./AddClasses";
 import Pagination from "../Pagination/Pagination";
 import { FaFilePdf } from "react-icons/fa6";
+
 export default function ClassesHomePage() {
   const [confirm, setConfirm] = useState(false);
   // const navigate = useNavigate();
@@ -15,28 +16,26 @@ export default function ClassesHomePage() {
   return (
     <>
       <section className="shadow-md">
-        <div className="relative w-full inline-flex items-center justify-between rounded-t-xl px-4 py-2 overflow-hidden text-slate-700 bg-white  bg-clip-border">
+        <div className="bg-white  px-4 py-2 flex  items-center justify-between rounded-xl">
           <p className="text-2xl text-left font-semibold text-slate-800 uppercase">
-            Classes
+            classes
           </p>
-          <div className="flex  items-center justify-end">
-            <button
-              onClick={() => handleNavigate()}
-              className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
-            >
-              <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
-                <FaPlus />
-              </svg>
-              <p className=" font-semibold">Add Class</p>
-            </button>
-          </div>
+          <button
+            onClick={() => handleNavigate()}
+            className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
+          >
+            <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
+              <FaPlus />
+            </svg>
+            <p className=" font-semibold">Add Class</p>
+          </button>
         </div>
         <div className="bg-white overflow-auto px-0">
-          <table className="mt-4 w-full min-w-max table-auto text-left">
+          <table className="w-full min-w-max table-auto text-left">
             <thead>
               <tr>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     S/N
                     <svg viewBox="0 0 24 24" className="h-4 w-4">
                       <path
@@ -48,32 +47,32 @@ export default function ClassesHomePage() {
                   </p>
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Classes Name
                   </p>
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Referral Code
                   </p>
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Uploaded PDF
                   </p>
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Tearms & Condition
                   </p>
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Privacy Policy
                   </p>
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Action
                   </p>
                 </th>

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { VscSaveAs } from "react-icons/vsc";
-import { VscEyeClosed } from "react-icons/vsc";
+import { VscEye,VscEyeClosed } from "react-icons/vsc";
 // import { RxEyeOpen } from "react-icons/rx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import { updateData } from "../../Context/Action/index";
 
 export default function PasswordUpdate() {
+  const [toggle, setToggle] = useState(false);
+
   // const staticObj = {
   //     id: "",
   //     username: "",
@@ -103,11 +105,11 @@ export default function PasswordUpdate() {
     <>
       <section className=" p-3 space-y-6">
         <div className="p-6 w-full h-fit border border-slate-300 bg-white rounded-xl space-y-10">
-          <div class="space-y-1 w-full px-4 py-2 overflow-hidden text-slate-700 bg-white bg-clip-border">
-            <p class="text-2xl text-left w-full font-semibold text-slate-800 ">
+          <div className="space-y-1 w-full px-4 py-2 overflow-hidden text-slate-700 bg-white bg-clip-border">
+            <p className="text-2xl text-left w-full font-semibold text-slate-800 ">
               Change Password
             </p>
-            <p class="text-lg text-left font-normal text-slate-600">
+            <p className="text-lg text-left font-normal text-slate-600">
               Change password and make secure your website
             </p>
           </div>
@@ -188,16 +190,16 @@ export default function PasswordUpdate() {
                 />
                 <button
                   type="button"
-                  // onClick={() => setShow(!show)}
+                  onClick={() => setToggle(!toggle)}
                   className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 16 16">
-                    <VscEyeClosed title="Show Password" />
-                    {/* {show ? (
-                  ) : (
-                    <RxEyeOpen title="Hide Password" />
-                  )} */}
+                  {toggle ? (
+                        <VscEyeClosed title="Show Password" />
+                      ) : (
+                        <VscEye title="Hide Password" />
+                      )}
                   </svg>
                 </button>
                 <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">

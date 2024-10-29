@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "../Pagination/Pagination";
 
 export default function AddContestHomepage() {
- 
   const navigate = useNavigate();
   function handleAddContest() {
     navigate("/createContest");
@@ -39,7 +38,7 @@ export default function AddContestHomepage() {
             <thead>
               <tr>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Product Name
                     <svg viewBox="0 0 24 24" className="h-4 w-4">
                       <path
@@ -121,7 +120,7 @@ export default function AddContestHomepage() {
                   </p>
                 </td>
                 <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
-                  <li className="px-2 text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-500">
+                  <li className="py-1 px-2 text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-500">
                     Active{" "}
                   </li>
                 </td>

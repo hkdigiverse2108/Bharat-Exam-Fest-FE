@@ -1,39 +1,40 @@
 import React, { useState } from "react";
-import { FiFilter } from "react-icons/fi";
+// import { FiFilter } from "react-icons/fi";
 import Pagination from "../Pagination/Pagination";
-import FilterdropDown from "./FilterdropDown";
+// import FilterdropDown from "./FilterdropDown";
+import FilterDropDown from "../Ui/FilterDropDown";
 
 export default function CoachingEarn() {
-  const [toggle, setToggle] = useState(false);
-  function handleShow() {
-    setToggle(!toggle);
-  }
+  // const [toggle, setToggle] = useState(false);
+  // const [filtertype, setFiltertype] = useState();
+
+  // function handleChange(e) {
+  //   setFiltertype(e.target.innerText);
+  // }
+  // function handleShow() {
+  //   setToggle(!toggle);
+  // }
   return (
     <>
       <section className="shadow-md">
-        <div className="relative w-full inline-flex items-center justify-between rounded-t-xl px-4 py-2 overflow-hidden text-slate-700 bg-white  bg-clip-border">
+        <div className="bg-white  px-4 py-2 flex  items-center justify-between rounded-xl">
           <p className="text-2xl text-left font-semibold text-slate-800 uppercase">
             Coaching Earning
           </p>
-          <div className="flex items-center justify-end">
-            <button
-              type="button"
-              onClick={() => setToggle(!toggle)}
-              className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
-            >
-              <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
-                <FiFilter />
-              </svg>
-              <p className=" font-semibold">Filter</p>
-            </button>
+          <div className="inline-flex items-center space-x-2 rounded-lg text-md text-center text-white bg-orange-500 hover:bg-opacity-90  ">
+            <FilterDropDown />
           </div>
         </div>
-          <div className={`${toggle === true ? "block" : "hidden"}`}>
-            <FilterdropDown toggle={toggle} setToggle={() => handleShow()} />
-          </div>
-
+        {/* <div className={`${toggle === true ? "block" : "hidden"}`}>
+          <FilterdropDown
+            toggle={toggle}
+            setToggle={() => handleShow()}
+            filtertype={filtertype}
+            valueChange={(e) => handleChange(e)}
+          />
+        </div> */}
         <div className="bg-white overflow-auto px-0">
-          <table className="mt-4 w-full min-w-max table-auto text-left">
+          <table className="w-full min-w-max table-auto text-left">
             <thead>
               <tr>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">

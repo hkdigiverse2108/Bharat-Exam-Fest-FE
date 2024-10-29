@@ -2,7 +2,6 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import PageNotfound from "../Page404";
 import UserDetails from "../UserData/UserDetails";
-import Profilepage from "../ProfilePage";
 import HomeBanner from "../Banner/HomeBanner";
 import SubjectData from "../Subjects/SubjectData";
 import AddSubject from "../Subjects/AddSubject";
@@ -20,108 +19,12 @@ import Incomeboard from "../IncomeExpense/Incomeboard";
 import PasswordUpdate from "../NewPassword/PasswordUpdate";
 import CreateContest from "../AddContest/CreateContest";
 import AddContestHomepage from "../AddContest/AddContestHomepage";
-// import Loading from "../Loader/Loading";
-
-// const PageRouting = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <UserDetails />,
-//     loader: <Loading />,
-//     children: [
-//       {
-//         path: "addUser",
-//         element: <AddUser />,
-//         loader: <Loading />,
-//       },
-//       {
-//         path: "editUser",
-//         element: <EditUser />,
-//         loader: <Loading />,
-//       },
-//     ],
-//   },
-//   {
-//     path: "/banner",
-//     element: <HomeBanner />,
-//     loader: <Loading />,
-//   },
-//   {
-//     path: "/subject",
-//     element: <SubjectData />,
-//     loader: <Loading />,
-//     children: [
-//       {
-//         path: "addSubject",
-//         element: <AddSubject />,
-//         loader: <Loading />,
-//       },
-//       {
-//         path: "editSubject",
-//         element: <EditSubjectSection />,
-//         loader: <Loading />,
-//       },
-//     ],
-//   },
-//   {
-//     path: "/information",
-//     element: <InformationHome />,
-//     loader: <Loading />,
-//     children: [
-//       {
-//         path: "addIntroduction",
-//         element: <AddIntroduction />,
-//         loader: <Loading />,
-//       },
-//     ],
-//   },
-//   {
-//     path: "/classes",
-//     element: <ClassesHomePage />,
-//     loader: <Loading />,
-//   },
-//   {
-//     path: "/contestType",
-//     element: <ContestHome />,
-//     loader: <Loading />,
-//   },
-//   {
-//     path: "/contestEarning",
-//     element: <ContestEarningHome />,
-//     loader: <Loading />,
-//   },
-//   {
-//     path: "/report",
-//     element: <ReportHomePage />,
-//     loader: <Loading />,
-//   },
-//   {
-//     path: "/kyc",
-//     element: <KYCHomePage />,
-//     loader: <Loading />,
-//   },
-//   {
-//     path: "/incomeExpense",
-//     element: <Incomeboard />,
-//     loader: <Loading />,
-//   },
-//   {
-//     path: "/profile",
-//     element: <Profilepage />,
-//     loader: <Loading />,
-//   },
-//   {
-//     path: "*",
-//     element: <PageNotfound />,
-//     loader: <Loading />,
-//   },
-// ]);
-// export { PageRouting };
 
 export default function RouteManger() {
   return (
     <>
       <Routes>
-        <Route  exact path="/" element={<Incomeboard />} />
+        <Route exact path="/" element={<Incomeboard />} />
         <Route path="/kyc" element={<KYCHomePage />} />
         <Route path="/report" element={<ReportHomePage />} />
         <Route path="/addContest" element={<AddContestHomepage />} />

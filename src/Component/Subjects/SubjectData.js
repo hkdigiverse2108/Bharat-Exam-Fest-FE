@@ -3,7 +3,6 @@ import { LuPencilLine } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import HowToPlay from "../ContestType/HowToPlay";
 import Pagination from "../Pagination/Pagination";
 
 export default function SubjectData() {
@@ -43,11 +42,11 @@ export default function SubjectData() {
           </div>
         </div>
         <div className="bg-white overflow-auto px-0">
-          <table className="mt-4 w-full min-w-max table-auto text-left">
+          <table className="w-full min-w-max table-auto text-left">
             <thead>
               <tr>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     No
                     <svg viewBox="0 0 24 24" className="h-4 w-4">
                       <path
@@ -59,7 +58,7 @@ export default function SubjectData() {
                   </p>
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Subject Name
                     <svg viewBox="0 0 24 24" className="h-4 w-4">
                       <path

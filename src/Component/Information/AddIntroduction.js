@@ -4,13 +4,13 @@ import { VscSaveAs } from "react-icons/vsc";
 export default function AddIntroduction({ setConfirm }) {
   return (
     <>
-      <section className="bg-white dark:bg-gray-900 overflow-y-auto rounded-lg border-2 border-slate-300 font-sans">
+      <section className="bg-white dark:bg-gray-900 overflow-y-auto rounded-lg border border-slate-300 font-sans">
         <div className="py-8 px-4 space-y-2  sm:py-16 lg:px-6">
-          <div className="space-y-6">
-            <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
+          <div className="space-y-3">
+            <p className="text-2xl text-left w-full font-semibold text-slate-800 uppercase">
               add introduction
             </p>
-            <p className="text-lg tracking-tight font-medium text-left text-slate-600 dark:text-white ">
+            <p className="text-lg text-left font-normal text-slate-600  ">
               Enter the introduction to create a new section for the class
               curriculum.
             </p>
@@ -20,7 +20,7 @@ export default function AddIntroduction({ setConfirm }) {
             <div className="grid grid-cols-1 space-y-2 max-w-xs text-start">
               <label
                 htmlFor="title"
-                className="text-lg font-medium text-gray-700 tracking-wide"
+                className="capitalize text-base font-medium text-gray-700 dark:text-white"
               >
                 Title
               </label>
@@ -34,7 +34,7 @@ export default function AddIntroduction({ setConfirm }) {
             <div className="grid grid-cols-1 space-y-2 max-w-xs text-start">
               <label
                 htmlFor="link"
-                className="text-lg font-medium text-gray-700 tracking-wide"
+                className="capitalize text-base font-medium text-gray-700 dark:text-white"
               >
                 Youtube Link
               </label>
@@ -49,7 +49,7 @@ export default function AddIntroduction({ setConfirm }) {
               <div className=" space-y-4">
                 <div className="space-y-2">
                   <p
-                    className="flex  text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                    className=" text-start capitalize text-base font-medium text-gray-700 dark:text-white"
                     htmlFor="file_input"
                   >
                     Image Upload
@@ -68,13 +68,13 @@ export default function AddIntroduction({ setConfirm }) {
 
                 <input type="file" name="file" id="file" className="sr-only" />
                 <label
-                  for="file"
-                  class="relative flex items-center justify-start  gap-x-4 text-center cursor-pointer"
+                  htmlFor="file"
+                  className="relative flex items-center justify-start  gap-x-4 text-center cursor-pointer"
                 >
-                  <span class="rounded-md border border-[#318973] py-2 px-8 text-base capitalize text-slate-700">
+                  <span className="rounded-md border border-[#318973] py-2 px-8 text-base capitalize text-slate-700">
                     choose file
                   </span>
-                  <span class="text-md capitalize text-[#318973]">
+                  <span className="text-md capitalize text-[#318973]">
                     no file chosen
                   </span>
                 </label>

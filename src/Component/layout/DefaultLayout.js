@@ -9,8 +9,8 @@ const DefaultLayout = ({ children }) => {
         <Sidebar />
         <div className="relative flex flex-col flex-1  h-screen overflow-hidden">
           <Navbar />
-          <main className=" overflow-y-auto overflow-x-hidden ">
-            <div className=" w-full p-4 md:p-6 ">{children}</div>
+          <main className="h-full overflow-y-auto overflow-x-hidden ">
+            <div className=" w-full h-full p-4 ">{children}</div>
           </main>
         </div>
       </div>

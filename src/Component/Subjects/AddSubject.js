@@ -7,8 +7,8 @@ export default function AddSubject() {
     <>
       <section className="inline-block mx-auto w-full h-full bg-white rounded-lg space-y-4 px-4 p-5 text-left overflow-hidden shadow-xl transform transition-all ">
         <div className="text-left">
-          <p className="text-3xl font-medium text-gray-900">Add Subject</p>
-          <p className="text-lg font-normal text-slate-600 ">
+          <p className="text-3xl font-semibold text-slate-800">Add Subject</p>
+          <p className="text-lg text-left font-normal text-slate-600 ">
             Enter ther subject name to create a new subject for the class
             curriculum.
           </p>
@@ -16,7 +16,7 @@ export default function AddSubject() {
         <div className="grid grid-cols-1 space-y-2 max-w-xs">
           <label
             htmlFor="subject"
-            className="text-gray-700 text-lg font-semibold dark:text-gray-200"
+            className="capitalize text-base font-medium text-gray-700 dark:text-white"
           >
             Subject name
           </label>
@@ -53,7 +53,7 @@ export default function AddSubject() {
           </div>
         </div>
         <div className="space-y-3 border border-[#808836] rounded-lg p-4">
-          <h3 className="text-2xl text-left font-semibold text-gray-900">
+          <h3 className="text-xl text-left capitalize font-medium text-gray-700 dark:text-white">
             Add multiple subtopic
           </h3>
           <div className="max-w-lg">

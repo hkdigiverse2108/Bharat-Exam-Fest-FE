@@ -9,7 +9,7 @@ import ConfirmationPage from "../Confirmation/ConfirmationPage";
 import { MdBlock } from "react-icons/md";
 
 export default function UserDetails() {
-  const { pathname } = useLocation();
+  // const { pathname } = useLocation();
 
   const [confirm, setConfirm] = useState(false);
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ export default function UserDetails() {
               <thead>
                 <tr>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       S/N
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -72,7 +72,7 @@ export default function UserDetails() {
                     </p>
                   </th>
                   <th class="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p class="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p class="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Full Name
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -92,12 +92,12 @@ export default function UserDetails() {
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Gmail
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Address
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -117,17 +117,17 @@ export default function UserDetails() {
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       DOB
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Profile Picture
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       City
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -147,13 +147,13 @@ export default function UserDetails() {
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Referral Code
                     </p>
                   </th>
 
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Actions
                     </p>
                   </th>
@@ -241,7 +241,7 @@ export default function UserDetails() {
               <thead>
                 <tr>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       S/N
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -261,7 +261,7 @@ export default function UserDetails() {
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Full Name
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -281,12 +281,12 @@ export default function UserDetails() {
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Gmail
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Address
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -306,33 +306,33 @@ export default function UserDetails() {
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       DOB
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Profile Picture
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Password
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Contact
                     </p>
                   </th>
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Class Name
                     </p>
                   </th>
 
                   <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                    <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                       Actions
                     </p>
                   </th>

@@ -1,9 +1,9 @@
 @tailwind base;
 *::-webkit-scrollbar {
   /* vertical scrollbar */
-  width: 6px;
+  width: 5px;
   /* horizontal scrollbar */
-  height: 6px;
+  height: 5px;
 }
 
 /* Track */

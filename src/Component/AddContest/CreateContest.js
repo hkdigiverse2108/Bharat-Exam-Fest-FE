@@ -15,19 +15,19 @@ export default function CreateContest() {
   }
   return (
     <>
-      <section className="bg-white dark:bg-gray-900 h-full overflow-y-auto p-4 rounded-lg border-2 border-slate-300 font-sans">
+      <section className="bg-white dark:bg-gray-900 h-full overflow-y-auto p-4 rounded-lg border border-slate-300 font-sans">
         <div className="space-y-6">
           <div className="space-y-2">
-            <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
+            <p className="text-3xl tracking-tight font-medium text-left text-gray-900 dark:text-white capitalize">
               contest creation
             </p>
-            <p className="text-xl tracking-tight font-medium text-left text-slate-600 dark:text-white ">
+            <p className="text-lg font-medium text-left text-slate-600 dark:text-white ">
               Manage your contests easily from here.
             </p>
           </div>
           <div className="space-y-6 px-2">
             <div className="space-y-2">
-              <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+              <p className="flex items-center capitalize text-xl font-medium text-slate-800 dark:text-white">
                 classes Name
               </p>
               <ul className="max-w-2xl grid grid-cols-1 md:grid-cols-4 text-sm font-medium text-gray-900  text-start dark:text-white">
@@ -95,61 +95,61 @@ export default function CreateContest() {
             </div>
             <div>
               <ul className="text-start grid grid-cols-2 gap-2 md:grid-cols-2 md:gap-4 2xl:grid-cols-4 2xl:gap-6">
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q1"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   >
                     contest name
                   </label>
                   <input
                     type="text"
-                    name="q1"
+                    id="q1"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter contest name"
                     maxLength="19"
                   />
                 </li>
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q2"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-slate-800 dark:text-white"
                   >
                     contest type
                   </label>
                   <input
                     type="text"
-                    name="q2"
+                    id="q2"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter contest type"
                     maxLength="19"
                   />
                 </li>
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q3"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   >
                     contest starting/ending time
                   </label>
                   <input
                     type="text"
-                    name="q3"
+                    id="q3"
                     onClick={()=> setDate(!date)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending time"
                   />
                 </li>
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q4"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   >
                     contest starting/ending date
                   </label>
                   <input
                     type="text"
-                    name="q4"
+                    id="q4"
                     onClick={()=> setTime(!time)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending date"
@@ -159,64 +159,64 @@ export default function CreateContest() {
               </ul>
             </div>
             <div className="space-y-3">
-              <p className="text-xl tracking-tight font-medium text-left text-gray-900 dark:text-white capitalize">
+              <p className="text-xl tracking-tight font-medium text-left text-gray-700 dark:text-white capitalize">
                 participation and rewards
               </p>
               <ul className="text-start grid grid-cols-2 gap-2 md:grid-cols-2 2xl:grid-cols-4 2xl:gap-6">
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q1"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   >
                     Total Spots
                   </label>
                   <input
                     type="text"
-                    name="q1"
+                    id="q1"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter Total Spots"
                     maxLength="19"
                   />
                 </li>
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q2"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   >
                     Fees
                   </label>
                   <input
                     type="text"
-                    name="q2"
+                    id="q2"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter Fees"
                     maxLength="19"
                   />
                 </li>
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q3"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   >
                     winning amount per fee
                   </label>
                   <input
                     type="text"
-                    name="q3"
+                    id="q3"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter winning amount per fee"
                   />
                 </li>
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q4"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   >
                     winner percentage
                   </label>
                   <input
                     type="text"
-                    name="q4"
+                    id="q4"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter winner percentage"
                     maxLength="19"
@@ -226,30 +226,30 @@ export default function CreateContest() {
             </div>
           </div>
           <div className="space-y-3">
-            <p className="text-xl tracking-tight font-medium text-left text-gray-900 dark:text-white capitalize">
+            <p className="text-xl font-medium text-left text-gray-800 dark:text-white capitalize">
               rank section
             </p>
             <div className="flex items-center justify-between">
               <ul className="text-start grid grid-cols-2 gap-2 md:grid-cols-2 ">
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q1"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   >
                     1st/2nd/3rd place
                   </label>
                   <DropDown />
                 </li>
-                <li>
+                <li className="space-y-1">
                   <label
                     htmlFor="q2"
-                    className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                    className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   >
                     price
                   </label>
                   <input
                     type="text"
-                    name="q2"
+                    id="q2"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter Fees"
                     maxLength="19"

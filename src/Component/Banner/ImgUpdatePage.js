@@ -72,7 +72,7 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
             &#8203;
           </span>
           <div className="inline-block mx-auto w-full bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle max-w-2xl">
-            <p className="text-3xl text-left font-medium text-gray-900">
+            <p className="text-3xl text-left w-full font-semibold text-slate-800">
               Edit Image
             </p>
             <div className="space-y-3 border border-[#808836] rounded-lg p-4">
@@ -80,7 +80,7 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
               <div className="grid grid-cols-1 space-y-2">
                 <label
                   htmlFor="editimg"
-                  className="text-xl font-medium text-gray-700 tracking-wide"
+                  className="capitalize text-base font-medium text-gray-800 dark:text-white"
                 >
                   Edit Image
                 </label>
@@ -112,7 +112,7 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
               </div>
               </div>
 
-              <p className="text-base text-gray-500">
+              <p className="text-base text-gray-600">
                 <span>File type: jpg/jpeg/png</span>
               </p>
             </div>

@@ -1,27 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { VscSaveAs } from "react-icons/vsc";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { VscEyeClosed } from "react-icons/vsc";
+import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import MultipleSelection from "../Ui/MultiSelection";
 
 export default function Adduser() {
+  const [toggle, setToggle] = useState(false);
+
   return (
     <>
       <section className=" p-6 space-y-6 border border-slate-300 bg-white rounded-xl h-full">
-        <div className="text-left space-y-2">
-          <p className=" text-3xl font-semibold text-gray-900">Add User</p>
-          <p className=" text-md text-gray-600">
+        <div className="text-left">
+          <p className="text-2xl font-semibold text-slate-800">Add User</p>
+          <p className="text-lg text-left font-normal text-slate-600 ">
             Fill in the data for profile. It will take a couple of minutes.
           </p>
         </div>
-
         <div className="p-6 w-full h-fit border-2 border-[#216123] bg-white rounded-xl space-y-10">
-          <div className="text-left space-y-2">
-            <p className=" text-xl font-semibold text-gray-900">
+          <div className="text-left">
+            <p className="text-xl font-semibold text-slate-800">
               Personal data
             </p>
-            <p className=" text-md text-gray-600">
+            <p className="text-md text-left font-normal text-slate-600 ">
               Specify exactly as in your passport
             </p>
           </div>
@@ -31,7 +32,7 @@ export default function Adduser() {
               {/* name */}
               <div className="text-left">
                 <label
-                  className="text-gray-700 font-medium dark:text-gray-200"
+                  className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   htmlFor="name"
                 >
                   Full Name
@@ -51,7 +52,7 @@ export default function Adduser() {
               {/* gmail */}
               <div className="text-left">
                 <label
-                  className="text-gray-700 font-medium dark:text-gray-200"
+                  className="capitalize text-base font-medium text-gray-700 dark:text-white"
                   htmlFor="gmail"
                 >
                   Gmail
@@ -83,16 +84,15 @@ export default function Adduser() {
                   />
                   <button
                     type="button"
+                    onClick={() => setToggle(!toggle)}
                     className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                   >
-                    <svg className="w-5 h-5" viewBox="0 0 16 16">
+                    {toggle ? (
                       <VscEyeClosed title="Show Password" />
-                      {/* {show ? (
-                  ) : (
-                    <RxEyeOpen title="Hide Password" />
-                  )} */}
-                    </svg>
+                    ) : (
+                      <VscEye title="Hide Password" />
+                    )}
                   </button>
                   <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">
                     Enter a strong password.

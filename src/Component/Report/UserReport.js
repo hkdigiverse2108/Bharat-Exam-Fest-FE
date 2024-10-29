@@ -6,17 +6,15 @@ export default function UserReport() {
   return (
     <>
       <section className="shadow-md">
-        <div className="relative rounded-t-xl px-4 py-2 overflow-hidden text-slate-700 bg-white  bg-clip-border">
-          <p className="text-2xl text-left font-semibold text-slate-800 uppercase">
+        <div className="bg-white  rounded-xl overflow-auto px-0">
+          <p className="px-4 py-2 text-2xl text-left font-medium text-slate-800 uppercase">
             User Report
           </p>
-        </div>
-        <div className="bg-white overflow-auto px-0">
           <table className="w-full min-w-max table-auto text-left">
             <thead>
               <tr>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     S/N
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +39,7 @@ export default function UserReport() {
                   </p>
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Referral Code
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +80,7 @@ export default function UserReport() {
                   </p>
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal leading-none opacity-70">
+                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Unlock
                   </p>
                 </th>

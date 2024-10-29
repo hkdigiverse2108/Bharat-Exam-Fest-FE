@@ -312,14 +312,18 @@ function Navbar() {
               >
                 <span
                   className={`${
-                    pathname === "/subject" || pathname === "/addSubject"
+                    pathname === "/subject" ||
+                      pathname === "/addSubject" ||
+                      pathname === "/editSubject"
                       ? "border-l-4 border-orange-500"
                       : "border-none"
                   } rounded-r-lg `}
                 ></span>
                 <span
                   className={`${
-                    pathname === "/subject" || pathname === "/addSubject"
+                    pathname === "/subject" ||
+                      pathname === "/addSubject" ||
+                      pathname === "/editSubject"
                       ? "text-white bg-orange-500"
                       : "text-black"
                   } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
@@ -385,7 +389,7 @@ function Navbar() {
       <div
         className={`${
           toggle === true
-            ? " absolute overflow-hidden w-52  duration-300 ease-linear origin-top-right top-16 right-2  dark:bg-gray-800  rounded-lg shadow-xl border dark:border-transparent"
+            ? " absolute overflow-hidden w-52  duration-300 ease-linear origin-top-right top-16 right-2  bg-white dark:bg-gray-800  rounded-lg shadow-xl border dark:border-transparent"
             : "hidden"
         } `}
       >
