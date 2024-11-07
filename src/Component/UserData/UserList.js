@@ -97,7 +97,6 @@ const UserList = () => {
 
   return (
     <>
-      {error && <div>Error: {error}</div>}
 
       <section className=" space-y-6 pb-4">
         <div className="shadow-md">
