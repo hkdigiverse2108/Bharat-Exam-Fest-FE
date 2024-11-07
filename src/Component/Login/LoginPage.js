@@ -7,11 +7,7 @@ import { loginSuccess } from "../../Context/Action/Auth";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OtpVerify from "../OtpVerify/OtpVerify";
-
-const staticObj = {
-  email: "",
-  password: "",
-};
+import axios from "axios";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -23,28 +19,86 @@ function LoginPage() {
   const numbers = /[0-9]/g;
   const spcl = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
 
-  const [state, setState] = useState(staticObj);
   const [confirm, setConfirm] = useState(false);
-
-  function handleNavigate() {
-    setConfirm(!confirm);
+  const [input, setInput] = useState({
+    email: "",
+    password: "",
+  });
+  const { email, password } = input;
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setInput({ ...input, [name]: value });
   }
-  function handleLogin() {
-    setConfirm(!confirm);
-    toast.success("Login successfully");
-    dispatch(loginSuccess(state));
-    setTimeout(() => {
-      navigate("/");
-    }, [1000]);
+
+  // function handleNavigate() {
+  //   setConfirm(!confirm);
+  // }
+
+  // async function handleNavigate() {
+  //   // setConfirm(!confirm);
+
+  //   await axios
+  //     .post(
+  //       `https://api-bef.hkdigiverse.com/auth/login`,
+  //       JSON.stringify(input),
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         validateStatus: function (status) {
+  //           return status >= 200 && status < 400;
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       const { status, data, message, error } = response.data;
+  //       console.log("Backend response", message);
+  //       if (status === 200) {
+  //         console.log("Backend response", data);
+  //         dispatch(loginSuccess(data));
+  //         setTimeout(() => {
+  //           toast.success(message);
+  //           navigate("/");
+  //         }, [1000]);
+  //       } else {
+  //         console.log("Backend response", error);
+  //         console.warn("Not Successfully");
+  //       }
+  //     });
+  // }
+
+  async function handleLogin() {
+    await axios
+      .post(
+        `https://api-bef.hkdigiverse.com/auth/login`,
+        JSON.stringify(input),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          validateStatus: function (status) {
+            return status >= 200 && status < 400;
+          },
+        }
+      )
+      .then((response) => {
+        const { status, data, message, error } = response.data;
+        console.log("Backend response", message);
+        if (status === 200) {
+          console.log("Backend response", data);
+          dispatch(loginSuccess(data));
+          setTimeout(() => {
+            toast.success(message);
+            navigate("/");
+          }, [1000]);
+        } else {
+          console.log("Backend response", error);
+          console.warn("Not Successfully");
+        }
+      });
   }
 
   const [show, setShow] = useState(false);
-  const { email, password } = state;
-
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setState({ ...state, [name]: value });
-  }
 
   function Signup() {
     try {
@@ -66,7 +120,7 @@ function LoginPage() {
                 if (!password.match(lowerCaseLetters)) {
                   toast.warn("Must Include lowerCase Letters in Password!");
                 } else {
-                  handleNavigate();
+                  handleLogin();
                 }
               }
             }
@@ -153,9 +207,9 @@ function LoginPage() {
             log in
           </button>
         </div>
-        <div className={`${confirm === true ? "block" : "hidden"}`}>
+        {/* <div className={`${confirm === true ? "block" : "hidden"}`}>
           <OtpVerify confirm={confirm} setConfirm={handleLogin} />
-        </div>
+        </div> */}
       </section>
       <ToastContainer
         draggable={false}

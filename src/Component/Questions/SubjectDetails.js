@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TfiPlus, TfiFilter, TfiPencil } from "react-icons/tfi";
 import { AiOutlineDelete } from "react-icons/ai";
 import ConfirmationPage from "./ConfirmationPage";
@@ -6,11 +6,19 @@ import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import FilterSide from "../Filterpage/FilterSide";
 import MultiSelection from "../Ui/MultiSelection";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 function SubjectDetails() {
   const navigate = useNavigate();
   const [confirm, setConfirm] = useState(false);
   const [filter, setFilter] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState(null);
+
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
   function handleCheck() {
     setConfirm(!confirm);
   }
@@ -23,6 +31,29 @@ function SubjectDetails() {
   function handleEditque() {
     navigate("/editQuestion");
   }
+
+  const fetchSubjects = async () => {
+    try {
+      const response = await axios.get(
+        "https://api-bef.hkdigiverse.com/question/all",
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
+          },
+        }
+      );
+      console.log(response.data.data.subject_data);
+
+      setUsers(response.data.data.subject_data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubjects();
+  }, []);
 
   return (
     <>
@@ -46,7 +77,10 @@ function SubjectDetails() {
                 onClick={() => handleCreateque()}
                 className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90  "
               >
-                <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
+                <svg
+                  className="font-bold text-white w-4 h-4"
+                  viewBox="0 0 16 16"
+                >
                   <TfiPlus />
                 </svg>
                 <p className=" font-semibold">create new question</p>
