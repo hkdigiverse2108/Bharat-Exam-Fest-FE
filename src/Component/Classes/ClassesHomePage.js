@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import { LuPencilLine } from "react-icons/lu";
 // import { useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa6";
@@ -6,13 +6,68 @@ import { AiOutlineDelete } from "react-icons/ai";
 import AddClasses from "./AddClasses";
 import Pagination from "../Pagination/Pagination";
 import { FaFilePdf } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "react-toastify";
+
 
 export default function ClassesHomePage() {
   const [confirm, setConfirm] = useState(false);
-  // const navigate = useNavigate();
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+  const [input, setInput] = useState({
+    classname: "",
+    referralcode: "",
+  });
+  const { classname, referralcode } = input;
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setInput({ ...input, [name]: value });
+  }
   function handleNavigate() {
     setConfirm(!confirm);
   }
+
+  const addClass = async () => {
+    try {
+      if (!classname || !referralcode) {
+        toast.warning("Fill up empty space");
+      } else {
+        const response = await axios.post(
+          "https://api-bef.hkdigiverse.com/classes/add",
+          {
+            // Your request body here
+            name: "New Class",
+            description: "Class Description",
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setData(response.data);
+      }
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        // Handle 401 Unauthorized error
+        setError("Unauthorized access. Please check your token.");
+        // Optionally, refresh token logic can be added here
+      } else {
+        setError(err.message);
+      }
+    }
+  };
+
+  
+
+  // const navigate = useNavigate();
+
+
   return (
     <>
       <section className="shadow-md">
@@ -136,7 +191,12 @@ export default function ClassesHomePage() {
         <Pagination />
       </section>
       <div className={`${confirm === true ? "block" : "hidden"}`}>
-        <AddClasses confirm={confirm} setConfirm={() => handleNavigate()} />
+        <AddClasses
+          confirm={confirm}
+          setConfirm={() => addClass()}
+          inputValue={input}
+          value={(e) => handleChange(e)}
+        />
       </div>
     </>
   );

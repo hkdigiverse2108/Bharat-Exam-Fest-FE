@@ -6,11 +6,11 @@ import DefaultLayout from "./Component/layout/DefaultLayout.js"
 import LoginPage from "./Component/Login/LoginPage.js";
 import Loading from "./Component/Loader/Loading.js";
 import PageNotfound from "./Component/Page404.js";
-import UserDetails from "./Component/UserData/UserDetails";
+import UserList from "./Component/UserData/UserList";
 import HomeBanner from "./Component/Banner/HomeBanner";
-import SubjectData from "./Component/Subjects/SubjectData";
+import SubjectList from "./Component/Subjects/SubjectList";
 import AddSubject from "./Component/Subjects/AddSubject";
-import EditSubjectSection from "./Component/Subjects/EditSubjectSection";
+import EditSubject from "./Component/Subjects/EditSubject.js";
 import AddIntroduction from "./Component/Information/AddIntroduction";
 import ContestHome from "./Component/ContestType/ContestHome";
 import ClassesHomePage from "./Component/Classes/ClassesHomePage";
@@ -60,11 +60,11 @@ function App() {
             <Route path="/contestType" element={<ContestHome />} />
             <Route path="/information" element={<InformationHome />} />
             <Route path="/addIntroduction" element={<AddIntroduction />} />
-            <Route path="/subject" element={<SubjectData />} />
+            <Route path="/subject" element={<SubjectList />} />
             <Route path="/addSubject" element={<AddSubject />} />
-            <Route path="/editSubject" element={<EditSubjectSection />} />
+            <Route path="/editSubject" element={<EditSubject />} />
             <Route path="/banner" element={<HomeBanner />} />
-            <Route path="/userDetails" element={<UserDetails />} />
+            <Route path="/userDetails" element={<UserList />} />
             <Route path="/addUser" element={<AddUser />} />
             <Route path="/editUser" element={<EditUser />} />
             <Route exact path="/resetpassword" element={<PasswordUpdate />} />

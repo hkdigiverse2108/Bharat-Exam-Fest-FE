@@ -1,12 +1,65 @@
-import React, { useState } from "react";
-import { VscSaveAs } from "react-icons/vsc";
+import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { VscEye, VscEyeClosed } from "react-icons/vsc";
+import { VscSaveAs, VscEye, VscEyeClosed } from "react-icons/vsc";
 import MultipleSelection from "../Ui/MultiSelection";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Adduser() {
+  const names = ["Economics", "Polity & GOV", "Geography", "Current Affairs"];
   const [toggle, setToggle] = useState(false);
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+
+  const [input, setInput] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const { name } = input;
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setInput({ ...input, [name]: value });
+  }
+
+  const addNewUser = async () => {
+    try {
+      if (!name) {
+        toast.warning("Fill up empty space");
+      } else {
+        let data = JSON.stringify(input);
+
+        let config = {
+          method: "post",
+          maxBodyLength: Infinity,
+          url: "https://api-bef.hkdigiverse.com/user/add",
+          headers: {
+            Authorization: accessToken,
+            "Content-Type": "application/json",
+          },
+          data: data,
+        };
+
+        axios
+          .request(config)
+          .then((response) => {
+            console.log(JSON.stringify(response.data));
+            navigate("/subject");
+            toast.success("Subject added");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
   return (
     <>
@@ -41,10 +94,10 @@ export default function Adduser() {
                   type="text"
                   id="name"
                   placeholder="Your Full Name"
-                  name="username"
+                  name="name"
                   defaultValue=""
                   // value={username || ""}
-                  // onChange={(e) => handleChange(e)}
+                  onChange={(e) => handleChange(e)}
                   className="mt-1 block w-full px-3 py-2 bg-white border-b border-black text-sm placeholder-slate-500
                             focus:outline-none focus:border-b focus:border-sky-500 focus:ring-b-1 focus:ring-sky-500"
                 />
@@ -61,10 +114,8 @@ export default function Adduser() {
                   type="text"
                   id="gmail"
                   placeholder="Enter your full address"
-                  name="gmail"
-                  defaultValue=""
-                  // value={address || ""}
-                  // onChange={(e) => handleChange(e)}
+                  name="email"
+                  onChange={(e) => handleChange(e)}
                   className="mt-1 block w-full px-3 py-2 bg-white border-b border-black text-sm placeholder-slate-500
                             focus:outline-none focus:border-b focus:border-sky-500 focus:ring-b-1 focus:ring-sky-500"
                 />
@@ -75,10 +126,9 @@ export default function Adduser() {
                 <div className="relative w-full ">
                   <input
                     className="text-black text-md px-4 py-4 border border-gray-600 h-10 w-full rounded-lg focus:outline-none focus:border focus:border-sky-500 focus:ring-b-1 focus:ring-sky-500"
-                    type="password"
+                    type={toggle ? "text" : "password"}
                     name="password"
-                    defaultValue=""
-                    // value=""
+                    onChange={(e) => handleChange(e)}
                     placeholder="Enter Your Password"
                     autoComplete="off"
                   />
@@ -108,7 +158,10 @@ export default function Adduser() {
 
         {/* UploadData */}
         <div className="w-full flex items-end justify-center">
-          <button className="inline-flex items-center space-x-2 rounded-lg px-10 py-3 text-md text-center capitalize text-white bg-orange-500 hover:bg-opacity-90  ">
+          <button
+            onClick={addNewUser}
+            className="inline-flex items-center space-x-2 rounded-lg px-10 py-3 text-md text-center capitalize text-white bg-orange-500 hover:bg-opacity-90  "
+          >
             <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
               <VscSaveAs />
             </svg>

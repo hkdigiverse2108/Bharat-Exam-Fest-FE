@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-
 import { VscSaveAs } from "react-icons/vsc";
 import MultipleSelect from "../Ui/MultiSelection";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
-export default function AddSubject() {
+export default function EditSubject() {
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
+  const location = useLocation();
+  const data = location.state;
+
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
 
   const [input, setInput] = useState({
+    subjectId: "",
     name: "",
   });
   const { name } = input;
@@ -23,7 +25,7 @@ export default function AddSubject() {
     setInput({ ...input, [name]: value });
   }
 
-  const addNewSubject = async () => {
+  const editSubject = async () => {
     try {
       if (!name) {
         toast.warning("Fill up empty space");
@@ -33,7 +35,7 @@ export default function AddSubject() {
         let config = {
           method: "post",
           maxBodyLength: Infinity,
-          url: "https://api-bef.hkdigiverse.com/subject/add",
+          url: "https://api-bef.hkdigiverse.com/subject/edit",
           headers: {
             Authorization: accessToken,
             "Content-Type": "application/json",
@@ -46,7 +48,7 @@ export default function AddSubject() {
           .then((response) => {
             console.log(JSON.stringify(response.data));
             navigate("/subject");
-            toast.success("Subject added");
+            toast.success("Subject Edited");
           })
           .catch((error) => {
             console.error(error);
@@ -57,12 +59,15 @@ export default function AddSubject() {
     }
   };
 
+  useEffect(() => {
+    setInput({ subjectId:data._id , name: data.name });
+  }, []);
 
   return (
     <>
       <section className="inline-block mx-auto w-full h-full bg-white rounded-lg space-y-4 px-4 p-5 text-left overflow-hidden shadow-xl transform transition-all ">
         <div className="text-left">
-          <p className="text-3xl font-semibold text-slate-800">Add Subject</p>
+          <p className="text-3xl font-semibold text-slate-800">Edit Subject</p>
           <p className="text-lg text-left font-normal text-slate-600 ">
             Enter ther subject name to create a new subject for the class
             curriculum.
@@ -71,46 +76,23 @@ export default function AddSubject() {
         <div className="grid grid-cols-1 space-y-2 max-w-xs">
           <label
             htmlFor="subject"
-            className="capitalize text-base font-medium text-gray-700 dark:text-white"
+            className="text-gray-700 font-semibold dark:text-gray-200"
           >
-            Subject name
+            Class name
           </label>
           <input
             className="text-base p-2 border rounded-lg shadow-sm bg-white placeholder-gray-400 text-gray-700 border-[#808836] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
             type="text"
             id="subject"
-            name="name"
             placeholder="Enter class name"
-            onChange={(e) => handleChange(e)}
+            name="name"
+            value={name}
+            onChange={handleChange}
           />
         </div>
-        <div className="space-y-3 ">
-          <div className="p-4 w-full h-fit border border-[#808836] bg-white shadow-sm rounded-xl space-y-4">
-            <div className="">
-              <p className=" text-start capitalize text-lg font-medium text-gray-700 dark:text-white">
-                Image Upload
-              </p>
-              <p className="text-sm text-slate-600">
-                <span>Type: jpg/jpeg/png</span>
-              </p>
-            </div>
-            <input type="file" name="file" id="file" className="sr-only" />
-            <label
-              htmlFor="file"
-              className="relative flex items-center justify-start gap-x-4 text-center cursor-pointer"
-            >
-              <span className=" rounded-md border border-[#318973] py-2 px-8 text-base capitalize text-slate-700">
-                choose file
-              </span>
 
-              <span className="text-md capitalize text-[#318973]">
-                no file chosen
-              </span>
-            </label>
-          </div>
-        </div>
         <div className="space-y-3 border border-[#808836] rounded-lg p-4">
-          <h3 className="text-xl text-left capitalize font-medium text-gray-700 dark:text-white">
+          <h3 className="text-xl text-left font-semibold text-gray-800">
             Add multiple subtopic
           </h3>
           <div className="max-w-lg">
@@ -119,7 +101,7 @@ export default function AddSubject() {
         </div>
         <div className="flex  items-center justify-center">
           <button
-            onClick={() => addNewSubject()}
+            onClick={editSubject}
             className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90  "
           >
             <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">

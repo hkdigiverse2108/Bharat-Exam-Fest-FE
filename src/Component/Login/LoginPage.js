@@ -4,14 +4,10 @@ import { useDispatch } from "react-redux";
 import { VscEyeClosed } from "react-icons/vsc";
 import { RxEyeOpen } from "react-icons/rx";
 import { loginSuccess } from "../../Context/Action/Auth";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OtpVerify from "../OtpVerify/OtpVerify";
-
-const staticObj = {
-  email: "",
-  password: "",
-};
+import axios from "axios";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -23,25 +19,50 @@ function LoginPage() {
   const numbers = /[0-9]/g;
   const spcl = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
 
-  const [state, setState] = useState(staticObj);
   const [confirm, setConfirm] = useState(false);
-  function handleNavigate() {
-    setConfirm(!confirm);
-  }
-  
-  function handleLogin() {
-    setConfirm(!confirm);
-    navigate("/");
-    dispatch(loginSuccess(state));
-    toast.success("Login successfully");
-  }
-
   const [show, setShow] = useState(false);
-  const { email, password } = state;
+  const [input, setInput] = useState({
+    email: "",
+    password: "",
+  });
+  const { email, password } = input;
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setState({ ...state, [name]: value });
+    setInput({ ...input, [name]: value });
+  }
+
+  async function handleNavigate() {
+    // setConfirm(!confirm);
+
+    await axios
+      .post(
+        `https://api-bef.hkdigiverse.com/auth/login`,
+        JSON.stringify(input),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          validateStatus: function (status) {
+            return status >= 200 && status < 400;
+          },
+        }
+      )
+      .then((response) => {
+        const { status, data, message, error } = response.data;
+        console.log("Backend response", message);
+        if (status === 200) {
+          console.log("Backend response", data);
+          dispatch(loginSuccess(data));
+          setTimeout(() => {
+            toast.success(message);
+            navigate("/");
+          }, [1000]);
+        } else {
+          console.log("Backend response", error);
+          console.warn("Not Successfully");
+        }
+      });
   }
 
   function Signup() {
@@ -64,7 +85,10 @@ function LoginPage() {
                 if (!password.match(lowerCaseLetters)) {
                   toast.warn("Must Include lowerCase Letters in Password!");
                 } else {
+                  // navigate("/");
                   handleNavigate();
+                  // dispatch(loginSuccess(state));
+                  // toast.success("Login successfully");
                 }
               }
             }
@@ -72,9 +96,15 @@ function LoginPage() {
         }
       }
     } catch (error) {
-      console.error(error);
+      console.log("error :", error);
+      console.log("error msg :", error.message);
     }
   }
+
+  const bounce = cssTransition({
+    enter: "animate__animated animate__bounceIn",
+    exit: "animate__animated animate__bounceOut",
+  });
 
   return (
     <>
@@ -86,7 +116,7 @@ function LoginPage() {
           <div className="flex flex-col space-y-2 w-full h-full">
             <div>
               <input
-                className="text-black text-md px-4 py-6  border-2 border-gray-200 h-10 w-full rounded-lg invalid:border-pink-500 invalid:text-pink-600 peer
+                className="text-black text-md px-4 py-6  border border-gray-300 h-10 w-full rounded-lg focus:outline-none focus:border-gray-400 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 type="email"
                 name="email"
@@ -102,7 +132,8 @@ function LoginPage() {
 
             <div className="relative w-full ">
               <input
-                className="text-black text-md px-4 py-6 border-2 border-gray-200 h-10 w-full rounded-lg"
+                className="text-black text-md px-4 py-6  border border-gray-300 h-10 w-full rounded-lg focus:outline-none focus:border-gray-400 invalid:border-pink-500 invalid:text-pink-600 peer
+                  focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 type={show ? "text" : "password"}
                 name="password"
                 value={password || ""}
@@ -113,8 +144,7 @@ function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShow(!show)}
-                className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
-                  focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+                className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-blue-600 rounded-e-md focus:outline-none"
               >
                 <svg className="w-5 h-5" viewBox="0 0 16 16">
                   {show ? (
@@ -137,7 +167,7 @@ function LoginPage() {
               />
               <label
                 htmlFor="default-checkbox"
-                className="ms-2 select-none text-sm capitalize text-gray-600 dark:text-gray-300"
+                className="ms-2 cursor-pointer select-none text-sm capitalize text-gray-600 dark:text-gray-300"
               >
                 remenber me
               </label>
@@ -152,17 +182,18 @@ function LoginPage() {
           </button>
         </div>
         <div className={`${confirm === true ? "block" : "hidden"}`}>
-          <OtpVerify confirm={confirm} setConfirm={() => handleLogin()} />
+          <OtpVerify confirm={confirm} setConfirm={() => handleNavigate()} />
         </div>
       </section>
       <ToastContainer
         draggable={false}
         autoClose={2000}
-        position={"top-center"}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}
         theme="dark"
+        transition={bounce}
       />
     </>
   );

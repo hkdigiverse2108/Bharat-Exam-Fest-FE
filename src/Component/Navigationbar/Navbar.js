@@ -60,7 +60,7 @@ function Navbar() {
             <input
               type="text"
               placeholder="Type to search..."
-              className="w-full p-2 pl-8 text-md rounded-full bg-transparent border-2  focus:outline-none  md:w-100 xl:w-125"
+              className="w-full p-2 pl-8 text-md rounded-full bg-transparent border  focus:outline-none focus:border-black  md:w-100 xl:w-125"
             />
           </div>
         </div>
