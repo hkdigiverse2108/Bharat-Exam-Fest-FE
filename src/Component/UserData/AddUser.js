@@ -8,7 +8,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function Adduser() {
-  const names = ["Economics", "Polity & GOV", "Geography", "Current Affairs"];
+ 
   const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
   const [error, setError] = useState(null);

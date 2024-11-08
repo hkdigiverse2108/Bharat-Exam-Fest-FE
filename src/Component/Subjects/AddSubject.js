@@ -13,22 +13,36 @@ export default function AddSubject() {
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
-
+  const [selectedNames, setSelectedNames] = useState([]);
+  const handleSelectionChange = (newValues) => {
+    setSelectedNames(newValues);
+    setInput({ ...input, subTopics: newValues });
+  };
   const [input, setInput] = useState({
     name: "",
+    images: "",
+    subTopics: selectedNames,
   });
-  const { name } = input;
+
+  // const { name } = input;
+
   function handleChange(e) {
-    const { name, value } = e.target;
-    setInput({ ...input, [name]: value });
+    const { name, value, files } = e.target;
+
+    if (name === "images") {
+      setInput({ ...input, [name]: files[0].name });
+    } else {
+      setInput({ ...input, [name]: value });
+    }
   }
 
   const addNewSubject = async () => {
     try {
-      if (!name) {
+      if (!input.name || !input.images || !input.subTopics) {
         toast.warning("Fill up empty space");
       } else {
         let data = JSON.stringify(input);
+        console.log(data);
 
         let config = {
           method: "post",
@@ -44,9 +58,13 @@ export default function AddSubject() {
         axios
           .request(config)
           .then((response) => {
-            console.log(JSON.stringify(response.data));
-            navigate("/subject");
-            toast.success("Subject added");
+            if (response.status === 200) {
+              console.log(JSON.stringify(response.data));
+              navigate("/subject");
+              toast.success("Subject added");
+            } else {
+              console.log(JSON.stringify(response.data));
+            }
           })
           .catch((error) => {
             console.error(error);
@@ -57,6 +75,9 @@ export default function AddSubject() {
     }
   };
 
+  useEffect(() => {
+    console.log(input);
+  }, [input]);
 
   return (
     <>
@@ -94,19 +115,14 @@ export default function AddSubject() {
                 <span>Type: jpg/jpeg/png</span>
               </p>
             </div>
-            <input type="file" name="file" id="file" className="sr-only" />
-            <label
-              htmlFor="file"
-              className="relative flex items-center justify-start gap-x-4 text-center cursor-pointer"
-            >
-              <span className=" rounded-md border border-[#318973] py-2 px-8 text-base capitalize text-slate-700">
-                choose file
-              </span>
 
-              <span className="text-md capitalize text-[#318973]">
-                no file chosen
-              </span>
-            </label>
+            <input
+              type="file"
+              onChange={(e) => handleChange(e)}
+              name="images"
+              id="file-input"
+              className="block w-full border border-gray-200 shadow-sm rounded-lg text-md focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 file:bg-gray-300  file:border-0 file:me-4 file:py-3 file:px-4 dark:file:bg-neutral-700 dark:file:text-neutral-400"
+            />
           </div>
         </div>
         <div className="space-y-3 border border-[#808836] rounded-lg p-4">
@@ -114,7 +130,7 @@ export default function AddSubject() {
             Add multiple subtopic
           </h3>
           <div className="max-w-lg">
-            <MultipleSelect />
+            <MultipleSelect onChange={handleSelectionChange} />
           </div>
         </div>
         <div className="flex  items-center justify-center">

@@ -313,8 +313,9 @@ function Navbar() {
                 <span
                   className={`${
                     pathname === "/subject" ||
-                      pathname === "/addSubject" ||
-                      pathname === "/editSubject"
+                    pathname === "/addSubject" ||
+                    pathname === "/editSubject" ||
+                    pathname === "/addSubtopic"
                       ? "border-l-4 border-orange-500"
                       : "border-none"
                   } rounded-r-lg `}
@@ -322,8 +323,9 @@ function Navbar() {
                 <span
                   className={`${
                     pathname === "/subject" ||
-                      pathname === "/addSubject" ||
-                      pathname === "/editSubject"
+                    pathname === "/addSubject" ||
+                    pathname === "/editSubject" ||
+                    pathname === "/addSubtopic"
                       ? "text-white bg-orange-500"
                       : "text-black"
                   } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
@@ -394,12 +396,14 @@ function Navbar() {
         } `}
       >
         <ul className="flex flex-col gap-y-1 dark:text-white text-left font-medium capitalize">
-          <li   onClick={Navigation}>
+          <li onClick={Navigation}>
             <NavLink to="/resetpassword">
               <button
                 type="button"
                 className={`${
-                  pathname === "/resetpassword" ? "text-white bg-gray-600" : "text-black"
+                  pathname === "/resetpassword"
+                    ? "text-white bg-gray-600"
+                    : "text-black"
                 }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600`}
               >
                 Reset Password

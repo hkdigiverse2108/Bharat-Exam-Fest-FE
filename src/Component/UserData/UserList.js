@@ -23,40 +23,33 @@ const UserList = () => {
     (state) => state.authConfig.userInfo[0].token
   );
 
+  // const deleteSubject = async (value) => {
+  //   try {
+  //     let config = {
+  //       method: "delete",
+  //       maxBodyLength: Infinity,
+  //       url: `https://api-bef.hkdigiverse.com/subject/delete/${value}`,
+  //       headers: {
+  //         Authorization: accessToken,
+  //         "Content-Type": "application/json",
+  //       },
+  //     };
 
-  useEffect(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    setDataToDisplay(users.slice(start, end));
-  }, [currentPage]);
-
-  const deleteSubject = async (value) => {
-    try {
-      let config = {
-        method: "delete",
-        maxBodyLength: Infinity,
-        url: `https://api-bef.hkdigiverse.com/subject/delete/${value}`,
-        headers: {
-          Authorization: accessToken,
-          "Content-Type": "application/json",
-        },
-      };
-
-      axios
-        .request(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-          navigate("/subject");
-          toast.success("Subject delete");
-          fetchSubjects();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
+  //     axios
+  //       .request(config)
+  //       .then((response) => {
+  //         console.log(JSON.stringify(response.data));
+  //         navigate("/subject");
+  //         toast.success("Subject delete");
+  //         fetchSubjects();
+  //       })
+  //       .catch((error) => {
+  //         console.error(error);
+  //       });
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
 
   const fetchSubjects = async () => {
     try {
@@ -94,6 +87,13 @@ const UserList = () => {
   useEffect(() => {
     fetchSubjects();
   }, []);
+
+  
+  useEffect(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    setDataToDisplay(users.slice(start, end));
+  }, [currentPage]);
 
   return (
     <>

@@ -10,11 +10,16 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-
 export default function ClassesHomePage() {
+  // const navigate = useNavigate();
   const [confirm, setConfirm] = useState(false);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
+  const [dataToDisplay, setDataToDisplay] = useState([]);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ITEMS_PER_PAGE = 5;
+  const Totalpage = Math.ceil(data.length / ITEMS_PER_PAGE);
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
@@ -31,42 +36,43 @@ export default function ClassesHomePage() {
     setConfirm(!confirm);
   }
 
-  const addClass = async () => {
+
+  const fetchSubjects = async () => {
     try {
-      if (!classname || !referralcode) {
-        toast.warning("Fill up empty space");
-      } else {
-        const response = await axios.post(
-          "https://api-bef.hkdigiverse.com/classes/add",
-          {
-            // Your request body here
-            name: "New Class",
-            description: "Class Description",
+      const response = await axios.get(
+        "https://api-bef.hkdigiverse.com/classes/all?page=1&limit=10",
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
           },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setData(response.data);
-      }
+        }
+      );
+      console.log(response.data.data.contest_data);
+
+      setData(response.data.data.contest_data);
+      setDataToDisplay(
+        response.data.data.classes_data.slice(0, ITEMS_PER_PAGE)
+      );
     } catch (err) {
-      if (err.response && err.response.status === 401) {
-        // Handle 401 Unauthorized error
-        setError("Unauthorized access. Please check your token.");
-        // Optionally, refresh token logic can be added here
-      } else {
-        setError(err.message);
-      }
+      setError(err.message);
     }
   };
 
-  
+  // const SimpleDate = ({ dateString }) => {
+  //   const date = new Date(dateString);
+  //   const formattedDate = date.toLocaleDateString();
 
-  // const navigate = useNavigate();
+  //   return (
+  //     <p className="block antialiased font-sans text-sm leading-normal font-normal">
+  //       {formattedDate}
+  //     </p>
+  //   );
+  // };
 
+  useEffect(() => {
+    fetchSubjects();
+  }, []);
 
   return (
     <>
@@ -134,69 +140,73 @@ export default function ClassesHomePage() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    01
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    Classes name
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    ABC123AWRII3469
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
-                  <button
-                    className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase transition-all disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
-                    type="button"
-                  >
-                    <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                      <svg viewBox="0 0 16 16" className="w-6 h-6 text-red-600">
-                        <FaFilePdf />
-                      </svg>
-                    </span>
-                  </button>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    ABC123AWRII3469
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    ABC123AWRII3469
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <button
-                    className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg  align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
-                    type="button"
-                  >
-                    <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                      <svg viewBox="0 0 16 16" className="w-6 h-6">
-                        <AiOutlineDelete />
-                      </svg>
-                    </span>
-                  </button>
-                </td>
-              </tr>
+              {dataToDisplay.map((value, index) => (
+                <tr>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      {index + 1}
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      Classes name
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      {value.referralCode}
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
+                    <button
+                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase transition-all disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                      type="button"
+                    >
+                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                        <svg
+                          viewBox="0 0 16 16"
+                          className="w-6 h-6 text-red-600"
+                        >
+                          <FaFilePdf />
+                        </svg>
+                      </span>
+                    </button>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      ABC123AWRII3469
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      ABC123AWRII3469
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <button
+                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg  align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                      type="button"
+                    >
+                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                        <svg viewBox="0 0 16 16" className="w-6 h-6">
+                          <AiOutlineDelete />
+                        </svg>
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-        <Pagination />
+        <Pagination
+          total={Totalpage}
+          page={setCurrentPage}
+          current={currentPage}
+        />
       </section>
       <div className={`${confirm === true ? "block" : "hidden"}`}>
-        <AddClasses
-          confirm={confirm}
-          setConfirm={() => addClass()}
-          inputValue={input}
-          value={(e) => handleChange(e)}
-        />
+        <AddClasses confirm={confirm} setConfirm={() => handleNavigate()} />
       </div>
     </>
   );

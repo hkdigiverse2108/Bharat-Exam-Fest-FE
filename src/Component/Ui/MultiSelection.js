@@ -1,10 +1,12 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
+import { useSelector } from "react-redux";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import axios from "axios";
+import { Chip, Stack } from "@mui/material";
 
 const ITEM_HEIGHT = 20;
 const ITEM_PADDING_TOP = 4;
@@ -17,7 +19,7 @@ const MenuProps = {
   },
 };
 
-const names = ["Economics", "Polity & GOV", "Geography", "Current Affairs"];
+const listName = ["Economics", "Polity & GOV", "Geography", "Current Affairs"];
 
 function getStyles(name, personName, theme) {
   return {
@@ -27,43 +29,59 @@ function getStyles(name, personName, theme) {
   };
 }
 
-export default function MultipleSelect() {
+export default function MultipleSelect({ onChange }) {
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
-
+  const [subtopics, setSubtopics] = useState([]);
+  const [selectedNames, setSelectedNames] = useState([]);
+  const [selectedId, setSelectedId] = useState([]);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
   const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+    const { name, value } = event.target;
+    setSelectedNames(value);
+
+    onChange(value);
   };
+
+  const fetchSubtopics = async () => {
+    try {
+      const response = await axios.get(
+        "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
+          },
+        }
+      );
+      // console.log(response.data.data.sub_topic_data);
+      setSubtopics(response.data.data.sub_topic_data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubtopics();
+  }, []);
 
   return (
     <>
-      <FormControl  className="container h-full">
+      <FormControl className="container h-full">
         <InputLabel id="demo-multiple-name-label" size="small">
-          Class Name
+          Subtopics
         </InputLabel>
         <Select
-          labelId="demo-multiple-name-label"
-          id="demo-multiple-name"
           multiple
-          value={personName}
+          value={selectedNames}
           onChange={handleChange}
-          input={<OutlinedInput label="Subtopic" />}
-          MenuProps={MenuProps}
+          renderValue={(selected) => selected.join(", ")}
           size="small"
         >
-          {names.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, personName, theme)}
-            >
-              {name}
+          {subtopics.map((value) => (
+            <MenuItem key={value._id} value={value.name}>
+              {value.name}
             </MenuItem>
           ))}
         </Select>

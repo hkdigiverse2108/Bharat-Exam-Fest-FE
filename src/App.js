@@ -24,6 +24,7 @@ import Incomeboard from "./Component/IncomeExpense/Incomeboard";
 import PasswordUpdate from "./Component/NewPassword/PasswordUpdate";
 import CreateContest from "./Component/AddContest/CreateContest";
 import AddContestHomepage from "./Component/AddContest/AddContestHomepage";
+import EditSubTopic from "./Component/Subjects/AddSubTopic.js";
 
 function App() {
   const [loading, setLoading] = useState(false);

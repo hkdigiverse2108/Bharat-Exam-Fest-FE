@@ -1,9 +1,55 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
 import { VscSaveAs } from "react-icons/vsc";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function AddClasses({ confirm, setConfirm }) {
+  const [toggle, setToggle] = useState(false);
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+
+  const [input, setInput] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const { name } = input;
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setInput({ ...input, [name]: value });
+  }
+
+  
+  // const addClass = async () => {
+  //   try {
+  //     if (!name ) {
+  //       toast.warning("Fill up empty space");
+  //     } else {
+  //       const response = await axios.post(
+  //         "https://api-bef.hkdigiverse.com/classes/add",
+  //         {
+  //           headers: {
+  //             Authorization: accessToken,
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //     }
+  //   } catch (err) {
+  //     if (err.response && err.response.status === 401) {
+  //       setError("Unauthorized access. Please check your token.");
+  //     } else {
+  //       setError(err.message);
+  //     }
+  //   }
+  // };
+  
   return (
     <>
       <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">

@@ -1,15 +1,87 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LuPencilLine } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../Pagination/Pagination";
+import axios from "axios";
+import { useSelector } from "react-redux";
 
 export default function AddContestHomepage() {
   const navigate = useNavigate();
+
+  const [confirm, setConfirm] = useState(false);
+  const [data, setData] = useState([]);
+  const [dataToDisplay, setDataToDisplay] = useState([]);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ITEMS_PER_PAGE = 5;
+  const Totalpage = Math.ceil(data.length / ITEMS_PER_PAGE);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+  const [input, setInput] = useState({
+    classname: "",
+    referralcode: "",
+  });
+  const { classname, referralcode } = input;
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setInput({ ...input, [name]: value });
+  }
+
+  function handleNavigate() {
+    setConfirm(!confirm);
+  }
+
   function handleAddContest() {
     navigate("/createContest");
   }
+
+  const fetchSubjects = async () => {
+    try {
+      const response = await axios.get(
+        "https://api-bef.hkdigiverse.com/contest/all?page=1&limit=10",
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
+          },
+        }
+      );
+      console.log(response.data.data.contest_data);
+
+      setData(response.data.data.contest_data);
+      setDataToDisplay(
+        response.data.data.classes_data.slice(0, ITEMS_PER_PAGE)
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // const SimpleDate = ({ dateString }) => {
+  //   const date = new Date(dateString);
+  //   const formattedDate = date.toLocaleDateString();
+
+  //   return (
+  //     <p className="block antialiased font-sans text-sm leading-normal font-normal">
+  //       {formattedDate}
+  //     </p>
+  //   );
+  // };
+
+  useEffect(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    setDataToDisplay(data.slice(start, end));
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchSubjects();
+  }, []);
+
   return (
     <>
       <section className="shadow-md">
@@ -131,10 +203,7 @@ export default function AddContestHomepage() {
                       type="button"
                     >
                       <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                        <svg
-                          viewBox="0 0 16 16"
-                          className="w-5 h-5"
-                        >
+                        <svg viewBox="0 0 16 16" className="w-5 h-5">
                           <LuPencilLine />
                         </svg>
                       </span>
@@ -155,9 +224,13 @@ export default function AddContestHomepage() {
             </tbody>
           </table>
         </div>
-        <Pagination />
+        <Pagination
+          total={Totalpage}
+          page={setCurrentPage}
+          current={currentPage}
+        />
       </section>
-     
+
       {/* <Calander/> */}
       {/* <TimeSelector/> */}
     </>
