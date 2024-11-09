@@ -16,23 +16,6 @@ function Navbar() {
     setToggle(!toggle);
   }
 
-  // const userLogout = () => {
-  //   try {
-  //     console.log("logout");
-
-  //     setTimeout(() => {
-  //       setShow(!show);
-  //       dispatch(logOut());
-  //       setDashboardMenu(!dashbaordMenu);
-  //       setToggle(!toggle);
-  //       toast.success("Log out Successfully...");
-  //       navigate("/");
-  //     }, [1000]);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   return (
     <>
       <div className="h-16 bg-white flex items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11 ">
@@ -60,7 +43,7 @@ function Navbar() {
             <input
               type="text"
               placeholder="Type to search..."
-              className="w-full p-2 pl-8 text-md rounded-full bg-transparent border  focus:outline-none focus:border-black  md:w-100 xl:w-125"
+              className="w-full p-2 pl-8 text-md rounded-full bg-transparent border border-gray-500  focus:outline-none focus:border-black  md:w-100 xl:w-125"
             />
           </div>
         </div>
@@ -391,11 +374,11 @@ function Navbar() {
       <div
         className={`${
           toggle === true
-            ? " absolute overflow-hidden w-52  duration-300 ease-linear origin-top-right top-16 right-2  bg-white dark:bg-gray-800  rounded-lg shadow-xl border dark:border-transparent"
+            ? " absolute overflow-hidden w-52  z-20 duration-300 ease-linear origin-top-right top-16 right-2  bg-white dark:bg-gray-800  rounded-lg shadow-xl border border-gray-500 dark:border-transparent"
             : "hidden"
         } `}
       >
-        <ul className="flex flex-col gap-y-1 dark:text-white text-left font-medium capitalize">
+        <ul className="flex flex-col dark:text-white text-left font-medium capitalize">
           <li onClick={Navigation}>
             <NavLink to="/resetpassword">
               <button

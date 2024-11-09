@@ -39,8 +39,7 @@ export default function AddSubTopic({ onClose }) {
         axios
           .request(config)
           .then((response) => {
-            console.log(JSON.stringify(response.data));
-
+            console.log(response.data);
             toast.success("Subtopic add");
           })
           .catch((error) => {
@@ -55,7 +54,11 @@ export default function AddSubTopic({ onClose }) {
   const handleClick = () => {
     addSubtopic();
     if (onClose) {
-      onClose();
+      if (!name) {
+        toast.warning("Fill up empty space");
+      } else {
+        onClose();
+      }
     }
   };
 

@@ -1,15 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
 import Pagination from "../Pagination/Pagination";
 import AddContest from "./AddContest";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 export default function ContestHome() {
   const [confirm, setConfirm] = useState(false);
+  const [classes, setClasses] = useState([]);
+  const [classesShow, setClassestShow] = useState([]);
+  const [error, setError] = useState(null);
+
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  // const Totalpage = Math.ceil(classes.length / itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
   // const navigate = useNavigate();
   function handleNavigate() {
     setConfirm(!confirm);
   }
+
+  const fetchClasses = async () => {
+    try {
+      const response = await axios.get(
+        "https://api-bef.hkdigiverse.com/contest/all?page=1&limit=10",
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
+          },
+        }
+      );
+      console.log(response.data.data.contest_data);
+
+      setClasses(response.data.data.contest_data);
+      setClassestShow(response.data.data.contest_data.slice(0, end));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  useEffect(() => {
+    setClassestShow(classes.slice(start, end));
+  }, [classes, currentPage, end, start]);
+
+  useEffect(() => {
+    fetchClasses();
+  }, [confirm]);
+
   return (
     <>
       <section className="shadow-md">
@@ -93,10 +137,14 @@ export default function ContestHome() {
             </tbody>
           </table>
         </div>
-        <Pagination />
+        <Pagination
+          // total={Totalpage}
+          page={setCurrentPage}
+          current={currentPage}
+        />
       </section>
       <div className={`${confirm === true ? "block" : "hidden"}`}>
-        <AddContest confirm={confirm} setConfirm={() => handleNavigate()} />
+        <AddContest confirm={confirm} onClose={handleNavigate} />
       </div>
     </>
   );

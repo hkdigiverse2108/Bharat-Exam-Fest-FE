@@ -1,10 +1,75 @@
-import React from "react";
+import React, { useState } from "react";
 import { VscSaveAs } from "react-icons/vsc";
 import MultipleSelect from "../Ui/MultiSelection";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
-export default function AddContest({ confirm, setConfirm }) {
+export default function AddContest({ onClose }) {
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+
+  const [input, setInput] = useState({
+    contestName: "",
+  });
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+
+    setInput({ ...input, [name]: value });
+  }
+
+  const addNewContest = async () => {
+    try {
+      if (!input.contestName) {
+        toast.warning("Fill up empty space");
+      } else {
+        let data = JSON.stringify(input);
+        console.log(input);
+
+        let config = {
+          method: "post",
+          maxBodyLength: Infinity,
+          url: "https://api-bef.hkdigiverse.com/contest/add",
+          headers: {
+            Authorization: accessToken,
+            "Content-Type": "application/json",
+          },
+          data: data,
+        };
+
+        axios
+          .request(config)
+          .then((response) => {
+            if (response.status === 200) {
+              console.log("success", response.data);
+              if (onClose) {
+                onClose();
+              }
+              navigate("/contestType");
+              toast.success("contestType add");
+            } else {
+              console.log("failed", response);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log(input);
+  // }, [input]);
+
   return (
     <>
       <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out ">
@@ -19,14 +84,10 @@ export default function AddContest({ confirm, setConfirm }) {
             &#8203;
           </span>
           <div className="inline-block mx-auto w-full  bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle max-w-5xl md:max-w-2xl">
-            <div className="text-left space-y-2">
+            <div className="text-left">
               <h3 className="text-2xl text-left w-full font-semibold text-slate-800">
-                Add Introduction
+                Add Content Type
               </h3>
-              <p className="text-lg text-left font-normal text-slate-600 ">
-                Enter the introduction to create a new section for the class
-                curriculum.
-              </p>
             </div>
             <div className="grid grid-cols-1 space-y-2 w-full">
               <label
@@ -40,12 +101,14 @@ export default function AddContest({ confirm, setConfirm }) {
                 type="text"
                 id="content"
                 placeholder="Enter content name"
+                onChange={(e) => handleChange(e)}
+                name="contestName"
               />
             </div>
             <div className="flex items-center justify-center">
               <button
                 className="inline-flex items-center space-x-2 rounded-lg px-4 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90"
-                onClick={setConfirm}
+                onClick={addNewContest}
               >
                 <svg
                   className="font-bold text-white w-4 h-4"

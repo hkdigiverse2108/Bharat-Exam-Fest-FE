@@ -13,11 +13,16 @@ function SubjectList() {
   const navigate = useNavigate();
   const [subjects, setSubjects] = useState([]);
   const [subtopics, setSubtopics] = useState([]);
-  const ITEMS_PER_PAGE = 5;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [users, setUsers] = useState([]);
-  const TotalSubject = Math.ceil(subjects.length / ITEMS_PER_PAGE);
-  const TotalSubtopic = Math.ceil(setSubtopics.length / ITEMS_PER_PAGE);
+  const itemsPerPage = 5;
+  const [currentPageTable1, setCurrentPageTable1] = useState(1);
+  const [currentPageTable2, setCurrentPageTable2] = useState(1);
+  const PageStart1 = (currentPageTable1 - 1) * itemsPerPage;
+  const PageEnd1 = PageStart1 + itemsPerPage;
+  const PageStart2 = (currentPageTable2 - 1) * itemsPerPage;
+  const PageEnd2 = PageStart2 + itemsPerPage;
+
+  const TotalSubject = Math.ceil(subjects.length / itemsPerPage);
+  const TotalSubtopic = Math.ceil(subtopics.length / itemsPerPage);
   const [subjectShow, setSubjectShow] = useState([]);
   const [subtopicShow, setSubtopicShow] = useState([]);
   const [error, setError] = useState(null);
@@ -26,7 +31,6 @@ function SubjectList() {
   );
 
   const [confirm, setConfirm] = useState(false);
-  // const navigate = useNavigate();
   function handleNavigate() {
     setConfirm(!confirm);
   }
@@ -79,7 +83,9 @@ function SubjectList() {
       // console.log(response.data.data.subject_data);
 
       setSubjects(response.data.data.subject_data);
-      setSubjectShow(response.data.data.subject_data.slice(0, ITEMS_PER_PAGE));
+      setSubjectShow(
+        response.data.data.subject_data.slice(0, PageEnd1)
+      );
     } catch (err) {
       setError(err.message);
     }
@@ -126,7 +132,7 @@ function SubjectList() {
 
       setSubtopics(response.data.data.sub_topic_data);
       setSubtopicShow(
-        response.data.data.sub_topic_data.slice(0, ITEMS_PER_PAGE)
+        response.data.data.sub_topic_data.slice(0, PageEnd2)
       );
     } catch (err) {
       setError(err.message);
@@ -134,16 +140,14 @@ function SubjectList() {
   };
 
   useEffect(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    setSubjectShow(subjects.slice(start, end));
-    setSubtopicShow(subtopicShow.slice(start, end));
-  }, [currentPage]);
+    setSubjectShow(subjects.slice(PageStart1, PageEnd1));
+    setSubtopicShow(subtopicShow.slice(PageStart2, PageEnd2));
+  }, [currentPageTable1,currentPageTable2]);
 
   useEffect(() => {
     fetchSubjects();
     fetchSubtopics();
-  }, []);
+  }, [confirm]);
 
   return (
     <>
@@ -221,7 +225,7 @@ function SubjectList() {
               </thead>
               <tbody>
                 {subjectShow.map((subject, index) => (
-                  <tr key={index}>
+                  <tr key={subject._id}>
                     <td className="p-4 border-b border-blue-gray-50">
                       <p className="block antialiased font-sans text-sm leading-normal font-normal">
                         {index + 1}
@@ -234,8 +238,11 @@ function SubjectList() {
                     </td>
                     <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
                       <div className=" grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-2 2xl:grid-cols-5 2xl:gap-3">
-                        {subject.subTopics.map((val) => (
-                          <p className="w-auto p-1 text-sm rounded-md text-yellow-700 text-center bg-yellow-100">
+                        {subject.subTopics.map((val, index) => (
+                          <p
+                            key={index}
+                            className="w-auto p-1 text-sm rounded-md text-yellow-700 text-center bg-yellow-100"
+                          >
                             {val.name}
                           </p>
                         ))}
@@ -278,8 +285,8 @@ function SubjectList() {
           </div>
           <Pagination
             total={TotalSubject}
-            page={setCurrentPage}
-            current={currentPage}
+            page={setCurrentPageTable1}
+            current={currentPageTable1}
           />
         </div>
         {/* Subtopics */}
@@ -336,7 +343,7 @@ function SubjectList() {
               </thead>
               <tbody>
                 {subtopicShow.map((subtopic, index) => (
-                  <tr key={index}>
+                  <tr key={subtopic._id}>
                     <td className="p-4 border-b border-blue-gray-50">
                       <p className="block antialiased font-sans text-sm leading-normal font-normal">
                         {index + 1}
@@ -369,8 +376,8 @@ function SubjectList() {
           </div>
           <Pagination
             total={TotalSubtopic}
-            page={setCurrentPage}
-            current={currentPage}
+            page={setCurrentPageTable2}
+            current={currentPageTable2}
           />
         </div>
       </section>

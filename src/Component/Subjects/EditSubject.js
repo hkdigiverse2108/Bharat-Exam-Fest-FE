@@ -9,21 +9,34 @@ import { toast } from "react-toastify";
 export default function EditSubject() {
   const navigate = useNavigate();
   const location = useLocation();
-  const data = location.state;
+  const { state } = location;
 
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
 
+  const [selectedNames, setSelectedNames] = useState(state.subTopicIds);
   const [input, setInput] = useState({
-    subjectId: "",
-    name: "",
+    subjectId: state._id,
+    name: state.name,
+    image: state.image,
+    subTopicIds: selectedNames,
   });
+
   const { name } = input;
   function handleChange(e) {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
   }
+
+  const handleSelectionChange = (newValues) => {
+    setSelectedNames(newValues);
+    const newArray = selectedNames.concat(newValues);
+    setInput((prevInput) => ({
+      ...prevInput,
+      subTopicIds: newArray,
+    }));
+  };
 
   const editSubject = async () => {
     try {
@@ -31,6 +44,7 @@ export default function EditSubject() {
         toast.warning("Fill up empty space");
       } else {
         let data = JSON.stringify(input);
+        console.log(input);
 
         let config = {
           method: "post",
@@ -46,7 +60,7 @@ export default function EditSubject() {
         axios
           .request(config)
           .then((response) => {
-            console.log(JSON.stringify(response.data));
+            console.log("response",response.data);
             navigate("/subject");
             toast.success("Subject Edited");
           })
@@ -60,8 +74,10 @@ export default function EditSubject() {
   };
 
   useEffect(() => {
-    setInput({ subjectId:data._id , name: data.name });
-  }, []);
+    setSelectedNames(state.subTopicIds);
+    console.log(state);
+    
+  }, [state]);
 
   return (
     <>
@@ -96,7 +112,7 @@ export default function EditSubject() {
             Add multiple subtopic
           </h3>
           <div className="max-w-lg">
-            <MultipleSelect />
+            <MultipleSelect onChange={handleSelectionChange} />
           </div>
         </div>
         <div className="flex  items-center justify-center">

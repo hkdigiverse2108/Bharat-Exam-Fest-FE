@@ -18,8 +18,9 @@ export default function ClassesHomePage() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const ITEMS_PER_PAGE = 5;
-  const Totalpage = Math.ceil(data.length / ITEMS_PER_PAGE);
+  const itemsPerPage = 5;
+  const Totalpage = Math.ceil(data.length / itemsPerPage);
+
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
@@ -27,15 +28,36 @@ export default function ClassesHomePage() {
     classname: "",
     referralcode: "",
   });
-  const { classname, referralcode } = input;
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setInput({ ...input, [name]: value });
-  }
+
   function handleNavigate() {
     setConfirm(!confirm);
   }
 
+  const deleteSubject = async (value) => {
+    try {
+      let config = {
+        method: "delete",
+        maxBodyLength: Infinity,
+        url: `https://api-bef.hkdigiverse.com/contest/delete/${value}`,
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .request(config)
+        .then((response) => {
+          toast.success("Subject delete");
+          fetchSubjects();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
   const fetchSubjects = async () => {
     try {
@@ -48,27 +70,14 @@ export default function ClassesHomePage() {
           },
         }
       );
-      console.log(response.data.data.contest_data);
+      console.log(response.data.data.classes_data);
 
-      setData(response.data.data.contest_data);
-      setDataToDisplay(
-        response.data.data.classes_data.slice(0, ITEMS_PER_PAGE)
-      );
+      setData(response.data.data.classes_data);
+      setDataToDisplay(response.data.data.classes_data.slice(0, itemsPerPage));
     } catch (err) {
       setError(err.message);
     }
   };
-
-  // const SimpleDate = ({ dateString }) => {
-  //   const date = new Date(dateString);
-  //   const formattedDate = date.toLocaleDateString();
-
-  //   return (
-  //     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-  //       {formattedDate}
-  //     </p>
-  //   );
-  // };
 
   useEffect(() => {
     fetchSubjects();
@@ -141,7 +150,7 @@ export default function ClassesHomePage() {
             </thead>
             <tbody>
               {dataToDisplay.map((value, index) => (
-                <tr>
+                <tr key={index}>
                   <td className="p-4 border-b border-blue-gray-50">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
                       {index + 1}
@@ -149,7 +158,7 @@ export default function ClassesHomePage() {
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                      Classes name
+                      {value.name}
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
@@ -159,31 +168,25 @@ export default function ClassesHomePage() {
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
                     <button
-                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase transition-all disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                      className="relative select-none max-w-12 max-h-12 rounded-lg text-md align-middle font-sansfont-medium uppercase transition-all disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
                       type="button"
                     >
-                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                        <svg
-                          viewBox="0 0 16 16"
-                          className="w-6 h-6 text-red-600"
-                        >
-                          <FaFilePdf />
-                        </svg>
-                      </span>
+                      <img src={value.image} alt="" className="w-full h-full" />
                     </button>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                      ABC123AWRII3469
+                      {value.referralCode}
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                      ABC123AWRII3469
+                      {value.referralCode}
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50">
                     <button
+                      onClick={deleteSubject}
                       className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg  align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
                       type="button"
                     >
@@ -206,7 +209,7 @@ export default function ClassesHomePage() {
         />
       </section>
       <div className={`${confirm === true ? "block" : "hidden"}`}>
-        <AddClasses confirm={confirm} setConfirm={() => handleNavigate()} />
+        <AddClasses confirm={confirm} onClose={handleNavigate} />
       </div>
     </>
   );

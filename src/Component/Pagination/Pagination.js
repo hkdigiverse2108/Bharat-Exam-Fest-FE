@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 export default function Pagination({ total,page,current}) {
+  const totalPages = Math.ceil(total / page);
   const handleNextPage = () => {
     if (current < total) {
       page((prev) => prev + 1);

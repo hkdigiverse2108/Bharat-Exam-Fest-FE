@@ -7,7 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 // import { updateData } from "../../Context/Action/index";
 
 export default function PasswordUpdate() {
-  const [toggle, setToggle] = useState(false);
+  const [toggle1, setToggle1] = useState(false);
+  const [toggle2, setToggle2] = useState(false);
 
   // const staticObj = {
   //     id: "",
@@ -133,8 +134,7 @@ export default function PasswordUpdate() {
               <div className="relative w-full">
                 <input
                   className="text-black text-md px-4 py-6 border-2 border-gray-200  w-full h-12 rounded-lg"
-                  // type={show ? "text" : "password"}
-                  type="password"
+                  type={toggle1 ? "text" : "password"}
                   name="password"
                   // value={password || ""}
                   // onChange={(e) => handleChange(e)}
@@ -143,16 +143,16 @@ export default function PasswordUpdate() {
                 />
                 <button
                   type="button"
-                  // onClick={() => setShow(!show)}
-                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
+                  onClick={() => setToggle1(!toggle1)}
+                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 16 16">
-                    <VscEyeClosed title="Show Password" />
-                    {/* {show ? (
-                  ) : (
-                    <RxEyeOpen title="Hide Password" />
-                  )} */}
+                  <svg className="w-5 h-5 text-blue-600" viewBox="0 0 16 16">
+                  {toggle1 ? (
+                        <VscEyeClosed title="Show Password" />
+                      ) : (
+                        <VscEye title="Hide Password" />
+                      )}
                   </svg>
                 </button>
                 <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">
@@ -180,8 +180,7 @@ export default function PasswordUpdate() {
               <div className="relative w-full">
                 <input
                   className="text-black text-md px-4 py-6 border-2 border-gray-200  w-full h-12 rounded-lg"
-                  // type={show ? "text" : "password"}
-                  type="password"
+                  type={toggle2 ? "text" : "password"}
                   name="password"
                   // value={password || ""}
                   // onChange={(e) => handleChange(e)}
@@ -190,12 +189,12 @@ export default function PasswordUpdate() {
                 />
                 <button
                   type="button"
-                  onClick={() => setToggle(!toggle)}
-                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 invalid:border-pink-500 invalid:text-pink-600 peer
+                  onClick={() => setToggle2(!toggle2)}
+                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 16 16">
-                  {toggle ? (
+                  <svg className="w-5 h-5 text-blue-600" viewBox="0 0 16 16">
+                  {toggle2 ? (
                         <VscEyeClosed title="Show Password" />
                       ) : (
                         <VscEye title="Hide Password" />

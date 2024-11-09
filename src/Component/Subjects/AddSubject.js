@@ -5,7 +5,7 @@ import { VscSaveAs } from "react-icons/vsc";
 import MultipleSelect from "../Ui/MultiSelection";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function AddSubject() {
   const navigate = useNavigate();
@@ -13,23 +13,22 @@ export default function AddSubject() {
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
+
   const [selectedNames, setSelectedNames] = useState([]);
   const handleSelectionChange = (newValues) => {
     setSelectedNames(newValues);
-    setInput({ ...input, subTopics: newValues });
+    setInput({ ...input, subTopicIds: newValues });
   };
   const [input, setInput] = useState({
     name: "",
-    images: "",
-    subTopics: selectedNames,
+    image: "",
+    subTopicIds: null,
   });
-
-  // const { name } = input;
 
   function handleChange(e) {
     const { name, value, files } = e.target;
 
-    if (name === "images") {
+    if (name === "image") {
       setInput({ ...input, [name]: files[0].name });
     } else {
       setInput({ ...input, [name]: value });
@@ -38,11 +37,11 @@ export default function AddSubject() {
 
   const addNewSubject = async () => {
     try {
-      if (!input.name || !input.images || !input.subTopics) {
+      if (!input.name || !input.image || !input.subTopicIds) {
         toast.warning("Fill up empty space");
       } else {
         let data = JSON.stringify(input);
-        console.log(data);
+        console.log(input);
 
         let config = {
           method: "post",
@@ -59,11 +58,11 @@ export default function AddSubject() {
           .request(config)
           .then((response) => {
             if (response.status === 200) {
-              console.log(JSON.stringify(response.data));
+              console.log("success",response.data);
               navigate("/subject");
-              toast.success("Subject added");
+              toast.success("Subject add");
             } else {
-              console.log(JSON.stringify(response.data));
+              console.log("failed",response);
             }
           })
           .catch((error) => {
@@ -75,9 +74,9 @@ export default function AddSubject() {
     }
   };
 
-  useEffect(() => {
-    console.log(input);
-  }, [input]);
+  // useEffect(() => {
+  //   console.log(input);
+  // }, [input]);
 
   return (
     <>
@@ -119,7 +118,7 @@ export default function AddSubject() {
             <input
               type="file"
               onChange={(e) => handleChange(e)}
-              name="images"
+              name="image"
               id="file-input"
               className="block w-full border border-gray-200 shadow-sm rounded-lg text-md focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 file:bg-gray-300  file:border-0 file:me-4 file:py-3 file:px-4 dark:file:bg-neutral-700 dark:file:text-neutral-400"
             />
@@ -130,7 +129,7 @@ export default function AddSubject() {
             Add multiple subtopic
           </h3>
           <div className="max-w-lg">
-            <MultipleSelect onChange={handleSelectionChange} />
+            <MultipleSelect onChange={handleSelectionChange} selectedValue={selectedNames}/>
           </div>
         </div>
         <div className="flex  items-center justify-center">

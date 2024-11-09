@@ -237,7 +237,7 @@ const UserList = () => {
                   <tr key={index}>
                     <td className="p-4 border-b border-blue-gray-50">
                       <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                        {index + 1}
+                        {user._id}
                       </p>
                     </td>
                     <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap">

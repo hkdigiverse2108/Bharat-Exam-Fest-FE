@@ -31,7 +31,12 @@ const TextEditor = () => {
   };
 
   const targetRef = useRef(null);
+  const [editorHtml, setEditorHtml] = useState("");
 
+  const handleChange = (html) => {
+    setEditorHtml(html);
+  };
+  
   useEffect(() => {
     const observerCallback = (mutationsList) => {
       for (let mutation of mutationsList) {
@@ -54,8 +59,8 @@ const TextEditor = () => {
     <>
       <div ref={targetRef}>
         <ReactQuill
-          value={value}
-          onEditorChange={setValue}
+          value={editorHtml}
+          onEditorChange={handleChange}
           modules={modules}
           placeholder="Compose an epic..."
           theme="snow"

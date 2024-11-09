@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import axios from "axios";
-import { Chip, Stack } from "@mui/material";
 
 const ITEM_HEIGHT = 20;
 const ITEM_PADDING_TOP = 4;
@@ -19,18 +17,7 @@ const MenuProps = {
   },
 };
 
-const listName = ["Economics", "Polity & GOV", "Geography", "Current Affairs"];
-
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight: personName.includes(name)
-      ? theme.typography.fontWeightMedium
-      : theme.typography.fontWeightRegular,
-  };
-}
-
 export default function MultipleSelect({ onChange }) {
-  const theme = useTheme();
   const [subtopics, setSubtopics] = useState([]);
   const [selectedNames, setSelectedNames] = useState([]);
   const [selectedId, setSelectedId] = useState([]);
@@ -38,10 +25,12 @@ export default function MultipleSelect({ onChange }) {
     (state) => state.authConfig.userInfo[0].token
   );
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { value } = event.target;
+    const dataId = value.map((res) => res?._id);
     setSelectedNames(value);
-
-    onChange(value);
+    onChange(dataId);
+    // console.log(value);
+    console.log(dataId);
   };
 
   const fetchSubtopics = async () => {
@@ -65,7 +54,6 @@ export default function MultipleSelect({ onChange }) {
   useEffect(() => {
     fetchSubtopics();
   }, []);
-
   return (
     <>
       <FormControl className="container h-full">
@@ -76,11 +64,12 @@ export default function MultipleSelect({ onChange }) {
           multiple
           value={selectedNames}
           onChange={handleChange}
-          renderValue={(selected) => selected.join(", ")}
+          renderValue={(selected) => selected.map((s) => s.name).join(", ")}
           size="small"
+          MenuProps={MenuProps}
         >
           {subtopics.map((value) => (
-            <MenuItem key={value._id} value={value.name}>
+            <MenuItem key={value._id} value={value}>
               {value.name}
             </MenuItem>
           ))}
