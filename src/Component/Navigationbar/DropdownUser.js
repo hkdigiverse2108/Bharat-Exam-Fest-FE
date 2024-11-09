@@ -5,6 +5,9 @@ const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
   const { pathname } = location;
+  function Navigation() {
+    setDropdownOpen(!dropdownOpen);
+  }
 
   return (
     <div className="relative">
@@ -49,27 +52,19 @@ const DropdownUser = () => {
         <div
           className={`absolute right-0 top-14 flex w-62.5 flex-col rounded-md border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark`}
         >
-          <ul className="flex flex-col gap-2 border-b border-stroke  dark:border-strokedark">
-            <li>
-              <NavLink
-                to="/profile"
-                className={`group relative flex items-center gap-2.5 outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium  ${
-                  pathname.includes("profile") && "text-white bg-orange-600"
-                }`}
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                Profile
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="#"
-                className={`group relative flex items-center gap-2.5 outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium  ${
-                  pathname.includes("settings") && "text-white bg-orange-600"
-                }`}
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                Settings
+          <ul className="flex flex-col dark:text-white text-left font-medium capitalize">
+            <li onClick={Navigation}>
+              <NavLink to="/resetpassword">
+                <button
+                  type="button"
+                  className={`${
+                    pathname === "/resetpassword"
+                      ? "text-white bg-gray-600"
+                      : "text-black"
+                  }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600`}
+                >
+                  Reset Password
+                </button>
               </NavLink>
             </li>
           </ul>

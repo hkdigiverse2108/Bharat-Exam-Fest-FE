@@ -10,6 +10,7 @@ import AddQuestion from "./Component/Questions/AddQuestion";
 import EditQuestion from "./Component/Questions/EditQuestion";
 import ProfilePage from "./Component/ProfilePage";
 import Loading from "./Component/Loader/Loading";
+import PasswordUpdate from "./Component/NewPassword/PasswordUpdate";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ function App() {
             <Route path="/subjectDetails" element={<SubjectDetails />} />
             <Route path="/addQuestion" element={<AddQuestion />} />
             <Route path="/editQuestion" element={<EditQuestion />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route exact path="/resetpassword" element={<PasswordUpdate />} />
           </Routes>
         </DefaultLayout>
       )}

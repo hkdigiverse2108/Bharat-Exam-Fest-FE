@@ -97,7 +97,7 @@ function AddQuestion() {
             </div>
           </div>
         </div>
-        <div className="px-4 py-2 space-y-3">
+        <div className="px-4 py-2 space-y-6">
           <div className="space-y-4">
             {/* english */}
             <div className="space-y-4">
@@ -728,7 +728,7 @@ function AddQuestion() {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <button className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-400 hover:bg-opacity-90  ">
+            <button className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90  ">
               <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
                 <VscSaveAs />
               </svg>

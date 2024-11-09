@@ -7,8 +7,10 @@ const DefaultLayout = ({ children }) => {
       <div className=" dark:bg-boxdark-2 dark:text-bodydark">
         <div className="relative flex flex-col h-screen overflow-hidden">
           <Navbar />
-          <main className="h-full overflow-y-auto overflow-x-hidden ">
-            <div className=" w-full p-4 h-full">{children}</div>
+          <main className="h-full overflow-hidden">
+            <div className=" w-full p-4 h-full overflow-y-auto overflow-x-hidden">
+              {children}
+            </div>
           </main>
         </div>
       </div>

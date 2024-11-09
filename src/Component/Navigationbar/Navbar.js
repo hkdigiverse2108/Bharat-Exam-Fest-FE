@@ -12,23 +12,6 @@ function Navbar() {
     setNavbarOpen(!navbarOpen);
   }
 
-  // const userLogout = () => {
-  //   try {
-  //     console.log("logout");
-
-  //     setTimeout(() => {
-  //       setShow(!show);
-  //       dispatch(logOut());
-  //       setDashboardMenu(!dashbaordMenu);
-  //       setToggle(!toggle);
-  //       toast.success("Log out Successfully...");
-  //       navigate("/");
-  //     }, [1000]);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   return (
     <>
       <header className="sticky top-0 z-20 h-20 px-4 py-4  flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
