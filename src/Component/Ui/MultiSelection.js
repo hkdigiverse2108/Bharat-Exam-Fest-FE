@@ -1,10 +1,10 @@
-import * as React from "react";
-import { useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import axios from "axios";
 
 const ITEM_HEIGHT = 20;
 const ITEM_PADDING_TOP = 4;
@@ -17,53 +17,69 @@ const MenuProps = {
   },
 };
 
-const names = ["Economics", "Polity & GOV", "Geography", "Current Affairs"];
+export default function MultipleSelect({ onChange }) {
+  const [subtopics, setSubtopics] = useState([]);
+  const [classNames, setClassNames] = useState([]);
 
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight: personName.includes(name)
-      ? theme.typography.fontWeightMedium
-      : theme.typography.fontWeightRegular,
-  };
-}
-
-export default function MultipleSelect() {
-  const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
-
+  const [selectedNames, setSelectedNames] = useState([]);
+  const [selectedId, setSelectedId] = useState([]);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
   const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+    const { value } = event.target;
+    console.log(value);
+    
+    const dataId = value.map((res) => res?._id);
+    setSelectedNames(value);
+    onChange(dataId);
+    // console.log(value);
+    console.log(dataId);
   };
 
+  const fetchClassname = async () => {
+    try {
+      const response = await axios.get(
+        "https://api-bef.hkdigiverse.com/question/all?page=1&limit=10",
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
+          },
+        }
+      );
+      // console.log(response.data.data.question_data);
+
+      setSubtopics(response.data.data.question_data);
+      const classes = response.data.data.question_data.map(
+        (question) => question.classes
+      );
+      setClassNames(classes);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchClassname();
+  }, []);
   return (
     <>
-      <FormControl  className="container h-full">
+      <FormControl className="container h-full">
         <InputLabel id="demo-multiple-name-label" size="small">
-          Class Name
+          Classes
         </InputLabel>
         <Select
-          labelId="demo-multiple-name-label"
-          id="demo-multiple-name"
           multiple
-          value={personName}
+          value={selectedNames}
           onChange={handleChange}
-          input={<OutlinedInput label="Subtopic" />}
-          MenuProps={MenuProps}
+          renderValue={(selected) => selected.map((s) => s.name).join(", ")}
           size="small"
+          MenuProps={MenuProps}
         >
-          {names.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, personName, theme)}
-            >
-              {name}
+          {classNames.map((value,index) => (
+            <MenuItem key={index} value={value}>
+              {value.name}
             </MenuItem>
           ))}
         </Select>

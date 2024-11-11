@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { TfiPlus, TfiFilter, TfiPencil } from "react-icons/tfi";
 import { AiOutlineDelete } from "react-icons/ai";
 import ConfirmationPage from "./ConfirmationPage";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import FilterSide from "../Filterpage/FilterSide";
 import MultiSelection from "../Ui/MultiSelection";
@@ -11,9 +11,16 @@ import axios from "axios";
 
 function SubjectDetails() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { state } = location;
+
   const [confirm, setConfirm] = useState(false);
   const [filter, setFilter] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [subjectData, setSubjectData] = useState(state);
+  const { subject } = subjectData;
+
+  const [questions, setQustions] = useState([]);
+  console.log(questions);
   const [error, setError] = useState(null);
 
   const accessToken = useSelector(
@@ -28,14 +35,20 @@ function SubjectDetails() {
   function handleCreateque() {
     navigate("/addQuestion");
   }
-  function handleEditque() {
-    navigate("/editQuestion");
+  function handleEditque(value) {
+    navigate("/editQuestion", { state: value });
   }
+
+  const [selectedNames, setSelectedNames] = useState([]);
+  const handleSelectionChange = (newValues) => {
+    setSelectedNames(newValues);
+    // setInput({ ...input, subTopicIds: newValues });
+  };
 
   const fetchSubjects = async () => {
     try {
       const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/question/all",
+        `https://api-bef.hkdigiverse.com/question/all?page=1&limit=10&subjectFilter=${state?._id}`,
         {
           headers: {
             Authorization: accessToken,
@@ -43,16 +56,36 @@ function SubjectDetails() {
           },
         }
       );
-      console.log(response.data.data.subject_data);
 
-      setUsers(response.data.data.subject_data);
+      console.log("res", response.data.data);
+      setQustions(response.data.data.question_data);
     } catch (err) {
       setError(err.message);
     }
   };
 
+  // const fetchSubjects = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://api-bef.hkdigiverse.com/question/${subjectData._id}`,
+  //       {
+  //         headers: {
+  //           Authorization: accessToken,
+  //           Accept: "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     // console.log([response.data.data]);
+  //     setQustions([response.data.data]);
+  //   } catch (err) {
+  //     setError(err.message);
+  //   }
+  // };
+
   useEffect(() => {
     fetchSubjects();
+    console.log("subject details", location);
   }, []);
 
   return (
@@ -88,49 +121,72 @@ function SubjectDetails() {
             </div>
             <div className=" space-y-2 flex flex-col items-start w-full">
               <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
-                subject
+                {state?.subjectName}
               </p>
               <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-2 2xl:grid-cols-4 2xl:gap-6">
-                <MultiSelection />
+                <MultiSelection onChange={handleSelectionChange} />
               </div>
             </div>
           </div>
           <div className="w-full space-y-6 text-left  md:gap-16 dark:border-gray-700 font-sans">
             <ul className="space-y-4">
-              <li className="space-y-2">
-                <div className="flex items-center justify-between text-lg font-medium text-gray-900 dark:text-white">
-                  1. What is ReactJS?
-                  <div className="flex items-center justify-end space-x-4 pr-2">
-                    <button
-                      onClick={() => handleCheck()}
-                      className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-red-100 border  hover:bg-opacity-90  "
-                    >
-                      <svg className="font-bold  w-5 h-5" viewBox="0 0 16 16">
-                        <AiOutlineDelete />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleEditque()}
-                      className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-green-100 border  hover:bg-opacity-90  "
-                    >
-                      <svg className="font-bold  w-5 h-5" viewBox="0 0 17 17">
-                        <TfiPencil />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                <div className="rounded-md border border-gray-300 px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                  React, also known as ReactJS, is a popular and powerful
-                  JavaScript library used for building dynamic and interactive
-                  user interfaces, primarily for single-page applications
-                  (SPAs). It was developed and maintained by Facebook and has
-                  gained significant popularity due to its efficient rendering
-                  techniques, reusable components, and active community support.
-                  In this article, we will explore React Introduction, what
-                  React is, its key features, benefits, and why it’s a great
-                  choice for modern web development.
-                </div>
-              </li>
+              {questions.map((value, index) => (
+                <>
+                  <li key={index} className="space-y-2">
+                    <div className="flex items-center justify-between text-lg font-medium text-gray-900 dark:text-white">
+                      <div className="flex items-center justify-between gap-x-4">
+                        <p className="block font-sans text-lg font-medium text-blue-gray-900 capitalize antialiased">
+                          {index + 1}
+                        </p>
+                        <p className="block font-sans text-lg font-medium text-blue-gray-900 capitalize antialiased">
+                          {value.englishQuestion.question}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-end space-x-4 pr-2">
+                        <span
+                          value="Verified"
+                          className={`${
+                            value.type === "easy"
+                              ? "bg-green-100  text-green-600"
+                              : value.type === "medium"
+                              ? "bg-yellow-100  text-yellow-600"
+                              : value.type === "hard"
+                              ? "bg-red-100  text-red-600"
+                              : "bg-gray-100  text-gray-900"
+                          } px-4 text-sm leading-5 font-medium rounded-full capitalize `}
+                        >
+                          {value.type}
+                        </span>
+                        <button
+                          onClick={() => handleCheck()}
+                          className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-red-100 border  hover:bg-opacity-90  "
+                        >
+                          <svg
+                            className="font-bold  w-5 h-5"
+                            viewBox="0 0 16 16"
+                          >
+                            <AiOutlineDelete />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleEditque(value)}
+                          className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-green-100 border  hover:bg-opacity-90  "
+                        >
+                          <svg
+                            className="font-bold  w-5 h-5"
+                            viewBox="0 0 17 17"
+                          >
+                            <TfiPencil />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="rounded-md border border-gray-300 px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                      {value.englishQuestion.solution}
+                    </div>
+                  </li>
+                </>
+              ))}
             </ul>
           </div>
         </div>

@@ -1,15 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import MultiSelection from "../Ui/MultiSelection";
 import { MdStar } from "react-icons/md";
 import { VscSaveAs } from "react-icons/vsc";
 import { FaPlus } from "react-icons/fa6";
 
 function EditQuestion() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { state } = location;
+  console.log(state);
+
   const [type, setType] = useState("Normal");
   const handleChange = (e) => {
     const { value } = e.target;
     setType(value);
   };
+  const [questionData, setQuestionData] = useState(state);
+  const { hindiQuestion, englishQuestion } = questionData;
+  const [options, setOptions] = useState(englishQuestion.options);
+
+  const handleCheck = (event) => {
+    const { value } = event.target;
+    console.log(value);
+
+    setOptions({
+      A: false,
+      B: false,
+      C: false,
+      D: false,
+      [value]: true,
+    });
+  };
+
+  // const { hindi, english } = options;
+  // useEffect(() => {
+  //   console.log(options);
+  //   console.log(options);
+  // }, [options]);
+
   const [statement, setStatement] = useState([]);
   const [inputValue, setInputValue] = useState("");
 
@@ -24,7 +54,11 @@ function EditQuestion() {
     setStatement([...statement, inputValue]);
     setInputValue("");
   }
-  
+
+  // function handleNavigate() {
+  //   navigate("/subjectDetails");
+  // }
+
   return (
     <>
       <section className=" bg-white dark:bg-gray-900 overflow-y-auto rounded-lg border-2 border-slate-300 font-sans">
@@ -178,6 +212,179 @@ function EditQuestion() {
                           and interactive user interfaces.
                         </div>
                       </div>
+                      {/* options */}
+                      <div className=" p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          options
+                        </p>
+                        <div className="flex flex-row items-center  space-x-3">
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q1"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              a- option
+                              <MdStar className="text-orange-400  h-3 w-3 " />
+                            </label>
+                            <input
+                              type="text"
+                              name="q1"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q2"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              b- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q2"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q3"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              c- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q3"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q4"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              d- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q4"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* answer */}
+                      <div className="p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          answer
+                        </p>
+
+                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
+                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
+                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio1"
+                                  type="radio"
+                                  value="A"
+                                  checked={options.A}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio1"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option A
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio2"
+                                  type="radio"
+                                  value="B"
+                                  checked={options.B}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio2"
+                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option B
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio3"
+                                  type="radio"
+                                  value="C"
+                                  checked={options.C}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio3"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option C
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio4"
+                                  type="radio"
+                                  value="D"
+                                  checked={options.D}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio4"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option D
+                                </label>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      {/* solution */}
+                      <div className="space-y-2">
+                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
+                          solution
+                        </p>
+                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                          React, also known as ReactJS, is a popular and
+                          powerful JavaScript library used for building dynamic
+                          and interactive user interfaces, primarily for
+                          single-page applications (SPAs). It was developed and
+                          maintained by Facebook and has gained significant
+                          popularity due to its efficient rendering techniques,
+                          reusable components, and active community support. In
+                          this article, we will explore React Introduction, what
+                          React is, its key features, benefits, and why it’s a
+                          great choice for modern web development.
+                        </div>
+                      </div>
                     </div>
                   ) : type === "Statement" ? (
                     <div className="duration-300 space-y-2">
@@ -232,188 +439,362 @@ function EditQuestion() {
                           and interactive user interfaces.
                         </div>
                       </div>
+                      {/* options */}
+                      <div className=" p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          options
+                        </p>
+                        <div className="flex flex-row items-center  space-x-3">
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q1"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              a- option
+                              <MdStar className="text-orange-400  h-3 w-3 " />
+                            </label>
+                            <input
+                              type="text"
+                              name="q1"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q2"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              b- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q2"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q3"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              c- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q3"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q4"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              d- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q4"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* answer */}
+                      <div className="p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          answer
+                        </p>
+
+                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
+                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
+                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio1"
+                                  type="radio"
+                                  value="A"
+                                  checked={options.A}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio1"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option A
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio2"
+                                  type="radio"
+                                  value="B"
+                                  checked={options.B}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio2"
+                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option B
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio3"
+                                  type="radio"
+                                  value="C"
+                                  checked={options.C}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio3"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option C
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio4"
+                                  type="radio"
+                                  value="D"
+                                  checked={options.D}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio4"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option D
+                                </label>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      {/* solution */}
+                      <div className="space-y-2">
+                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
+                          solution
+                        </p>
+                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                          React, also known as ReactJS, is a popular and
+                          powerful JavaScript library used for building dynamic
+                          and interactive user interfaces, primarily for
+                          single-page applications (SPAs). It was developed and
+                          maintained by Facebook and has gained significant
+                          popularity due to its efficient rendering techniques,
+                          reusable components, and active community support. In
+                          this article, we will explore React Introduction, what
+                          React is, its key features, benefits, and why it’s a
+                          great choice for modern web development.
+                        </div>
+                      </div>
                     </div>
                   ) : (
-                    <div className=" rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                      React, also known as ReactJS, is a popular and powerful
-                      JavaScript library used for building dynamic and
-                      interactive user interfaces, primarily for single-page
-                      applications (SPAs). It was developed and maintained by
-                      Facebook and has gained significant popularity due to its
-                      efficient rendering techniques, reusable components, and
-                      active community support. In this article, we will explore
-                      React Introduction, what React is, its key features,
-                      benefits, and why it’s a great choice for modern web
-                      development.
-                    </div>
-                  )}
+                    <>
+                      <div className=" rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                        {englishQuestion?.question}
+                      </div>
 
-                  <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                    React, also known as ReactJS, is a popular and powerful
-                    JavaScript library used for building dynamic and interactive
-                    user interfacespopularity due to its efficient rendering
-                    techniques, reusable components, and active community
-                    support. In this article, we will explore React
-                    Introduction, what React is, its key features, benefits, and
-                    why it’s a great choice for modern web development.
-                  </div>
-                </div>
-                {/* options */}
-                <div className=" p-4 space-y-4">
-                  <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                    options
-                  </p>
-                  <div className="flex flex-row items-center  space-x-3">
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q1"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        a- option
-                        <MdStar className="text-orange-400  h-3 w-3 " />
-                      </label>
-                      <input
-                        type="text"
-                        name="q1"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q2"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        b- option
-                        <MdStar className="text-orange-400 h-3 w-3" />
-                      </label>
-                      <input
-                        type="text"
-                        name="q2"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q3"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        c- option
-                        <MdStar className="text-orange-400 h-3 w-3" />
-                      </label>
-                      <input
-                        type="text"
-                        name="q3"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q4"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        d- option
-                        <MdStar className="text-orange-400 h-3 w-3" />
-                      </label>
-                      <input
-                        type="text"
-                        name="q4"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* answer */}
-                <div className="p-4 space-y-4">
-                  <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                    answer
-                  </p>
-                  <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
-                    <div className="flex  items-center justify-start space-x-2">
-                      <input
-                        id="horizontal-list-radio-license"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600  dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-license"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option a
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="horizontal-list-radio-id"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-id"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option b
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="horizontal-list-radio-military"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border border-orange-600 dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-military"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option c
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="horizontal-list-radio-military"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 focus:border-none dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-military"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option d
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                {/* solution */}
-                <div className="space-y-2">
-                  <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                    solution
-                  </p>
-                  <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                    React, also known as ReactJS, is a popular and powerful
-                    JavaScript library used for building dynamic and interactive
-                    user interfaces, primarily for single-page applications
-                    (SPAs). It was developed and maintained by Facebook and has
-                    gained significant popularity due to its efficient rendering
-                    techniques, reusable components, and active community
-                    support. In this article, we will explore React
-                    Introduction, what React is, its key features, benefits, and
-                    why it’s a great choice for modern web development.
-                  </div>
+                      <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                        React, also known as ReactJS, is a popular and powerful
+                        JavaScript library used for building dynamic and
+                        interactive user interfacespopularity due to its
+                        efficient rendering techniques, reusable components, and
+                        active community support. In this article, we will
+                        explore React Introduction, what React is, its key
+                        features, benefits, and why it’s a great choice for
+                        modern web development.
+                      </div>
+                      {/* options */}
+                      <div className=" p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          options
+                        </p>
+                        <div className="flex flex-row items-center  space-x-3">
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q1"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              a- option
+                              <MdStar className="text-orange-400  h-3 w-3 " />
+                            </label>
+                            <input
+                              type="text"
+                              name="q1"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q2"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              b- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q2"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q3"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              c- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q3"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q4"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              d- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q4"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* answer */}
+                      <div className="p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          answer
+                        </p>
+
+                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
+                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
+                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio1"
+                                  type="radio"
+                                  value="A"
+                                  checked={options.A}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio1"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option A
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio2"
+                                  type="radio"
+                                  value="B"
+                                  checked={options.B}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio2"
+                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option B
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio3"
+                                  type="radio"
+                                  value="C"
+                                  checked={options.C}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio3"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option C
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio4"
+                                  type="radio"
+                                  value="D"
+                                  checked={options.D}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio4"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option D
+                                </label>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      {/* solution */}
+                      <div className="space-y-2">
+                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
+                          solution
+                        </p>
+                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                         {englishQuestion.solution}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -495,6 +876,179 @@ function EditQuestion() {
                           and interactive user interfaces.
                         </div>
                       </div>
+                      {/* options */}
+                      <div className=" p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          options
+                        </p>
+                        <div className="flex flex-row items-center  space-x-3">
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q1"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              a- option
+                              <MdStar className="text-orange-400  h-3 w-3 " />
+                            </label>
+                            <input
+                              type="text"
+                              name="q1"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q2"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              b- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q2"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q3"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              c- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q3"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q4"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              d- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q4"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* answer */}
+                      <div className="p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          answer
+                        </p>
+
+                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
+                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
+                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio1"
+                                  type="radio"
+                                  value="A"
+                                  checked={options.A}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio1"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option A
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio2"
+                                  type="radio"
+                                  value="B"
+                                  checked={options.B}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio2"
+                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option B
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio3"
+                                  type="radio"
+                                  value="C"
+                                  checked={options.C}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio3"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option C
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio4"
+                                  type="radio"
+                                  value="D"
+                                  checked={options.D}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio4"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option D
+                                </label>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      {/* solution */}
+                      <div className="space-y-2">
+                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
+                          solution
+                        </p>
+                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                          React, also known as ReactJS, is a popular and
+                          powerful JavaScript library used for building dynamic
+                          and interactive user interfaces, primarily for
+                          single-page applications (SPAs). It was developed and
+                          maintained by Facebook and has gained significant
+                          popularity due to its efficient rendering techniques,
+                          reusable components, and active community support. In
+                          this article, we will explore React Introduction, what
+                          React is, its key features, benefits, and why it’s a
+                          great choice for modern web development.
+                        </div>
+                      </div>
                     </div>
                   ) : type === "Statement" ? (
                     <div className="duration-300 space-y-2">
@@ -549,187 +1103,361 @@ function EditQuestion() {
                           and interactive user interfaces.
                         </div>
                       </div>
+                      {/* options */}
+                      <div className=" p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          options
+                        </p>
+                        <div className="flex flex-row items-center  space-x-3">
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q1"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              a- option
+                              <MdStar className="text-orange-400  h-3 w-3 " />
+                            </label>
+                            <input
+                              type="text"
+                              name="q1"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q2"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              b- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q2"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q3"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              c- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q3"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q4"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              d- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q4"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* answer */}
+                      <div className="p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          answer
+                        </p>
+
+                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
+                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
+                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio1"
+                                  type="radio"
+                                  value="A"
+                                  checked={options.A}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio1"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option A
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio2"
+                                  type="radio"
+                                  value="B"
+                                  checked={options.B}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio2"
+                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option B
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio3"
+                                  type="radio"
+                                  value="C"
+                                  checked={options.C}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio3"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option C
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio4"
+                                  type="radio"
+                                  value="D"
+                                  checked={options.D}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio4"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option D
+                                </label>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      {/* solution */}
+                      <div className="space-y-2">
+                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
+                          solution
+                        </p>
+                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                          React, also known as ReactJS, is a popular and
+                          powerful JavaScript library used for building dynamic
+                          and interactive user interfaces, primarily for
+                          single-page applications (SPAs). It was developed and
+                          maintained by Facebook and has gained significant
+                          popularity due to its efficient rendering techniques,
+                          reusable components, and active community support. In
+                          this article, we will explore React Introduction, what
+                          React is, its key features, benefits, and why it’s a
+                          great choice for modern web development.
+                        </div>
+                      </div>
                     </div>
                   ) : (
-                    <div className=" rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                      React, also known as ReactJS, is a popular and powerful
-                      JavaScript library used for building dynamic and
-                      interactive user interfaces, primarily for single-page
-                      applications (SPAs). It was developed and maintained by
-                      Facebook and has gained significant popularity due to its
-                      efficient rendering techniques, reusable components, and
-                      active community support. In this article, we will explore
-                      React Introduction, what React is, its key features,
-                      benefits, and why it’s a great choice for modern web
-                      development.
-                    </div>
+                    <>
+                      <div className=" rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                        {hindiQuestion?.question}
+                      </div>
+                      <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                        React, also known as ReactJS, is a popular and powerful
+                        JavaScript library used for building dynamic and
+                        interactive user interfacespopularity due to its
+                        efficient rendering techniques, reusable components, and
+                        active community support. In this article, we will
+                        explore React Introduction, what React is, its key
+                        features, benefits, and why it’s a great choice for
+                        modern web development.
+                      </div>
+                      {/* options */}
+                      <div className=" p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          options
+                        </p>
+                        <div className="flex flex-row items-center  space-x-3">
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q1"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              a- option
+                              <MdStar className="text-orange-400  h-3 w-3 " />
+                            </label>
+                            <input
+                              type="text"
+                              name="q1"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q2"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              b- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q2"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q3"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              c- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q3"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                          <div className="w-1/4">
+                            <label
+                              htmlFor="q4"
+                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                            >
+                              d- option
+                              <MdStar className="text-orange-400 h-3 w-3" />
+                            </label>
+                            <input
+                              type="text"
+                              name="q4"
+                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                              placeholder="Enter Question"
+                              maxLength="19"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* answer */}
+                      <div className="p-4 space-y-4">
+                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                          answer
+                        </p>
+
+                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
+                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
+                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio1"
+                                  type="radio"
+                                  value="A"
+                                  checked={options.A}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio1"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option A
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio2"
+                                  type="radio"
+                                  value="B"
+                                  checked={options.B}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio2"
+                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option B
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio3"
+                                  type="radio"
+                                  value="C"
+                                  checked={options.C}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio3"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option C
+                                </label>
+                              </div>
+                            </li>
+                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id="radio4"
+                                  type="radio"
+                                  value="D"
+                                  checked={options.D}
+                                  onChange={handleCheck}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                />
+                                <label
+                                  htmlFor="radio4"
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Option D
+                                </label>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      {/* solution */}
+                      <div className="space-y-2">
+                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
+                          solution
+                        </p>
+                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                         {hindiQuestion.solution}
+                        </div>
+                      </div>
+                    </>
                   )}
-                  <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                    React, also known as ReactJS, is a popular and powerful
-                    JavaScript library used for building dynamic and interactive
-                    user interfacespopularity due to its efficient rendering
-                    techniques, reusable components, and active community
-                    support. In this article, we will explore React
-                    Introduction, what React is, its key features, benefits, and
-                    why it’s a great choice for modern web development.
-                  </div>
-                </div>
-                {/* options */}
-                <div className=" p-4 space-y-4">
-                  <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                    options
-                  </p>
-                  <div className="flex flex-row items-center  space-x-3">
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q1"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        a- option
-                        <MdStar className="text-orange-400  h-3 w-3 " />
-                      </label>
-                      <input
-                        type="text"
-                        name="q1"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q2"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        b- option
-                        <MdStar className="text-orange-400 h-3 w-3" />
-                      </label>
-                      <input
-                        type="text"
-                        name="q2"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q3"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        c- option
-                        <MdStar className="text-orange-400 h-3 w-3" />
-                      </label>
-                      <input
-                        type="text"
-                        name="q3"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q4"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        d- option
-                        <MdStar className="text-orange-400 h-3 w-3" />
-                      </label>
-                      <input
-                        type="text"
-                        name="q4"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* answer */}
-                <div className=" p-4 space-y-4">
-                  <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                    answer
-                  </p>
-                  <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
-                    <div className="flex  items-center justify-start space-x-2">
-                      <input
-                        id="horizontal-list-radio-license"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600  dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-license"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option a
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="horizontal-list-radio-id"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-id"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option b
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="horizontal-list-radio-military"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border border-orange-600 dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-military"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option c
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="horizontal-list-radio-military"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 focus:border-none dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-military"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option d
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                {/* solution */}
-                <div className="space-y-2">
-                  <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                    solution
-                  </p>
-                  <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                    React, also known as ReactJS, is a popular and powerful
-                    JavaScript library used for building dynamic and interactive
-                    user interfaces, primarily for single-page applications
-                    (SPAs). It was developed and maintained by Facebook and has
-                    gained significant popularity due to its efficient rendering
-                    techniques, reusable components, and active community
-                    support. In this article, we will explore React
-                    Introduction, what React is, its key features, benefits, and
-                    why it’s a great choice for modern web development.
-                  </div>
                 </div>
               </div>
             </div>
