@@ -21,8 +21,8 @@ export default function AddClasses({ confirm, setConfirm }) {
     name: "",
     referralCode: "",
     image: "",
-    email:"",
-    password:""
+    email: "",
+    password: "",
   });
 
   function handleChange(e) {
@@ -37,7 +37,7 @@ export default function AddClasses({ confirm, setConfirm }) {
 
   const addNewClass = async ({ onClose }) => {
     try {
-      if (!input.name || !input.image || !input.referralCode) {
+      if (!input.name || !input.email || !input.password || !input.referralCode) {
         toast.warning("Fill up empty space");
       } else {
         let data = JSON.stringify(input);
@@ -59,15 +59,13 @@ export default function AddClasses({ confirm, setConfirm }) {
           .then((response) => {
             if (response.status === 200) {
               console.log("success", response.data);
-              if (onClose) {
-                onClose();
-              }
               navigate("/classes");
-              toast.success("Class add");
-            } else {
-              console.log("failed", response);
               toast.success(response.message);
 
+              onClose(response.data.message);
+            } else {
+              console.log("failed", response);
+              toast.error(response.message);
             }
           })
           .catch((error) => {

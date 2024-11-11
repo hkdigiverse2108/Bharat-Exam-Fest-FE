@@ -5,7 +5,6 @@ import { FaPlus } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
 import AddClasses from "./AddClasses";
 import Pagination from "../Pagination/Pagination";
-import { FaFilePdf } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -20,6 +19,8 @@ export default function ClassesHomePage() {
 
   const itemsPerPage = 5;
   const Totalpage = Math.ceil(data.length / itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
 
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
@@ -33,12 +34,17 @@ export default function ClassesHomePage() {
     setConfirm(!confirm);
   }
 
+  const handleSuccess = (message) => {
+    console.log("API call was successful:", message);
+    handleNavigate();
+  };
+
   const deleteSubject = async (value) => {
     try {
       let config = {
         method: "delete",
         maxBodyLength: Infinity,
-        url: `https://api-bef.hkdigiverse.com/contest/delete/${value}`,
+        url: `https://api-bef.hkdigiverse.com//contest/delete/${value}`,
         headers: {
           Authorization: accessToken,
           "Content-Type": "application/json",
@@ -48,6 +54,8 @@ export default function ClassesHomePage() {
       axios
         .request(config)
         .then((response) => {
+          console.log(response.data);
+
           toast.success("Subject delete");
           fetchSubjects();
         })
@@ -80,6 +88,10 @@ export default function ClassesHomePage() {
   };
 
   useEffect(() => {
+    setDataToDisplay(data.slice(start, end));
+  }, [currentPage]);
+
+  useEffect(() => {
     fetchSubjects();
   }, []);
 
@@ -91,7 +103,7 @@ export default function ClassesHomePage() {
             classes
           </p>
           <button
-            onClick={() => handleNavigate()}
+            onClick={handleNavigate}
             className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
           >
             <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
@@ -153,7 +165,7 @@ export default function ClassesHomePage() {
                 <tr key={index}>
                   <td className="p-4 border-b border-blue-gray-50">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                      {index + 1}
+                      {start + index + 1}
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
@@ -186,7 +198,7 @@ export default function ClassesHomePage() {
                   </td>
                   <td className="p-4 border-b border-blue-gray-50">
                     <button
-                      onClick={deleteSubject}
+                      onClick={() => deleteSubject(value._id)}
                       className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg  align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
                       type="button"
                     >
@@ -209,7 +221,7 @@ export default function ClassesHomePage() {
         />
       </section>
       <div className={`${confirm === true ? "block" : "hidden"}`}>
-        <AddClasses confirm={confirm} onClose={handleNavigate} />
+        <AddClasses confirm={confirm} onClose={handleSuccess} />
       </div>
     </>
   );
