@@ -1,74 +1,124 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MultiSelection from "../Ui/MultiSelection";
 import { MdStar } from "react-icons/md";
 import { VscSaveAs } from "react-icons/vsc";
 import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SingleSelect from "../Ui/SingleSelect";
 
 function AddQuestion() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { state } = location;
+
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
   const [type, setType] = useState("Normal");
-  const [option, setOption] = useState({
-    A: false,
-    B: false,
-    C: false,
-    D: false,
+  const [options, setOptions] = useState({
+    english: { A: false, B: false, C: false, D: false },
+    hindi: { A: false, B: false, C: false, D: false },
   });
+  const optionsArray1 = Object.keys(options.english).map((key) => ({
+    label: `Option ${key}`,
+    value: key,
+    checked: options.english[key],
+  }));
+  const optionsArray2 = Object.keys(options.hindi).map((key) => ({
+    label: `Option ${key}`,
+    value: key,
+    checked: options.hindi[key],
+  }));
 
   const [addQuestion, setAddQuestion] = useState({
-    type: type,
+    subjectId: state._id,
+    classesId: "",
+    subtopicId: "",
+    type: "normal",
     englishQuestion: {
-      question: "string",
+      question: "",
       options: {
-        A: "string",
-        B: "string",
-        C: "string",
-        D: "string",
+        A: "",
+        B: "",
+        C: "",
+        D: "",
       },
-      answer: "string",
-      solution: "string",
+      answer: "",
+      solution: "",
     },
     hindiQuestion: {
-      question: "string",
+      question: "",
       options: {
-        A: "string",
-        B: "string",
-        C: "string",
-        D: "string",
+        A: "",
+        B: "",
+        C: "",
+        D: "",
       },
-      answer: "string",
-      solution: "string",
+      answer: "",
+      solution: "",
     },
   });
 
-  // console.log(addQuestion);
+  const handleCheck = (language, event) => {
+    const selectedValue = event.target.value;
 
-  const handleCheck = (event) => {
-    const { value } = event.target;
-
-    setOption({
-      A: false,
-      B: false,
-      C: false,
-      D: false,
-      [value]: true,
+    setOptions((prev) => {
+      const newOptions = { ...prev };
+      Object.keys(newOptions[language]).forEach((key) => {
+        newOptions[language][key] = key === selectedValue;
+      });
+      return newOptions;
     });
+  };
+
+  useEffect(() => {
+    console.log(addQuestion);
+  }, [addQuestion]);
+
+  const [subtopics, setSubtopics] = useState([]);
+  const [classNames, setClassNames] = useState([]);
+  const [subTopicName, setSubTopicName] = useState("");
+  const [selectedSubtopic, setSelectedSubtopic] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+
+  const handleClassChange = (event) => {
+    const { value } = event.target;
+    const selectedClass = classNames.find(
+      (classItem) => classItem.name === value
+    );
+
+    const selectedClassName = selectedClass ? selectedClass.name : "";
+    setSelectedSubtopic(selectedClass?.name);
+    setAddQuestion((prev) => ({
+      ...prev,
+      classesId: selectedClass?._id,
+    }));
+  };
+
+  const handleSubtopicChange = (event) => {
+    const { value } = event.target;
+    const selectedSubtopic = subtopics.find(
+      (subtopic) => subtopic.name === value
+    );
+    const selectedSubtopicName = selectedSubtopic ? selectedSubtopic.name : "";
+    setSubTopicName(selectedSubtopic?.name);
+    setAddQuestion((prev) => ({
+      ...prev,
+      subtopicId: selectedSubtopic?._id,
+    }));
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
 
     if (name.startsWith("englishQuestion.")) {
-      const fieldName = name.split(".")[1]; // Get the field name after 'englishQuestion.'
+      const fieldName = name.split(".")[1];
       if (fieldName === "options") {
-        const optionKey = name.split(".")[2]; // Get the option key (A, B, C, D)
+        const optionKey = name.split(".")[2];
         setAddQuestion((prev) => ({
           ...prev,
           englishQuestion: {
@@ -89,9 +139,9 @@ function AddQuestion() {
         }));
       }
     } else if (name.startsWith("hindiQuestion.")) {
-      const fieldName = name.split(".")[1]; // Get the field name after 'hindiQuestion.'
+      const fieldName = name.split(".")[1];
       if (fieldName === "options") {
-        const optionKey = name.split(".")[2]; // Get the option key (A, B, C, D)
+        const optionKey = name.split(".")[2];
         setAddQuestion((prev) => ({
           ...prev,
           hindiQuestion: {
@@ -137,43 +187,101 @@ function AddQuestion() {
 
   const addNewQuestion = async () => {
     try {
-      if (!addQuestion.type) {
-        toast.warning("Fill up empty space");
-      } else {
-        let data = JSON.stringify(addQuestion);
-        console.log(addQuestion);
+      for (const key in addQuestion) {
+        if (typeof addQuestion[key] === "object" && addQuestion[key] === "") {
+          toast.warning(`${key} empty `);
+        } else {
+          let data = JSON.stringify(addQuestion);
+          console.log(addQuestion);
 
-        let config = {
-          method: "post",
-          maxBodyLength: Infinity,
-          url: "https://api-bef.hkdigiverse.com/question/add",
-          headers: {
-            Authorization: accessToken,
-            "Content-Type": "application/json",
-          },
-          data: data,
-        };
+          let config = {
+            method: "post",
+            maxBodyLength: Infinity,
+            url: "https://api-bef.hkdigiverse.com/question/add",
+            headers: {
+              Authorization: accessToken,
+              "Content-Type": "application/json",
+            },
+            data: data,
+          };
 
-        axios
-          .request(config)
-          .then((response) => {
-            if (response.status === 200) {
-              console.log("success", response.data);
-              // navigate("/classes");
-              // toast.success(response.message);
-            } else {
-              console.log("failed", response);
-              // toast.error(response.message);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+          axios
+            .request(config)
+            .then((response) => {
+              if (response.status === 200) {
+                console.log("success", response.data);
+                console.log("msg", response.message);
+                // navigate("/classes");
+                // toast.success(response.message);
+              } else {
+                console.log("failed", response);
+                console.log("msg", response.message);
+
+                // toast.error(response.message);
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
       }
     } catch (err) {
       console.error(err.message);
     }
   };
+
+  const fetchClassname = async () => {
+    try {
+      const response = await axios.get(
+        "https://api-bef.hkdigiverse.com/question/all?page=1&limit=10",
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
+          },
+        }
+      );
+      // console.log(response.data.data.question_data);
+
+      const classes = response.data.data.question_data.map(
+        (question) => question.classes
+      );
+
+      const uniqueData = classes.reduce((acc, current) => {
+        const exist = acc.find((item) => item.name === current.name);
+        if (!exist) {
+          acc.push(current);
+        }
+        return acc;
+      }, []);
+      setClassNames(uniqueData);
+      //   console.log(uniqueData);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+  const fetchSubtopics = async () => {
+    try {
+      const response = await axios.get(
+        "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
+          },
+        }
+      );
+      // console.log(response.data.data.sub_topic_data);
+      setSubtopics(response.data.data.sub_topic_data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchClassname();
+    fetchSubtopics();
+  }, []);
 
   return (
     <>
@@ -188,8 +296,22 @@ function AddQuestion() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2  lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
-            <MultiSelection />
+            <SingleSelect
+              label="Class"
+              value={selectedSubtopic}
+              onChange={handleClassChange}
+              options={classNames}
+            />
+            {/* <MultiSelection onChange={handleSelectionChange} /> */}
+            <SingleSelect
+              label="Subtopics"
+              value={subTopicName}
+              onChange={handleSubtopicChange}
+              options={subtopics}
+            />
+         
           </div>
+          {/* question_type */}
           <div className="p-4 md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
             <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
               Question Type :
@@ -200,7 +322,7 @@ function AddQuestion() {
                 type="radio"
                 name="list-radio"
                 value="Normal"
-                onChange={(e) => handleChange(e)}
+                onChange={(e) => setType(e.target.value)}
                 checked={type === "Normal"}
                 className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600  dark:bg-gray-600 dark:border-gray-500"
               />
@@ -217,7 +339,7 @@ function AddQuestion() {
                 type="radio"
                 name="list-radio"
                 value="Statement"
-                onChange={(e) => handleChange(e)}
+                onChange={(e) => setType(e.target.value)}
                 checked={type === "Statement"}
                 className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
               />
@@ -234,7 +356,7 @@ function AddQuestion() {
                 type="radio"
                 name="list-radio"
                 value="Pair"
-                onChange={(e) => handleChange(e)}
+                onChange={(e) => setType(e.target.value)}
                 checked={type === "Pair"}
                 className="w-4 h-4 text-orange-600 bg-orange-600 border border-orange-600 dark:bg-gray-600 dark:border-gray-500"
               />
@@ -405,7 +527,6 @@ function AddQuestion() {
                         <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
                           answer
                         </p>
-
                         <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
                           <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
                             <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
@@ -414,8 +535,8 @@ function AddQuestion() {
                                   id="radio1"
                                   type="radio"
                                   value="A"
-                                  checked={option.A}
-                                  onChange={handleCheck}
+                                  checked={options.A}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -432,8 +553,8 @@ function AddQuestion() {
                                   id="radio2"
                                   type="radio"
                                   value="B"
-                                  checked={option.B}
-                                  onChange={handleCheck}
+                                  checked={options.B}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -450,8 +571,8 @@ function AddQuestion() {
                                   id="radio3"
                                   type="radio"
                                   value="C"
-                                  checked={option.C}
-                                  onChange={handleCheck}
+                                  checked={options.C}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -468,8 +589,8 @@ function AddQuestion() {
                                   id="radio4"
                                   type="radio"
                                   value="D"
-                                  checked={option.D}
-                                  onChange={handleCheck}
+                                  checked={options.D}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -640,8 +761,8 @@ function AddQuestion() {
                                   id="radio1"
                                   type="radio"
                                   value="A"
-                                  checked={option.A}
-                                  onChange={handleCheck}
+                                  checked={options.A}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -658,8 +779,8 @@ function AddQuestion() {
                                   id="radio2"
                                   type="radio"
                                   value="B"
-                                  checked={option.B}
-                                  onChange={handleCheck}
+                                  checked={options.B}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -676,8 +797,8 @@ function AddQuestion() {
                                   id="radio3"
                                   type="radio"
                                   value="C"
-                                  checked={option.C}
-                                  onChange={handleCheck}
+                                  checked={options.C}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -694,8 +815,8 @@ function AddQuestion() {
                                   id="radio4"
                                   type="radio"
                                   value="D"
-                                  checked={option.D}
-                                  onChange={handleCheck}
+                                  checked={options.D}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -730,6 +851,7 @@ function AddQuestion() {
                     </div>
                   ) : (
                     <>
+                      {/* value input */}
                       <input
                         className=" border-2 pl-4 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
                         id="question"
@@ -748,7 +870,7 @@ function AddQuestion() {
                           {["A", "B", "C", "D"].map((option) => (
                             <div key={option} className="w-1/4">
                               <label className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white">
-                                {option}- option
+                                Option - {option}
                                 <MdStar className="text-orange-400 h-3 w-3" />
                               </label>
                               <input
@@ -759,7 +881,7 @@ function AddQuestion() {
                                 }
                                 onChange={handleChange}
                                 className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                placeholder={`Enter Option ${option}`}
+                                placeholder={`Option ${option}`}
                               />
                             </div>
                           ))}
@@ -770,40 +892,36 @@ function AddQuestion() {
                         <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
                           answer
                         </p>
+
                         <div className="flex flex-row items-center  space-x-3">
-                          {["A", "B", "C", "D"].map((option) => (
+                          {optionsArray1.map((option, index) => (
                             <div
-                              key={option}
+                              key={index}
                               className="flex flex-row items-center justify-start gap-x-6 text-sm font-medium text-gray-900 rounded-t-lg dark:border-gray-600"
                             >
                               <div className="flex items-center ps-3">
                                 <input
-                                  id={`radio${option}`}
+                                  id={option.value}
                                   type="radio"
-                                  value={option}
-                                  checked={
-                                    addQuestion.englishQuestion.answer ===
-                                    option
-                                  }
-                                  onChange={(e) =>
+                                  value={option.value}
+                                  checked={option.checked}
+                                  onChange={(e) => {
                                     setAddQuestion((prev) => ({
                                       ...prev,
                                       englishQuestion: {
                                         ...prev.englishQuestion,
-                                        answer:
-                                          addQuestion.englishQuestion.options[
-                                            option
-                                          ],
+                                        answer: option.value,
                                       },
-                                    }))
-                                  }
-                                  className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                                    }));
+                                    handleCheck("english", e);
+                                  }}
+                                  className="w-4 h-4 text-blue-600 border-gray-300 "
                                 />
                                 <label
-                                  htmlFor={`radio${option}`}
+                                  htmlFor={option.value}
                                   className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                                 >
-                                  Option {option}
+                                  {option.label}
                                 </label>
                               </div>
                             </div>
@@ -819,22 +937,18 @@ function AddQuestion() {
                           id="message"
                           rows="4"
                           name={addQuestion.englishQuestion.solution}
-                          onChange={handleChange}
-                          className="block rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner p-2.5 w-full text-md bg-gray-50  border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          onChange={(e) =>
+                            setAddQuestion((prev) => ({
+                              ...prev,
+                              englishQuestion: {
+                                ...prev.englishQuestion,
+                                solution: e.target.value,
+                              },
+                            }))
+                          }
+                          className="block rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner p-2.5 w-full text-md bg-gray-50  border-gray-300 focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                           placeholder="Your solution..."
                         ></textarea>
-                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces, primarily for
-                          single-page applications (SPAs). It was developed and
-                          maintained by Facebook and has gained significant
-                          popularity due to its efficient rendering techniques,
-                          reusable components, and active community support. In
-                          this article, we will explore React Introduction, what
-                          React is, its key features, benefits, and why it’s a
-                          great choice for modern web development.
-                        </div>
                       </div>
                     </>
                   )}
@@ -881,7 +995,7 @@ function AddQuestion() {
                       </div>
                       <div className="">
                         <input
-                          class=" border-2 pl-10 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+                          className=" border-2 pl-10 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
                           id="username"
                           type="text"
                           placeholder="Add"
@@ -1006,8 +1120,8 @@ function AddQuestion() {
                                   id="radio1"
                                   type="radio"
                                   value="A"
-                                  checked={option.A}
-                                  onChange={handleCheck}
+                                  checked={options.A}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -1024,8 +1138,8 @@ function AddQuestion() {
                                   id="radio2"
                                   type="radio"
                                   value="B"
-                                  checked={option.B}
-                                  onChange={handleCheck}
+                                  checked={options.B}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -1042,8 +1156,8 @@ function AddQuestion() {
                                   id="radio3"
                                   type="radio"
                                   value="C"
-                                  checked={option.C}
-                                  onChange={handleCheck}
+                                  checked={options.C}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -1060,8 +1174,8 @@ function AddQuestion() {
                                   id="radio4"
                                   type="radio"
                                   value="D"
-                                  checked={option.D}
-                                  onChange={handleCheck}
+                                  checked={options.D}
+                                  // onChange={handleCheck}
                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
                                 />
                                 <label
@@ -1123,7 +1237,7 @@ function AddQuestion() {
                         </button>
                       </div>
                       <input
-                        class=" border-2 pl-10 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+                        className=" border-2 pl-10 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
                         id="username"
                         type="text"
                         placeholder="Add"
@@ -1188,15 +1302,12 @@ function AddQuestion() {
                                   id={`radio${option}`}
                                   type="radio"
                                   value={option}
-                                  checked={
-                                    addQuestion.englishQuestion.answer ===
-                                    option
-                                  }
+                                  checked={options[option] === option}
                                   onChange={(e) =>
                                     setAddQuestion((prev) => ({
                                       ...prev,
-                                      englishQuestion: {
-                                        ...prev.englishQuestion,
+                                      hindiQuestion: {
+                                        ...prev.hindiQuestion,
                                         answer: e.target.value,
                                       },
                                     }))
@@ -1213,82 +1324,6 @@ function AddQuestion() {
                             </div>
                           ))}
                         </div>
-                        {/* <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
-                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio1"
-                                  type="radio"
-                                  value="A"
-                                  checked={option.A}
-                                  onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio1"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option A
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio2"
-                                  type="radio"
-                                  value="B"
-                                  checked={option.B}
-                                  onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio2"
-                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option B
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio3"
-                                  type="radio"
-                                  value="C"
-                                  checked={option.C}
-                                  onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio3"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option C
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio4"
-                                  type="radio"
-                                  value="D"
-                                  checked={option.D}
-                                  onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio4"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option D
-                                </label>
-                              </div>
-                            </li>
-                          </ul>
-                        </div> */}
                       </div>
                       {/* solution */}
                       <div className="space-y-2">
@@ -1311,12 +1346,13 @@ function AddQuestion() {
                     </div>
                   ) : (
                     <>
+                      {/* value input */}
                       <input
                         className=" border-2 pl-4 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
                         id="question"
                         type="text"
                         placeholder="Add question"
-                        name="englishQuestion.question"
+                        name="hindiQuestion.question"
                         onChange={handleChange}
                       />
                       {/* options */}
@@ -1328,7 +1364,7 @@ function AddQuestion() {
                           {["A", "B", "C", "D"].map((option) => (
                             <div className="w-1/4" key={option}>
                               <label className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white">
-                                {option}- option
+                                Option - {option}
                                 <MdStar className="text-orange-400 h-3 w-3" />
                               </label>
                               <input
@@ -1339,7 +1375,7 @@ function AddQuestion() {
                                 }
                                 onChange={handleChange}
                                 className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                placeholder="Enter Option"
+                                placeholder={`Option ${option}`}
                               />
                             </div>
                           ))}
@@ -1352,41 +1388,38 @@ function AddQuestion() {
                         </p>
 
                         <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
-                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-                            {["A", "B", " C", "D"].map((option) => (
-                              <li
-                                key={option}
-                                className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-                              >
-                                <div className="flex items-center ps-3">
-                                  <input
-                                    id={`hindiRadio${option}`}
-                                    type="radio"
-                                    value={option}
-                                    checked={
-                                      addQuestion.hindiQuestion.answer === option
-                                    }
-                                    onChange={(e) =>
-                                      setAddQuestion((prev) => ({
-                                        ...prev,
-                                        hindiQuestion: {
-                                          ...prev.hindiQuestion,
-                                          answer: addQuestion.englishQuestion.options[option],
-                                        },
-                                      }))
-                                    }
-                                    className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                  />
-                                  <label
-                                    htmlFor={`hindiRadio${option}`}
-                                    className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                  >
-                                    Option {option}
-                                  </label>
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
+                          {optionsArray2.map((option, index) => (
+                            <div
+                              key={index}
+                              className="flex flex-row items-center justify-start gap-x-6 text-sm font-medium text-gray-900 rounded-t-lg dark:border-gray-600"
+                            >
+                              <div className="flex items-center ps-3">
+                                <input
+                                  id={option.value}
+                                  type="radio"
+                                  value={option.value}
+                                  checked={option.checked}
+                                  onChange={(e) => {
+                                    setAddQuestion((prev) => ({
+                                      ...prev,
+                                      hindiQuestion: {
+                                        ...prev.hindiQuestion,
+                                        answer: option.value,
+                                      },
+                                    }));
+                                    handleCheck("hindi", e);
+                                  }}
+                                  className="w-4 h-4 text-blue-600 border-gray-300 "
+                                />
+                                <label
+                                  htmlFor={option.value}
+                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  {option.label}
+                                </label>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                       {/* solution */}
@@ -1394,175 +1427,25 @@ function AddQuestion() {
                         <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
                           solution
                         </p>
-                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces, primarily for
-                          single-page applications (SPAs). It was developed and
-                          maintained by Facebook and has gained significant
-                          popularity due to its efficient rendering techniques,
-                          reusable components, and active community support. In
-                          this article, we will explore React Introduction, what
-                          React is, its key features, benefits, and why it’s a
-                          great choice for modern web development.
-                        </div>
+                        <textarea
+                          id="message"
+                          rows="4"
+                          name={addQuestion.hindiQuestion.solution}
+                          onChange={(e) =>
+                            setAddQuestion((prev) => ({
+                              ...prev,
+                              hindiQuestion: {
+                                ...prev.hindiQuestion,
+                                solution: e.target.value,
+                              },
+                            }))
+                          }
+                          className="block rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner p-2.5 w-full text-md bg-gray-50  border-gray-300 focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          placeholder="Your solution..."
+                        ></textarea>
                       </div>
                     </>
                   )}
-                </div>
-                <div className=" p-4 space-y-4">
-                  <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                    options
-                  </p>
-                  <div className="flex flex-row items-center  space-x-3">
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q1"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        a- option
-                        <MdStar className="text-orange-400  h-3 w-3 " />
-                      </label>
-                      <input
-                        type="text"
-                        name="q1"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q2"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        b- option
-                        <MdStar className="text-orange-400 h-3 w-3" />
-                      </label>
-                      <input
-                        type="text"
-                        name="q2"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q3"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        c- option
-                        <MdStar className="text-orange-400 h-3 w-3" />
-                      </label>
-                      <input
-                        type="text"
-                        name="q3"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                    <div className="w-1/4">
-                      <label
-                        htmlFor="q4"
-                        className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        d- option
-                        <MdStar className="text-orange-400 h-3 w-3" />
-                      </label>
-                      <input
-                        type="text"
-                        name="q4"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Question"
-                        maxLength="19"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className=" p-4 space-y-4">
-                  <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                    answer
-                  </p>
-                  <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
-                    <div className="flex  items-center justify-start space-x-2">
-                      <input
-                        id="horizontal-list-radio-license"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600  dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-license"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option a
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="horizontal-list-radio-id"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-id"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option b
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="horizontal-list-radio-military"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border border-orange-600 dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-military"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option c
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="horizontal-list-radio-military"
-                        type="radio"
-                        value=""
-                        name="list-radio"
-                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 focus:border-none dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor="horizontal-list-radio-military"
-                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                      >
-                        option d
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                    solution
-                  </p>
-                  <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                    React, also known as ReactJS, is a popular and powerful
-                    JavaScript library used for building dynamic and interactive
-                    user interfaces, primarily for single-page applications
-                    (SPAs). It was developed and maintained by Facebook and has
-                    gained significant popularity due to its efficient rendering
-                    techniques, reusable components, and active community
-                    support. In this article, we will explore React
-                    Introduction, what React is, its key features, benefits, and
-                    why it’s a great choice for modern web development.
-                  </div>
                 </div>
               </div>
             </div>

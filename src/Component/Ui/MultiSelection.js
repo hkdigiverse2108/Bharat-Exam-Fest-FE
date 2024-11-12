@@ -28,9 +28,9 @@ export default function MultipleSelect({ onChange }) {
   );
   const handleChange = (event) => {
     const { value } = event.target;
-    console.log(value);
     
     const dataId = value.map((res) => res?._id);
+    console.log(dataId);
     setSelectedNames(value);
     onChange(dataId);
     // console.log(value);
