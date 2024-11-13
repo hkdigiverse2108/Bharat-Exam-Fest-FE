@@ -17,6 +17,8 @@ function SubjectDetails() {
 
   const [confirm, setConfirm] = useState(false);
   const [filter, setFilter] = useState(false);
+  const [classNames, setClassNames] = useState([]);
+  const [selectedClass, setSelectedClass] = useState([]);
   const [subjectData, setSubjectData] = useState(state);
   const { subject } = subjectData;
   const [itemToDelete, setItemToDelete] = useState(null);
@@ -38,9 +40,16 @@ function SubjectDetails() {
   }
 
   const [selectedNames, setSelectedNames] = useState([]);
-  const handleSelectionChange = (newValues) => {
-    setSelectedNames(newValues);
-    // setInput({ ...input, subTopicIds: newValues });
+  const handleSelectionChange = (e) => {
+    const { value } = e.target;
+    const selectedClass = classNames.find(
+      (classItem) => classItem.name === value
+    );
+    setSelectedClass(value);
+    // setAddQuestion((prev) => ({
+    //   ...prev,
+    //   classesId: selectedClass?._id,
+    // }));
   };
 
   function handleDelete(value) {
@@ -98,7 +107,7 @@ function SubjectDetails() {
 
   useEffect(() => {
     if (questions.length !== 0) {
-      console.log(questions);
+      console.log("Questions", questions);
     }
   }, [questions]);
 
@@ -108,7 +117,7 @@ function SubjectDetails() {
 
   return (
     <>
-      <section className=" font-sans bg-white h-full p-4 rounded-lg border border-slate-300">
+      <section className="bg-white dark:bg-gray-900 p-4 overflow-y-auto rounded-lg border border-slate-300 font-sans">
         <div className="space-y-10 ">
           <div className=" space-y-4">
             <div className="flex items-center 2xl:justify-end xl:justify-end  lg:justify-end md:justify-end sm:justify-center space-x-4">
@@ -138,11 +147,16 @@ function SubjectDetails() {
               </button>
             </div>
             <div className=" space-y-2 flex flex-col items-start w-full">
-              <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
+              <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white uppercase">
                 {state?.subjectName}
               </p>
               <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-2 2xl:grid-cols-4 2xl:gap-6">
-                <MultiSelection onChange={handleSelectionChange} />
+                <MultiSelection
+                  label="Class"
+                  value={selectedClass}
+                  onChange={handleSelectionChange}
+                  options={classNames}
+                />
               </div>
             </div>
           </div>

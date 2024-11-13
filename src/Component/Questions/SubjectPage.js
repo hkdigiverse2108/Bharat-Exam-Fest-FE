@@ -8,11 +8,7 @@ import { useSelector } from "react-redux";
 function SubjectPage() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState([]);
-  const [classNames, setClassNames] = useState([]);
-
   const [error, setError] = useState(null);
-
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
@@ -36,7 +32,7 @@ function SubjectPage() {
           },
         }
       );
-      // console.log(response.data.data);
+      console.log(response.data.data);
 
       setData(response.data.data);
     } catch (err) {

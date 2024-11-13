@@ -29,8 +29,8 @@ export default function SingleSelect({ label, value, onChange, options }) {
           onChange={onChange}
           MenuProps={MenuProps}
         >
-          {options.map((option) => (
-            <MenuItem key={option.name} value={option.name}>
+          {options.map((option,index) => (
+            <MenuItem key={index} value={option.name}>
               {option.name}
             </MenuItem>
           ))}

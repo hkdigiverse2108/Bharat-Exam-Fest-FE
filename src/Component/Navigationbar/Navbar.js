@@ -30,8 +30,8 @@ function Navbar() {
               </NavLink>
             </div>
             {/* navigationtab */}
-            <nav className="flex items-center justify-start duration-300 ease-linear  md:hidden lg:block xl:block 2xl:block ">
-              <ul className=" flex gap-x-1.5">
+            <nav className="hidden text-right lg:block ">
+              <ul className=" flex items-center justify-start duration-300 ease-linear  gap-x-1.5">
                 <li>
                   <NavLink
                     to="/"

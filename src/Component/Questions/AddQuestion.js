@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SingleSelect from "../Ui/SingleSelect";
+import RadioButtons from "../Ui/RadioButtons";
 
 function AddQuestion() {
   const navigate = useNavigate();
@@ -18,7 +19,14 @@ function AddQuestion() {
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
-  const [type, setType] = useState("Normal");
+  const [type, setType] = useState("");
+  const [questionType, setQuestionType] = useState("normal");
+  const [subtopics, setSubtopics] = useState([]);
+  const [classNames, setClassNames] = useState([]);
+
+  const [selectedClass, setSelectedClass] = useState([]);
+  const [subTopicName, setSubTopicName] = useState([]);
+  const [selectedSubtopic, setSelectedSubtopic] = useState([]);
   const [options, setOptions] = useState({
     english: { A: false, B: false, C: false, D: false },
     hindi: { A: false, B: false, C: false, D: false },
@@ -37,8 +45,9 @@ function AddQuestion() {
   const [addQuestion, setAddQuestion] = useState({
     subjectId: state._id,
     classesId: "",
-    subtopicId: "",
-    type: "normal",
+    subtopicIds: [],
+    type: type,
+    questionType: questionType,
     englishQuestion: {
       question: "",
       options: {
@@ -76,23 +85,25 @@ function AddQuestion() {
   };
 
   useEffect(() => {
-    console.log(addQuestion);
+    console.log("add", addQuestion);
   }, [addQuestion]);
 
-  const [subtopics, setSubtopics] = useState([]);
-  const [classNames, setClassNames] = useState([]);
-  const [subTopicName, setSubTopicName] = useState("");
-  const [selectedSubtopic, setSelectedSubtopic] = useState("");
-  const [selectedType, setSelectedType] = useState("");
+  const handleTypeChange = (event) => {
+    const { value } = event.target;
+
+    setType(event.target.value);
+    setAddQuestion((prev) => ({
+      ...prev,
+      type: value,
+    }));
+  };
 
   const handleClassChange = (event) => {
     const { value } = event.target;
     const selectedClass = classNames.find(
       (classItem) => classItem.name === value
     );
-
-    const selectedClassName = selectedClass ? selectedClass.name : "";
-    setSelectedSubtopic(selectedClass?.name);
+    setSelectedClass(value);
     setAddQuestion((prev) => ({
       ...prev,
       classesId: selectedClass?._id,
@@ -101,14 +112,12 @@ function AddQuestion() {
 
   const handleSubtopicChange = (event) => {
     const { value } = event.target;
-    const selectedSubtopic = subtopics.find(
-      (subtopic) => subtopic.name === value
-    );
-    const selectedSubtopicName = selectedSubtopic ? selectedSubtopic.name : "";
-    setSubTopicName(selectedSubtopic?.name);
+    const dataId = value.map((res) => res?._id);
+    setSubTopicName(dataId);
+    setSelectedSubtopic(value);
     setAddQuestion((prev) => ({
       ...prev,
-      subtopicId: selectedSubtopic?._id,
+      subtopicIds: dataId,
     }));
   };
 
@@ -185,45 +194,79 @@ function AddQuestion() {
     setInputValue("");
   }
 
+  const isEmpty = () => {
+    if (
+      !addQuestion.subjectId ||
+      !addQuestion.classesId ||
+      addQuestion.subtopicIds.length === 0 ||
+      !addQuestion.type ||
+      !addQuestion.questionType ||
+      !addQuestion.englishQuestion.question ||
+      !addQuestion.englishQuestion.answer ||
+      !addQuestion.englishQuestion.solution ||
+      !addQuestion.hindiQuestion.question ||
+      !addQuestion.hindiQuestion.answer ||
+      !addQuestion.hindiQuestion.solution
+    ) {
+      return true;
+    }
+
+    const englishOptions = addQuestion.englishQuestion.options;
+    const hindiOptions = addQuestion.hindiQuestion.options;
+
+    if (
+      !englishOptions.A ||
+      !englishOptions.B ||
+      !englishOptions.C ||
+      !englishOptions.D ||
+      !hindiOptions.A ||
+      !hindiOptions.B ||
+      !hindiOptions.C ||
+      !hindiOptions.D
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
   const addNewQuestion = async () => {
     try {
-      for (const key in addQuestion) {
-        if (typeof addQuestion[key] === "object" && addQuestion[key] === "") {
-          toast.warning(`${key} empty `);
-        } else {
-          let data = JSON.stringify(addQuestion);
-          console.log(addQuestion);
+      if (isEmpty()) {
+        toast.warning("Please fill up empty fields.");
+      } else {
+        let data = JSON.stringify(addQuestion);
+        console.log(addQuestion);
 
-          let config = {
-            method: "post",
-            maxBodyLength: Infinity,
-            url: "https://api-bef.hkdigiverse.com/question/add",
-            headers: {
-              Authorization: accessToken,
-              "Content-Type": "application/json",
-            },
-            data: data,
-          };
+        let config = {
+          method: "post",
+          maxBodyLength: Infinity,
+          url: "https://api-bef.hkdigiverse.com/question/add",
+          headers: {
+            Authorization: accessToken,
+            "Content-Type": "application/json",
+          },
+          data: data,
+        };
 
-          axios
-            .request(config)
-            .then((response) => {
-              if (response.status === 200) {
-                console.log("success", response.data);
-                console.log("msg", response.message);
-                // navigate("/classes");
-                // toast.success(response.message);
-              } else {
-                console.log("failed", response);
-                console.log("msg", response.message);
+        axios
+          .request(config)
+          .then((response) => {
+            if (response.status === 200) {
+              console.log("success", response.data);
+              console.log("msg", response.message);
+              navigate("/classes");
+              toast.success(response.message);
+            } else {
+              console.log("failed", response);
+              console.log("msg", response.message);
 
-                // toast.error(response.message);
-              }
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        }
+              // toast.error(response.message);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       }
     } catch (err) {
       console.error(err.message);
@@ -248,12 +291,13 @@ function AddQuestion() {
       );
 
       const uniqueData = classes.reduce((acc, current) => {
-        const exist = acc.find((item) => item.name === current.name);
+        const exist = acc.find((item) => item._id === current._id);
         if (!exist) {
           acc.push(current);
         }
         return acc;
       }, []);
+
       setClassNames(uniqueData);
       //   console.log(uniqueData);
     } catch (err) {
@@ -272,6 +316,7 @@ function AddQuestion() {
         }
       );
       // console.log(response.data.data.sub_topic_data);
+      
       setSubtopics(response.data.data.sub_topic_data);
     } catch (err) {
       console.error(err.message);
@@ -296,20 +341,46 @@ function AddQuestion() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2  lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
-            <SingleSelect
-              label="Class"
-              value={selectedSubtopic}
-              onChange={handleClassChange}
-              options={classNames}
-            />
-            {/* <MultiSelection onChange={handleSelectionChange} /> */}
-            <SingleSelect
-              label="Subtopics"
-              value={subTopicName}
-              onChange={handleSubtopicChange}
-              options={subtopics}
-            />
-         
+            <div>
+              <label className=" text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+                Classes
+              </label>
+              <SingleSelect
+                label="Class"
+                value={selectedClass}
+                onChange={handleClassChange}
+                options={classNames}
+              />
+            </div>
+            <div>
+              <label className=" text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+                Subtopics
+              </label>
+              <MultiSelection
+                label="Subtopics"
+                value={selectedSubtopic}
+                onChange={handleSubtopicChange}
+                options={subtopics}
+              />
+            </div>
+            {/* <div>
+              <label className=" text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+                Question bank
+              </label>
+              <MultiSelection
+                // label="Subtopics"
+                // value={selectedSubtopic}
+                // onChange={handleSubtopicChange}
+                // options={subtopics}
+              />
+            </div> */}
+
+            <div className="space-y-3">
+              <label className=" text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+                Type
+              </label>
+              <RadioButtons onChange={handleTypeChange} />
+            </div>
           </div>
           {/* question_type */}
           <div className="p-4 md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
@@ -322,8 +393,8 @@ function AddQuestion() {
                 type="radio"
                 name="list-radio"
                 value="Normal"
-                onChange={(e) => setType(e.target.value)}
-                checked={type === "Normal"}
+                onChange={(e) => setQuestionType(e.target.value)}
+                checked={questionType === "normal"}
                 className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600  dark:bg-gray-600 dark:border-gray-500"
               />
               <label
@@ -339,8 +410,8 @@ function AddQuestion() {
                 type="radio"
                 name="list-radio"
                 value="Statement"
-                onChange={(e) => setType(e.target.value)}
-                checked={type === "Statement"}
+                onChange={(e) => setQuestionType(e.target.value)}
+                checked={questionType === "statement"}
                 className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
               />
               <label
@@ -356,8 +427,8 @@ function AddQuestion() {
                 type="radio"
                 name="list-radio"
                 value="Pair"
-                onChange={(e) => setType(e.target.value)}
-                checked={type === "Pair"}
+                onChange={(e) => setQuestionType(e.target.value)}
+                checked={questionType === "pair"}
                 className="w-4 h-4 text-orange-600 bg-orange-600 border border-orange-600 dark:bg-gray-600 dark:border-gray-500"
               />
               <label
