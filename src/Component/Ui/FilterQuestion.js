@@ -18,7 +18,7 @@ const MenuProps = {
   },
 };
 
-export default function SingleSelect({ label, value, onChange, options }) {
+export default function FilterQuestion({ label, value, onChange, options }) {
   return (
     <>
       <FormControl className="container h-full" size="small">
@@ -31,9 +31,11 @@ export default function SingleSelect({ label, value, onChange, options }) {
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          <MenuItem value={options.name} className="capitalize">
-            {options.name}
-          </MenuItem>
+          {options.map((value) => (
+            <MenuItem key={value._id} value={value}>
+              {value.name}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
     </>

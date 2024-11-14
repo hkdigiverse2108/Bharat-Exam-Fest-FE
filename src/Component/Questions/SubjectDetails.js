@@ -7,62 +7,191 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FilterSide from "../Filterpage/FilterSide";
 import MultiSelection from "../Ui/MultiSelection";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import { CurrentQuestion, QuestionList } from "../../Context/Action";
+import SingleSelect from "../Ui/SingleSelect";
+import FilterQuestion from "../Ui/FilterQuestion";
 
 function SubjectDetails() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { state } = location;
-
-  const [confirm, setConfirm] = useState(false);
-  const [filter, setFilter] = useState(false);
-  const [classNames, setClassNames] = useState([]);
-  const [selectedClass, setSelectedClass] = useState([]);
-  const [subjectData, setSubjectData] = useState(state);
-  const { subject } = subjectData;
-  const [itemToDelete, setItemToDelete] = useState(null);
-  const [questions, setQustions] = useState([]);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
 
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
+  const subject = useSelector((state) => state.userConfig.CurrentSubject[0]);
+  const questionList = useSelector((state) => state.userConfig.Questions[0]);
+  const [confirm, setConfirm] = useState(false);
+  const [toggle, setToggle] = useState(false);
+  const [classNames, setClassNames] = useState([]);
+  const [selectedClass, setSelectedClass] = useState([]);
+  const [subjectData, setSubjectData] = useState();
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [questions, setQustions] = useState([]);
+  const [filteredQuestions, setFilteredQuestions] = useState([]);
+  const [subtopics, setSubtopics] = useState([]);
+  const [selectedSubtopic, setSelectedSubtopic] = useState([]);
 
-  function handleFilter() {
-    setFilter(!filter);
+  const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({
+    easy: false,
+    medium: false,
+    hard: false,
+    newestFirst: false,
+    olderFirst: false,
+    lastModified: false,
+    question1: false,
+    question2: false,
+    question3: false,
+  });
+
+  const handleCheckboxChange = (event) => {
+    const { id, checked } = event.target;
+    setFilters((prev) => ({
+      ...prev,
+      [id]: checked,
+    }));
+  };
+
+  function handleFilterData() {
+    setToggle(!toggle);
   }
+
+  const applyFilters = () => {
+    const checkedValues = Object.entries(filters)
+      .filter(([key, value]) => value)
+      .map(([key]) => key);
+    const filteredQuestions = questions.filter(
+      (question) =>
+        checkedValues.length === 0 || checkedValues.includes(question.type)
+    );
+    setFilteredQuestions(filteredQuestions);
+    handleFilterData();
+    console.log("Checked Filters:", filteredQuestions);
+  };
+
+  useEffect(() => {
+    const checkedValues = Object.entries(filters)
+      .filter(([key, value]) => value)
+      .map(([key]) => key);
+    // Function to sort questions based on the selected sort order
+    const sortQuestions = () => {
+      const subtopicIds = subtopics.map((subtopic) => subtopic._id);
+      let sorted = [...questions]; // Create a copy of the questions array
+
+      if (filters.newestFirst) {
+        sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (filters.olderFirst) {
+        sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      } else if (filters.lastModified) {
+        sorted.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      }
+
+      setFilteredQuestions(sorted);
+    };
+
+    sortQuestions();
+  }, [filters, questions]);
+
+  const handleSelectionChange = (e) => {
+    const { value } = e.target;
+
+    // const dataId = value.map((res) => res._id);
+    // const selected = subtopics.find((classItem) => classItem.name === value);
+    setSelectedSubtopic(value._id);
+    // console.log(dataId);
+  };
+
+  // useEffect(() => {
+  //   if (selectedSubtopic) {
+  //     const filtered = questions
+  //       .filter((question) => question)
+  //       .map((value, i) => value.subtopicIds[i] === selectedSubtopic);
+
+  //     setFilteredQuestions(filtered);
+  //   } else {
+  //     setFilteredQuestions(questions);
+  //   }
+  // }, [selectedSubtopic]);
+
+  useEffect(() => {
+    const initialFilters = {};
+    questions.forEach((question) => {
+      if (question.type) {
+        initialFilters[question.type] = true;
+      }
+    });
+    setFilters((prev) => ({
+      ...prev,
+      ...initialFilters,
+    }));
+  }, [questions]);
+
   function handleCreateque() {
-    navigate("/addQuestion", { state: subjectData });
+    navigate("/addQuestion");
   }
+
   function handleEditque(value) {
-    navigate("/editQuestion", { state: value });
+    dispatch(CurrentQuestion(value));
+    navigate("/editQuestion");
   }
 
   const [selectedNames, setSelectedNames] = useState([]);
-  const handleSelectionChange = (e) => {
-    const { value } = e.target;
-    const selectedClass = classNames.find(
-      (classItem) => classItem.name === value
-    );
-    setSelectedClass(value);
-    // setAddQuestion((prev) => ({
-    //   ...prev,
-    //   classesId: selectedClass?._id,
-    // }));
-  };
 
   function handleDelete(value) {
     setItemToDelete(value);
     setConfirm(!confirm);
   }
+  const fetchSubtopics = async () => {
+    try {
+      const response = await axios.get(
+        "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
+          },
+        }
+      );
+      console.log(response.data.data.sub_topic_data);
 
+      setSubtopics(response.data.data.sub_topic_data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+  const fetchQuestions = async () => {
+    try {
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `https://api-bef.hkdigiverse.com/question/all?page=1&limit=10&subjectFilter=${subject._id}`,
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios.request(config).then((response) => {
+        if (response.status === 200) {
+          console.log("Question List", response.data.data.question_data);
+          dispatch(QuestionList(response.data.data.question_data));
+          setQustions(response.data.data.question_data);
+        } else {
+          console.log("no data ", response.message);
+        }
+      });
+    } catch (err) {
+      setError(err.message);
+    }
+  };
   const deleteQuestion = async () => {
     try {
       let config = {
         method: "delete",
         maxBodyLength: Infinity,
-        url: `https://api-bef.hkdigiverse.com/contest/delete/${itemToDelete}`,
+        url: `https://api-bef.hkdigiverse.com/question/delete/${itemToDelete}`,
         headers: {
           Authorization: accessToken,
           "Content-Type": "application/json",
@@ -75,7 +204,7 @@ function SubjectDetails() {
           console.log(response.data);
           toast.success(response.data.message);
           handleDelete();
-          fetchSubjects();
+          fetchQuestions();
         })
         .catch((error) => {
           console.error(error);
@@ -85,34 +214,16 @@ function SubjectDetails() {
     }
   };
 
-  const fetchSubjects = async () => {
-    try {
-      const response = await axios.get(
-        `https://api-bef.hkdigiverse.com/question/all?page=1&limit=10&subjectFilter=${state?._id}`,
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-
-      console.log("res", response.data.data);
-
-      setQustions(response.data.data.question_data);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+  useEffect(() => {
+    console.log("current ", subject);
+  }, [subject]);
 
   useEffect(() => {
-    if (questions.length !== 0) {
-      console.log("Questions", questions);
-    }
-  }, [questions]);
-
-  useEffect(() => {
-    fetchSubjects();
+    fetchQuestions();
+    fetchSubtopics();
+    setSubjectData(subject);
+    // setFilteredQuestions(questionList);
+    console.log("questionList", subtopics);
   }, []);
 
   return (
@@ -122,7 +233,7 @@ function SubjectDetails() {
           <div className=" space-y-4">
             <div className="flex items-center 2xl:justify-end xl:justify-end  lg:justify-end md:justify-end sm:justify-center space-x-4">
               <button
-                onClick={() => handleFilter()}
+                onClick={() => handleFilterData()}
                 className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-orange-400 border border-orange-500 hover:bg-opacity-90  "
               >
                 <svg
@@ -148,21 +259,21 @@ function SubjectDetails() {
             </div>
             <div className=" space-y-2 flex flex-col items-start w-full">
               <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white uppercase">
-                {state?.subjectName}
+                {subject.subjectName}
               </p>
               <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-2 2xl:grid-cols-4 2xl:gap-6">
-                <MultiSelection
-                  label="Class"
-                  value={selectedClass}
+                {/* <FilterQuestion
+                  label="Subject"
+                  value={selectedSubtopic}
                   onChange={handleSelectionChange}
-                  options={classNames}
-                />
+                  options={subtopics}
+                /> */}
               </div>
             </div>
           </div>
           <div className="w-full space-y-6 text-left  md:gap-16 dark:border-gray-700 font-sans">
             <ul className="space-y-4">
-              {questions.map((value, index) => (
+              {filteredQuestions.map((value, index) => (
                 <li key={index} className="space-y-2">
                   <div className="flex items-center justify-between text-lg font-medium text-gray-900 dark:text-white">
                     <div className="flex items-center justify-between gap-x-4">
@@ -221,10 +332,24 @@ function SubjectDetails() {
             onCancel={handleDelete}
           />
         </div>
-        <div className={`${filter === true ? "block" : "hidden"}`}>
-          <FilterSide filter={filter} setFilter={() => handleFilter()} />
+        <div className={`${toggle === true ? "block" : "hidden"}`}>
+          <FilterSide
+            filterData={filters}
+            onChange={handleCheckboxChange}
+            apply={applyFilters}
+            onClose={handleFilterData}
+          />
         </div>
       </section>
+      <ToastContainer
+        draggable={false}
+        autoClose={2000}
+        position={"top-center"}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={false}
+        theme="dark"
+      />
     </>
   );
 }

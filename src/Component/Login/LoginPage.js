@@ -21,51 +21,15 @@ function LoginPage() {
 
   const [confirm, setConfirm] = useState(false);
   const [input, setInput] = useState({
-    email: "",
+    uniqueId: "",
     password: "",
+    userType: "admin",
   });
-  const { email, password } = input;
+  const { uniqueId, password } = input;
   function handleChange(e) {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
   }
-
-  // function handleNavigate() {
-  //   setConfirm(!confirm);
-  // }
-
-  // async function handleNavigate() {
-  //   // setConfirm(!confirm);
-
-  //   await axios
-  //     .post(
-  //       `https://api-bef.hkdigiverse.com/auth/login`,
-  //       JSON.stringify(input),
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         validateStatus: function (status) {
-  //           return status >= 200 && status < 400;
-  //         },
-  //       }
-  //     )
-  //     .then((response) => {
-  //       const { status, data, message, error } = response.data;
-  //       console.log("Backend response", message);
-  //       if (status === 200) {
-  //         console.log("Backend response", data);
-  //         dispatch(loginSuccess(data));
-  //         setTimeout(() => {
-  //           toast.success(message);
-  //           navigate("/");
-  //         }, [1000]);
-  //       } else {
-  //         console.log("Backend response", error);
-  //         console.warn("Not Successfully");
-  //       }
-  //     });
-  // }
 
   async function handleLogin() {
     await axios
@@ -82,17 +46,16 @@ function LoginPage() {
         }
       )
       .then((response) => {
-        const { status, data, message, error } = response.data;
-        console.log("Backend response", message);
-        if (status === 200) {
-          console.log("Backend response", data);
-          dispatch(loginSuccess(data));
+        console.log("Backend response", response.message);
+        if (response.status === 200) {
+          console.log("Backend response", response.data);
+          dispatch(loginSuccess(response.data.data));
           setTimeout(() => {
-            toast.success(message);
+            toast.success(response.message);
             navigate("/");
           }, [1000]);
         } else {
-          console.log("Backend response", error);
+          console.log("Backend response", response.error);
           console.warn("Not Successfully");
         }
       });
@@ -102,10 +65,10 @@ function LoginPage() {
 
   function Signup() {
     try {
-      if (!email || !password) {
+      if (!uniqueId || !password) {
         toast.warn("Fill up empty field!");
       } else {
-        if (!email.match(emailpatton)) {
+        if (!uniqueId.match(emailpatton)) {
           toast.warn("Email dosen't match!");
         } else {
           if (!password.match(spcl)) {
@@ -137,16 +100,16 @@ function LoginPage() {
       <section className="bg-white  mx-auto 3xl:w-[386px] 2xl:w-[386px] xl:w-[386px] md:w-[386px] sm:w-[340px] h-[450px] py-6 px-4 space-y-10 border-2 border-gray-300 rounded-xl  overflow-none">
         <div className="flex flex-col items-center justify-center space-y-4 h-full">
           <span className="text-black text-3xl py-4 capitalize select-none">
-            welcome developer panel
+            welcome Question panel
           </span>
           <div className="flex flex-col space-y-2 w-full h-full">
             <div>
               <input
                 className="text-black text-md px-4 py-6  border-2 border-gray-200 h-10 w-full rounded-lg invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-                type="email"
-                name="email"
-                value={email || ""}
+                type="uniqueId"
+                name="uniqueId"
+                value={uniqueId || ""}
                 onChange={(e) => handleChange(e)}
                 placeholder="Enter Your Email Address"
                 autoComplete="off"

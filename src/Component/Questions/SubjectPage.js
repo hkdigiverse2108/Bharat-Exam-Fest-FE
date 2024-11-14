@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { FiBox } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { CurrentData, SubjectData } from "../../Context/Action/index";
+
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function SubjectPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const accessToken = useSelector(
@@ -14,11 +17,8 @@ function SubjectPage() {
   );
 
   function handleSubject(value) {
-    // const id = value.map((res) => res?._id);
-    // const name = value.map((res) => res?.subjectName);
-    navigate("/subjectDetails", {
-      state: value,
-    });
+    dispatch(CurrentData(value));
+    navigate("/subjectDetails");
   }
 
   const fetchSubjects = async () => {
@@ -33,7 +33,7 @@ function SubjectPage() {
         }
       );
       console.log(response.data.data);
-
+      dispatch(SubjectData(response.data.data));
       setData(response.data.data);
     } catch (err) {
       setError(err.message);

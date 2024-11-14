@@ -24,6 +24,7 @@ export default function MultipleSelect({ label, value, onChange, options }) {
         </InputLabel>
         <Select
           multiple
+          label={label}
           value={value}
           onChange={onChange}
           renderValue={(selected) => selected.map((s) => s.name).join(", ")}
@@ -37,25 +38,6 @@ export default function MultipleSelect({ label, value, onChange, options }) {
           ))}
         </Select>
       </FormControl>
-      {/* <FormControl className="container h-full">
-        <InputLabel id={`question-label`} size="small">
-          Question bank
-        </InputLabel>
-        <Select
-          multiple
-          // value={value}
-          // onChange={onChange}
-          renderValue={(selected) => selected.map((s) => s.name).join(", ")}
-          size="small"
-          MenuProps={MenuProps}
-        >
-          {options.map((value) => (
-            <MenuItem key={value._id} value={value}>
-              {value.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl> */}
     </>
   );
 }

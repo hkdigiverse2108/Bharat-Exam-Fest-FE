@@ -1,106 +1,81 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { VscSaveAs } from "react-icons/vsc";
-import { VscEye,VscEyeClosed } from "react-icons/vsc";
+import { VscEye, VscEyeClosed } from "react-icons/vsc";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 // import { RxEyeOpen } from "react-icons/rx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import { updateData } from "../../Context/Action/index";
 
 export default function PasswordUpdate() {
+  const navigate = useNavigate();
   const [toggle1, setToggle1] = useState(false);
   const [toggle2, setToggle2] = useState(false);
+  const userAccess = useSelector((state) => state.authConfig.userInfo[0]);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentUser, setCurrentUser] = useState({
+    uniqueId: userAccess._id,
+    password: "",
+    userType: userAccess.userType,
+  });
+  const isEmpty = () => {
+    if (
+      !currentUser.uniqueId ||
+      !currentUser.password ||
+      !currentUser.userType
+    ) { 
+      return true;
+    }
+    return false;
+  };
 
-  // const staticObj = {
-  //     id: "",
-  //     username: "",
-  //     address: "",
-  //     email: "",
-  //     phone: "",
-  //     password: "",
-  //     age: "",
-  //     country: "india",
-  //     hobbies: "",
-  //     photoURL:
-  //       "https://th.bing.com/th?id=OIP.FTgrJyVFtgBnlReUwwkLSgHaHS&w=252&h=247&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
-  //   };
+  async function ChangePassword() {
+    try {
+      if (isEmpty()) {
+        toast.warning("Please fill up empty fields.");
+      } else {
+        if (!currentUser.password.match(confirmPassword)) {
+          toast.warn("Password dose not match");
+          return false;
+        } else {
+          let data = JSON.stringify(currentUser);
+          console.log(currentUser);
 
-  //   const dispatch = useDispatch();
-  //   const userInfo = useSelector((state) => state.userConfig);
-  //   const loginInfo = useSelector((state) => state.authConfig);
-  //   const [currentUser, setCurrentUser] = useState(staticObj);
-  //   const {
-  //     _id,
-  //     username,
-  //     address,
-  //     email,
-  //     phone,
-  //     country,
-  //     hobbies,
-  //     language,
-  //     photoURL,
-  //     age,
-  //   } = currentUser;
-  // const [toggle, setToggle] = useState(false);
-  // const [trainer, setTrainer] = useState(false);
+          let config = {
+            method: "post",
+            maxBodyLength: Infinity,
+            url: "https://api-bef.hkdigiverse.com/auth/reset-password",
+            headers: {
+              Authorization: userAccess.token,
+              "Content-Type": "application/json",
+            },
+            data: data,
+          };
 
-  // function handleChange(e) {
-  //   const { name, value } = e.target;
-  // }
-
-  //   async function UploadData() {
-  //     try {
-  //       const uploadurl = "http://localhost:5000/uploadImg";
-  //       // console.log(demo);
-  //       const formdata = new FormData();
-  //       formdata.append("_id", _id);
-  //       formdata.append("file", demo);
-
-  //       await Axios.post(uploadurl, formdata, {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }).then((response) => {
-  //         if (response.status === 200) {
-  //           console.log("Backend response", JSON.parse(response.config.data));
-  //           // dispatch(updateData(JSON.parse(response.config.data)));
-  //           toast.success("Data update Successfully...");
-  //         } else {
-  //           console.warn("Not update", response.config);
-  //           toast.warn("Data not update Successfully...");
-  //         }
-  //       });
-
-  //       const url = "http://localhost:5000/profileData";
-  //       await Axios.post(url, currentUser, {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }).then((response) => {
-  //         if (response.status === 200) {
-  //           console.log("Backend response", JSON.parse(response.config.data));
-  //           dispatch(updateData(JSON.parse(response.config.data)));
-  //           toast.success("Data update Successfully...");
-  //         } else {
-  //           console.warn("Not update", response.config);
-  //           toast.warn("Data not update Successfully...");
-  //         }
-  //       });
-  //     } catch (error) {
-  //       console.warn(error);
-  //     }
-  //   }
-
-  //   useEffect(() => {
-  //     try {
-  //       if (loginInfo.isLoggedIn === true) {
-  //         setCurrentUser(userInfo.User[0]);
-  //       } else {
-  //         console.log(loginInfo);
-  //       }
-  //     } catch (error) {
-  //       console.warn(error.message);
-  //     }
-  //   }, [loginInfo, userInfo]);
+          axios
+            .request(config)
+            .then((response) => {
+              if (response.status === 200) {
+                console.log("success", response.data);
+                console.log("msg", response.message);
+                toast.success(response.message);
+                navigate("/");
+              } else {
+                console.log("failed", response);
+                console.log("msg", response.message);
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
 
   return (
     <>
@@ -124,20 +99,24 @@ export default function PasswordUpdate() {
                 >
                   new password
                 </label>
-                <button
+                <span
                   type="button"
-                  className="py-2.5 px-6 text-md bg-indigo-50 text-slate-500 rounded-xl cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 hover:bg-indigo-100"
+                  className="py-2.5 px-6 text-md bg-indigo-50 text-slate-500 rounded-xl font-semibold text-center shadow-xs transition-all duration-500 hover:bg-indigo-100"
                 >
                   Required
-                </button>
+                </span>
               </div>
               <div className="relative w-full">
                 <input
                   className="text-black text-md px-4 py-6 border-2 border-gray-200  w-full h-12 rounded-lg"
                   type={toggle1 ? "text" : "password"}
                   name="password"
-                  // value={password || ""}
-                  // onChange={(e) => handleChange(e)}
+                  onChange={(e) => {
+                    setCurrentUser((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }));
+                  }}
                   placeholder="Enter new assword"
                   autoComplete="off"
                 />
@@ -148,11 +127,11 @@ export default function PasswordUpdate() {
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 >
                   <svg className="w-5 h-5 text-blue-600" viewBox="0 0 16 16">
-                  {toggle1 ? (
-                        <VscEyeClosed title="Show Password" />
-                      ) : (
-                        <VscEye title="Hide Password" />
-                      )}
+                    {toggle1 ? (
+                      <VscEyeClosed title="Show Password" />
+                    ) : (
+                      <VscEye title="Hide Password" />
+                    )}
                   </svg>
                 </button>
                 <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">
@@ -170,12 +149,12 @@ export default function PasswordUpdate() {
                 >
                   confirm new password
                 </label>
-                <button
+                <span
                   type="button"
-                  className="py-2.5 px-6 text-md bg-indigo-50 text-slate-500 rounded-xl cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 hover:bg-indigo-100"
+                  className="py-2.5 px-6 text-md bg-indigo-50 text-slate-500 rounded-xl  font-semibold text-center shadow-xs transition-all duration-500 hover:bg-indigo-100"
                 >
                   Required
-                </button>
+                </span>
               </div>
               <div className="relative w-full">
                 <input
@@ -183,7 +162,7 @@ export default function PasswordUpdate() {
                   type={toggle2 ? "text" : "password"}
                   name="password"
                   // value={password || ""}
-                  // onChange={(e) => handleChange(e)}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Enter new assword"
                   autoComplete="off"
                 />
@@ -194,11 +173,11 @@ export default function PasswordUpdate() {
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 >
                   <svg className="w-5 h-5 text-blue-600" viewBox="0 0 16 16">
-                  {toggle2 ? (
-                        <VscEyeClosed title="Show Password" />
-                      ) : (
-                        <VscEye title="Hide Password" />
-                      )}
+                    {toggle2 ? (
+                      <VscEyeClosed title="Show Password" />
+                    ) : (
+                      <VscEye title="Hide Password" />
+                    )}
                   </svg>
                 </button>
                 <p className="mt-1 invisible peer-invalid:visible text-red-600 text-sm">
@@ -223,7 +202,10 @@ export default function PasswordUpdate() {
         </div>
         {/* UploadData */}
         <div className="w-full flex items-end justify-center">
-          <button className="inline-flex items-center space-x-2 rounded-full px-10 py-3 text-md text-center capitalize text-white bg-orange-500 hover:bg-opacity-90  ">
+          <button
+            onClick={ChangePassword}
+            className="inline-flex items-center space-x-2 rounded-full px-10 py-3 text-md text-center capitalize text-white bg-orange-500 hover:bg-opacity-90  "
+          >
             <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
               <VscSaveAs />
             </svg>

@@ -32,3 +32,28 @@ export const updateData = (data) => {
         payload: data
     };
 }
+
+export const SubjectData = (data) => {
+    return {
+      type: "SUBJECT",
+      payload: data,
+    };
+  };
+  export const QuestionList = (data) => {
+    return {
+      type: "QUESTIONS",
+      payload: data,
+    };
+  };
+  export const CurrentData = (data) => {
+    return {
+      type: "CURRENT",
+      payload: data,
+    };
+  };
+  export const CurrentQuestion = (data) => {
+    return {
+      type: "EDIT",
+      payload: data,
+    };
+  };

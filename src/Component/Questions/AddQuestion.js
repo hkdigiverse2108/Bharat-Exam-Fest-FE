@@ -13,18 +13,15 @@ import RadioButtons from "../Ui/RadioButtons";
 
 function AddQuestion() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { state } = location;
-
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
+  const subject = useSelector((state) => state.userConfig.CurrentSubject[0]);
   const [type, setType] = useState("");
   const [questionType, setQuestionType] = useState("normal");
   const [subtopics, setSubtopics] = useState([]);
-  const [classNames, setClassNames] = useState([]);
-
-  const [selectedClass, setSelectedClass] = useState([]);
+  const [subjectname, setSubjectname] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState([]);
   const [subTopicName, setSubTopicName] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState([]);
   const [options, setOptions] = useState({
@@ -43,8 +40,8 @@ function AddQuestion() {
   }));
 
   const [addQuestion, setAddQuestion] = useState({
-    subjectId: state._id,
-    classesId: "",
+    subjectId: subject._id,
+    classesId: subject.class,
     subtopicIds: [],
     type: type,
     questionType: questionType,
@@ -98,15 +95,15 @@ function AddQuestion() {
     }));
   };
 
-  const handleClassChange = (event) => {
+  const handleSubjectChange = (event) => {
     const { value } = event.target;
-    const selectedClass = classNames.find(
-      (classItem) => classItem.name === value
-    );
-    setSelectedClass(value);
+    // const selectedClass = subjectname.find(
+    //   (classItem) => classItem.name === value
+    // );
+    setSelectedSubject(value);
     setAddQuestion((prev) => ({
       ...prev,
-      classesId: selectedClass?._id,
+      classesId: value,
     }));
   };
 
@@ -253,14 +250,13 @@ function AddQuestion() {
           .request(config)
           .then((response) => {
             if (response.status === 200) {
+              toast.success(response.message);
               console.log("success", response.data);
               console.log("msg", response.message);
-              navigate("/classes");
-              toast.success(response.message);
+              navigate("/subjectDetails");
             } else {
               console.log("failed", response);
               console.log("msg", response.message);
-
               // toast.error(response.message);
             }
           })
@@ -273,10 +269,10 @@ function AddQuestion() {
     }
   };
 
-  const fetchClassname = async () => {
+  const fetchSubjectname = async () => {
     try {
       const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/question/all?page=1&limit=10",
+        `https://api-bef.hkdigiverse.com/subject/${subject._id}`,
         {
           headers: {
             Authorization: accessToken,
@@ -284,22 +280,9 @@ function AddQuestion() {
           },
         }
       );
-      // console.log(response.data.data.question_data);
+      console.log(response.data.data.name);
 
-      const classes = response.data.data.question_data.map(
-        (question) => question.classes
-      );
-
-      const uniqueData = classes.reduce((acc, current) => {
-        const exist = acc.find((item) => item._id === current._id);
-        if (!exist) {
-          acc.push(current);
-        }
-        return acc;
-      }, []);
-
-      setClassNames(uniqueData);
-      //   console.log(uniqueData);
+      setSubjectname(response.data.data);
     } catch (err) {
       console.error(err.message);
     }
@@ -316,7 +299,7 @@ function AddQuestion() {
         }
       );
       // console.log(response.data.data.sub_topic_data);
-      
+
       setSubtopics(response.data.data.sub_topic_data);
     } catch (err) {
       console.error(err.message);
@@ -324,8 +307,9 @@ function AddQuestion() {
   };
 
   useEffect(() => {
-    fetchClassname();
+    fetchSubjectname();
     fetchSubtopics();
+    // console.log("add",subject);
   }, []);
 
   return (
@@ -341,19 +325,19 @@ function AddQuestion() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2  lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
-            <div>
-              <label className=" text-start capitalize text-base font-medium text-gray-700 dark:text-white">
-                Classes
+            <div className="space-y-2">
+              <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
+                Subject
               </label>
               <SingleSelect
-                label="Class"
-                value={selectedClass}
-                onChange={handleClassChange}
-                options={classNames}
+                label="Subject"
+                value={selectedSubject}
+                onChange={handleSubjectChange}
+                options={subjectname}
               />
             </div>
-            <div>
-              <label className=" text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+            <div className="space-y-2">
+              <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
                 Subtopics
               </label>
               <MultiSelection
@@ -363,20 +347,20 @@ function AddQuestion() {
                 options={subtopics}
               />
             </div>
-            {/* <div>
-              <label className=" text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+            <div className="space-y-2">
+              <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
                 Question bank
               </label>
               <MultiSelection
-                // label="Subtopics"
-                // value={selectedSubtopic}
-                // onChange={handleSubtopicChange}
-                // options={subtopics}
+                label="Subtopics"
+                value={selectedSubtopic}
+                onChange={handleSubtopicChange}
+                options={subtopics}
               />
-            </div> */}
+            </div>
 
             <div className="space-y-3">
-              <label className=" text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+              <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
                 Type
               </label>
               <RadioButtons onChange={handleTypeChange} />
@@ -1534,6 +1518,15 @@ function AddQuestion() {
           </div>
         </div>
       </section>
+      <ToastContainer
+        draggable={false}
+        autoClose={2000}
+        position={"top-center"}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={false}
+        theme="dark"
+      />
     </>
   );
 }
