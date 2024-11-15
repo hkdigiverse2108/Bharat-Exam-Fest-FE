@@ -9,7 +9,7 @@ export default function ResultBanner() {
   }
   return (
     <>
-      <section className="mx-auto space-y-6 ">
+      <div className="mx-auto space-y-6 ">
         {/* result banner */}
         <h3 className="text-2xl text-left  font-semibold text-slate-800">
           Result Banner
@@ -75,7 +75,7 @@ export default function ResultBanner() {
           </table>
           <Pagination />
         </div>
-      </section>
+      </div>
     </>
   );
 }

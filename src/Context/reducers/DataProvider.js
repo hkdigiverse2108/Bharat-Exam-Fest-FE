@@ -1,21 +1,27 @@
+
 const initialData = {
-  User: [],
-  Admin: [],
-  Logintype: "User",
+  bannerDataList: [],
+  Logintype: "Admin",
 };
 
 const DataProvider = (state = initialData, action) => {
   switch (action.type) {
-    case "LOGIN_USER":
+    case "BANNER":
       return {
         ...state,
-        User: [...state.User, action.payload],
+        bannerDataList: [action.payload],
       };
 
-    case "LOGIN_ADMIN":
+    case "QUESTIONS":
       return {
         ...state,
-        Admin: [...state.Admin, action.payload],
+        Questions: [ action.payload],
+      };
+
+    case "CURRENT":
+      return {
+        ...state,
+        CurrentSubject: [ action.payload],
       };
 
     case "LOGIN_TYPE":
@@ -24,10 +30,10 @@ const DataProvider = (state = initialData, action) => {
         Logintype: action.payload,
       };
 
-    case "UPDATE":
+    case "EDIT":
       return {
         ...state,
-        User: [action.payload],
+        CurrentQue: [action.payload],
       };
 
     case "LOGOUT":

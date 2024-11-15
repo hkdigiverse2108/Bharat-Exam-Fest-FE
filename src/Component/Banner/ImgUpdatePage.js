@@ -1,61 +1,92 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 // import { useSelector, useDispatch } from "react-redux";
 // import Axios from "axios";
 import { VscSaveAs } from "react-icons/vsc";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import { updateData } from "../../Context/Action/index";
 
 export default function ImgUpdatePage({ confirm, setConfirm }) {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const classId = useSelector((state) => state.authConfig.userInfo[0]._id);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+  // const subject = useSelector((state) => state.userConfig.CurrentSubject[0]);
 
-  //   const dispatch = useDispatch();
-  //   const userInfo = useSelector((state) => state.userConfig);
-  //   const loginInfo = useSelector((state) => state.authConfig);
+  const [imgEdit, setImgEdit] = useState({
+    bannerId: "",
+    image: "",
+    type: "",
+  });
 
-  //   async function UploadData() {
-  //     try {
-  //       const uploadurl = "http://localhost:5000/uploadImg";
-  //       // console.log(demo);
-  //       const formdata = new FormData();
-  //       formdata.append("_id", _id);
-  //       formdata.append("file", demo);
+  const isEmpty = () => {
+    return (
+      imgEdit.bannerId === "string" ||
+      imgEdit.image === "string" ||
+      imgEdit.type === "string"
+    );
+  };
 
-  //       await Axios.post(uploadurl, formdata, {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }).then((response) => {
-  //         if (response.status === 200) {
-  //           console.log("Backend response", JSON.parse(response.config.data));
-  //           // dispatch(updateData(JSON.parse(response.config.data)));
-  //           toast.success("Data update Successfully...");
-  //         } else {
-  //           console.warn("Not update", response.config);
-  //           toast.warn("Data not update Successfully...");
-  //         }
-  //       });
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setImgEdit((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-  //       const url = "http://localhost:5000/profileData";
-  //       await Axios.post(url, currentUser, {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }).then((response) => {
-  //         if (response.status === 200) {
-  //           console.log("Backend response", JSON.parse(response.config.data));
-  //           dispatch(updateData(JSON.parse(response.config.data)));
-  //           toast.success("Data update Successfully...");
-  //         } else {
-  //           console.warn("Not update", response.config);
-  //           toast.warn("Data not update Successfully...");
-  //         }
-  //       });
-  //     } catch (error) {
-  //       console.warn(error);
-  //     }
-  //   }
+  const handleFileChange = (e) => {
+    const { files } = e.target;
+    console.log(files);
+
+    if (files) {
+      setImgEdit((prev) => ({
+        ...prev,
+        bannerId: files[0].name,
+        image: files[0].name,
+      }));
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log("edit img:", imgEdit);
+  // }, [imgEdit]);
+
+  const EditBanner = async () => {
+    try {
+      if (isEmpty()) {
+        toast.warning("Please fill up empty fields.");
+      }
+      let data = JSON.stringify(imgEdit);
+      console.log(imgEdit);
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: `https://api-bef.hkdigiverse.com/banner/edit/{id}`,
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
+
+      const response = await axios.request(config);
+
+      if (response.status === 200) {
+        toast.success("Image Edited successfully");
+        setConfirm();
+      } else {
+        toast.error("Failed to add question");
+      }
+    } catch (err) {
+      console.error(err.message);
+      toast.error("An error occurred while adding the question.");
+    }
+  };
 
   return (
     <>
@@ -76,7 +107,6 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
               Edit Image
             </p>
             <div className="space-y-3 border border-[#808836] rounded-lg p-4">
-            
               <div className="grid grid-cols-1 space-y-2">
                 <label
                   htmlFor="editimg"
@@ -86,32 +116,41 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
                 </label>
                 <input
                   className="border-b w-full block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
-                  type=""
+                  type="text"
                   id="editimg"
+                  name="image"
                   placeholder="Image"
+                  value={imgEdit.image === "string" ? "" : imgEdit.image}
+                  onChange={(e) => handleInputChange(e)}
                 />
               </div>
               <div className="p-4 w-full h-fit border border-[#65B741] bg-white shadow-sm rounded-xl">
-              <div className=" space-y-2">
-                <p className="text-start capitalize text-base font-medium text-gray-700 dark:text-white">
-                  Banner Image
-                </p>
-                <input type="file" name="file" id="file" className="sr-only" />
-                <label
-                  htmlFor="file"
-                  className="relative flex items-center justify-start  gap-x-4 text-center cursor-pointer"
-                >
-                  <span className=" rounded-md border border-[#5F8670] py-2 px-8 text-base capitalize text-slate-700">
-                    choose file
-                  </span>
-
-                  <span className="text-md capitalize text-[#5F8670 ]">
-                    no file chosen
-                  </span>
-                </label>
+                <div className="space-y-2">
+                  <p className="text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+                    Banner Image
+                  </p>
+                  <input
+                    type="file"
+                    name="file"
+                    id="file"
+                    className="sr-only"
+                    onChange={handleFileChange}
+                  />
+                  <label
+                    htmlFor="file"
+                    className="relative flex items-center justify-start gap-x-4 text-center cursor-pointer"
+                  >
+                    <span className="rounded-md border border-[#5F8670] py-2 px-8 text-base capitalize text-slate-700">
+                      choose file
+                    </span>
+                    <span className="text-md capitalize text-[#5F8670]">
+                      {imgEdit.bannerId === "string"
+                        ? "no file chosen"
+                        : imgEdit.bannerId}
+                    </span>
+                  </label>
+                </div>
               </div>
-              </div>
-
               <p className="text-base text-gray-600">
                 <span>File type: jpg/jpeg/png</span>
               </p>
@@ -120,6 +159,7 @@ export default function ImgUpdatePage({ confirm, setConfirm }) {
               <button
                 type="submit"
                 onClick={setConfirm}
+                // onClick={EditBanner}
                 className=" bg-orange-500 text-gray-100 px-20 py-2  rounded-full tracking-wide
                 font-semibold  focus:outline-none focus:shadow-outline hover:bg-orange-600 cursor-pointer transition ease-in duration-300"
               >

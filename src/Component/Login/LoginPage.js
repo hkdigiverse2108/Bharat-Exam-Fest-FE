@@ -22,10 +22,11 @@ function LoginPage() {
   const [confirm, setConfirm] = useState(false);
   const [show, setShow] = useState(false);
   const [input, setInput] = useState({
-    email: "",
+    uniqueId: "",
     password: "",
+    userType: "admin",
   });
-  const { email, password } = input;
+  const { uniqueId, password, userType } = input;
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -33,71 +34,83 @@ function LoginPage() {
   }
 
   async function handleNavigate() {
-    // setConfirm(!confirm);
+    setConfirm(!confirm);
+  }
 
-    await axios
-      .post(
-        `https://api-bef.hkdigiverse.com/auth/login`,
-        JSON.stringify(input),
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          validateStatus: function (status) {
-            return status >= 200 && status < 400;
-          },
-        }
-      )
-      .then((response) => {
-        const { status, data, message, error } = response.data;
-        console.log("Backend response", message);
-        if (status === 200) {
-          console.log("Backend response", data);
-          dispatch(loginSuccess(data));
-          setTimeout(() => {
-            toast.success(message);
-            navigate("/");
-          }, [1000]);
-        } else {
-          console.log("Backend response", error);
-          console.warn("Not Successfully");
-        }
-      });
+  async function handleLogin() {
+    try {
+      let userData = JSON.stringify(input);
+
+      let config = {
+        method: "post",
+        url: `https://api-bef.hkdigiverse.com/auth/login`,
+        maxBodyLength: Infinity,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: userData,
+      };
+      const response = await axios.request(config);
+
+      const { status, data, message, error } = response.data;
+
+      console.log("Backend response", message);
+
+      if (status === 200) {
+        console.log("Backend response", data);
+        dispatch(loginSuccess(data));
+        toast.success(message);
+        setTimeout(() => navigate("/"), 1000);
+        handleNavigate();
+      } else {
+        console.warn("Login failed:", error);
+        toast.error("Login failed: " + error);
+      }
+    } catch (err) {
+      console.error("Error during login:", err);
+      toast.error("An error occurred during login.");
+    }
   }
 
   function Signup() {
     try {
-      if (!email || !password) {
-        toast.warn("Fill up empty field!");
+      const validationMessages = [];
+
+      if (!uniqueId) {
+        validationMessages.push("Fill up empty field!");
+      } else if (!uniqueId.match(emailpatton)) {
+        validationMessages.push("Email doesn't match!");
+      }
+
+      if (!password) {
+        validationMessages.push("Fill up empty field!");
       } else {
-        if (!email.match(emailpatton)) {
-          toast.warn("Email dosen't match!");
-        } else {
-          if (!password.match(spcl)) {
-            toast.warn("Must Include Symbol in Password!");
-          } else {
-            if (!password.match(numbers)) {
-              toast.warn("Must Include digit in Password!");
-            } else {
-              if (!password.match(upperCaseLetters)) {
-                toast.warn("Must Include upperCase Letters in Password!");
-              } else {
-                if (!password.match(lowerCaseLetters)) {
-                  toast.warn("Must Include lowerCase Letters in Password!");
-                } else {
-                  // navigate("/");
-                  handleNavigate();
-                  // dispatch(loginSuccess(state));
-                  // toast.success("Login successfully");
-                }
-              }
-            }
-          }
+        if (!password.match(spcl)) {
+          validationMessages.push("Must include a symbol in password!");
+        }
+        if (!password.match(numbers)) {
+          validationMessages.push("Must include a digit in password!");
+        }
+        if (!password.match(upperCaseLetters)) {
+          validationMessages.push(
+            "Must include uppercase letters in password!"
+          );
+        }
+        if (!password.match(lowerCaseLetters)) {
+          validationMessages.push(
+            "Must include lowercase letters in password!"
+          );
         }
       }
+
+      if (validationMessages.length > 0) {
+        validationMessages.forEach((message) => toast.warn(message));
+        return;
+      }
+
+      handleLogin();
     } catch (error) {
-      console.log("error :", error);
-      console.log("error msg :", error.message);
+      console.error(error);
     }
   }
 
@@ -118,9 +131,9 @@ function LoginPage() {
               <input
                 className="text-black text-md px-4 py-6  border border-gray-300 h-10 w-full rounded-lg focus:outline-none focus:border-gray-400 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-                type="email"
-                name="email"
-                value={email || ""}
+                type="uniqueId"
+                name="uniqueId"
+                value={uniqueId || ""}
                 onChange={(e) => handleChange(e)}
                 placeholder="Enter Your Email Address"
                 autoComplete="off"
@@ -188,7 +201,7 @@ function LoginPage() {
       <ToastContainer
         draggable={false}
         autoClose={2000}
-        position={"top-right"}
+        position={"top-center"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

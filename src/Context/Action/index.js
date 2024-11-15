@@ -32,3 +32,29 @@ export const updateData = (data) => {
         payload: data
     };
 }
+
+export const bannerDataList = (data) => {
+    return {
+      type: "BANNER",
+      payload: data,
+    };
+  };
+
+  export const QuestionList = (data) => {
+    return {
+      type: "QUESTIONS",
+      payload: data,
+    };
+  };
+  export const CurrentData = (data) => {
+    return {
+      type: "CURRENT",
+      payload: data,
+    };
+  };
+  export const CurrentQuestion = (data) => {
+    return {
+      type: "EDIT",
+      payload: data,
+    };
+  };
