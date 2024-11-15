@@ -24,7 +24,7 @@ function SubjectPage() {
   const fetchSubjects = async () => {
     try {
       const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/question/subject-wise-question-count",
+        `https://api-bef.hkdigiverse.com/question/subject-wise-question-count`,
         {
           headers: {
             Authorization: accessToken,
@@ -32,7 +32,16 @@ function SubjectPage() {
           },
         }
       );
-      console.log(response.data.data);
+      const res = await axios.get(
+        `https://api-bef.hkdigiverse.com/classes/all?page=1&limit=10`,
+        {
+          headers: {
+            Authorization: accessToken,
+            Accept: "application/json",
+          },
+        }
+      );
+      console.log(res.data.data);
       dispatch(SubjectData(response.data.data));
       setData(response.data.data);
     } catch (err) {

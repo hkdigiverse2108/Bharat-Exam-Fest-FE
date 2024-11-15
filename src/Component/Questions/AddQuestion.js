@@ -5,25 +5,27 @@ import { VscSaveAs } from "react-icons/vsc";
 import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 import SingleSelect from "../Ui/SingleSelect";
 import RadioButtons from "../Ui/RadioButtons";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AddQuestion() {
   const navigate = useNavigate();
+  const classId = useSelector((state) => state.authConfig.userInfo[0]._id);
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
   const subject = useSelector((state) => state.userConfig.CurrentSubject[0]);
+
   const [type, setType] = useState("");
   const [questionType, setQuestionType] = useState("normal");
   const [subtopics, setSubtopics] = useState([]);
-  const [subjectname, setSubjectname] = useState('');
+  const [subjectname, setSubjectname] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState([]);
-  const [subTopicName, setSubTopicName] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState([]);
+
   const [options, setOptions] = useState({
     english: { A: false, B: false, C: false, D: false },
     hindi: { A: false, B: false, C: false, D: false },
@@ -41,37 +43,27 @@ function AddQuestion() {
 
   const [addQuestion, setAddQuestion] = useState({
     subjectId: subject._id,
-    classesId: subject.class,
+    classesId: classId,
     subtopicIds: [],
     type: type,
     questionType: questionType,
     englishQuestion: {
       question: "",
-      options: {
-        A: "",
-        B: "",
-        C: "",
-        D: "",
-      },
+      options: { A: "", B: "", C: "", D: "" },
       answer: "",
       solution: "",
     },
     hindiQuestion: {
       question: "",
-      options: {
-        A: "",
-        B: "",
-        C: "",
-        D: "",
-      },
+      options: { A: "", B: "", C: "", D: "" },
       answer: "",
       solution: "",
     },
   });
 
+  // Handle checkbox selection for options
   const handleCheck = (language, event) => {
     const selectedValue = event.target.value;
-
     setOptions((prev) => {
       const newOptions = { ...prev };
       Object.keys(newOptions[language]).forEach((key) => {
@@ -81,13 +73,9 @@ function AddQuestion() {
     });
   };
 
-  useEffect(() => {
-    console.log("add", addQuestion);
-  }, [addQuestion]);
-
+  // Handle type change
   const handleTypeChange = (event) => {
     const { value } = event.target;
-
     setType(event.target.value);
     setAddQuestion((prev) => ({
       ...prev,
@@ -95,22 +83,21 @@ function AddQuestion() {
     }));
   };
 
+  // useEffect(() => {
+  //   console.log("QUESTION",addQuestion);
+  // }, [addQuestion]);
+
+  // Handle subject change
   const handleSubjectChange = (event) => {
     const { value } = event.target;
-    // const selectedClass = subjectname.find(
-    //   (classItem) => classItem.name === value
-    // );
     setSelectedSubject(value);
-    setAddQuestion((prev) => ({
-      ...prev,
-      classesId: value,
-    }));
   };
 
+  // Handle subtopic change
   const handleSubtopicChange = (event) => {
     const { value } = event.target;
+
     const dataId = value.map((res) => res?._id);
-    setSubTopicName(dataId);
     setSelectedSubtopic(value);
     setAddQuestion((prev) => ({
       ...prev,
@@ -118,198 +105,166 @@ function AddQuestion() {
     }));
   };
 
+  // Handle input changes for questions and options
   const handleChange = (event) => {
     const { name, value } = event.target;
+    const [lang, field, option] = name.split(".");
 
-    if (name.startsWith("englishQuestion.")) {
-      const fieldName = name.split(".")[1];
-      if (fieldName === "options") {
-        const optionKey = name.split(".")[2];
+    if (lang === "englishQuestion" || lang === "hindiQuestion") {
+      if (field === "options" && option) {
         setAddQuestion((prev) => ({
           ...prev,
-          englishQuestion: {
-            ...prev.englishQuestion,
+          [lang]: {
+            ...prev[lang],
             options: {
-              ...prev.englishQuestion.options,
-              [optionKey]: value,
+              ...prev[lang].options,
+              [option]: value,
             },
           },
         }));
       } else {
         setAddQuestion((prev) => ({
           ...prev,
-          englishQuestion: {
-            ...prev.englishQuestion,
-            [fieldName]: value,
-          },
-        }));
-      }
-    } else if (name.startsWith("hindiQuestion.")) {
-      const fieldName = name.split(".")[1];
-      if (fieldName === "options") {
-        const optionKey = name.split(".")[2];
-        setAddQuestion((prev) => ({
-          ...prev,
-          hindiQuestion: {
-            ...prev.hindiQuestion,
-            options: {
-              ...prev.hindiQuestion.options,
-              [optionKey]: value,
-            },
-          },
-        }));
-      } else {
-        setAddQuestion((prev) => ({
-          ...prev,
-          hindiQuestion: {
-            ...prev.hindiQuestion,
-            [fieldName]: value,
+          [lang]: {
+            ...prev[lang],
+            [field]: value,
           },
         }));
       }
     } else {
-      // Update the type field directly
       setAddQuestion((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
+  
   };
 
-  const [statement, setStatement] = useState([]);
-  const [inputValue, setInputValue] = useState("");
-
-  function handleAddValue(e) {
-    const { value } = e.target;
-    if (value !== "") {
-      setInputValue(value);
-    }
-  }
-
-  function AddStatement() {
-    setStatement([...statement, inputValue]);
-    setInputValue("");
-  }
-
   const isEmpty = () => {
-    if (
+    const { englishQuestion, hindiQuestion } = addQuestion;
+    return (
       !addQuestion.subjectId ||
       !addQuestion.classesId ||
       addQuestion.subtopicIds.length === 0 ||
       !addQuestion.type ||
       !addQuestion.questionType ||
-      !addQuestion.englishQuestion.question ||
-      !addQuestion.englishQuestion.answer ||
-      !addQuestion.englishQuestion.solution ||
-      !addQuestion.hindiQuestion.question ||
-      !addQuestion.hindiQuestion.answer ||
-      !addQuestion.hindiQuestion.solution
-    ) {
-      return true;
-    }
-
-    const englishOptions = addQuestion.englishQuestion.options;
-    const hindiOptions = addQuestion.hindiQuestion.options;
-
-    if (
-      !englishOptions.A ||
-      !englishOptions.B ||
-      !englishOptions.C ||
-      !englishOptions.D ||
-      !hindiOptions.A ||
-      !hindiOptions.B ||
-      !hindiOptions.C ||
-      !hindiOptions.D
-    ) {
-      return true;
-    }
-
-    return false;
+      !englishQuestion.question ||
+      !englishQuestion.answer ||
+      !englishQuestion.solution ||
+      !hindiQuestion.question ||
+      !hindiQuestion.answer ||
+      !hindiQuestion.solution ||
+      Object.values(englishQuestion.options).some((opt) => !opt) ||
+      Object.values(hindiQuestion.options).some((opt) => !opt)
+    );
   };
 
   const addNewQuestion = async () => {
     try {
       if (isEmpty()) {
         toast.warning("Please fill up empty fields.");
+      }
+      let data = JSON.stringify(addQuestion);
+      console.log(addQuestion);
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: "https://api-bef.hkdigiverse.com/question/add",
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
+
+      const response = await axios.request(config);
+
+      if (response.status === 200) {
+        toast.success("Question added successfully");
+        navigate("/subjectDetails");
       } else {
-        let data = JSON.stringify(addQuestion);
-        console.log(addQuestion);
-
-        let config = {
-          method: "post",
-          maxBodyLength: Infinity,
-          url: "https://api-bef.hkdigiverse.com/question/add",
-          headers: {
-            Authorization: accessToken,
-            "Content-Type": "application/json",
-          },
-          data: data,
-        };
-
-        axios
-          .request(config)
-          .then((response) => {
-            if (response.status === 200) {
-              toast.success(response.message);
-              console.log("success", response.data);
-              console.log("msg", response.message);
-              navigate("/subjectDetails");
-            } else {
-              console.log("failed", response);
-              console.log("msg", response.message);
-              // toast.error(response.message);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        toast.error("Failed to add question");
       }
     } catch (err) {
       console.error(err.message);
+      toast.error("An error occurred while adding the question.");
     }
   };
 
-  const fetchSubjectname = async () => {
-    try {
-      const response = await axios.get(
-        `https://api-bef.hkdigiverse.com/subject/${subject._id}`,
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      console.log(response.data.data.name);
+  // const fetchSubjectname = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://api-bef.hkdigiverse.com/subject/${subject._id}`,
+  //       {
+  //         headers: {
+  //           Authorization: accessToken,
+  //           Accept: "application/json",
+  //         },
+  //       }
+  //     );
+  //     setSubjectname(response.data.data);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //     toast.error("Failed to fetch subject name.");
+  //   }
+  // };
 
-      setSubjectname(response.data.data);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-  const fetchSubtopics = async () => {
-    try {
-      const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      // console.log(response.data.data.sub_topic_data);
+  // const fetchSubtopics = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
+  //       {
+  //         headers: {
+  //           Authorization: accessToken,
+  //           Accept: "application/json",
+  //         },
+  //       }
+  //     );
+  //     setSubtopics(response.data.data.sub_topic_data);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //     toast.error("Failed to fetch subtopics.");
+  //   }
+  // };
 
-      setSubtopics(response.data.data.sub_topic_data);
-    } catch (err) {
-      console.error(err.message);
+  const fetchData = async () => {
+    try {
+      const urlSubtopics = `https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10`;
+      const urlSubjectName = `https://api-bef.hkdigiverse.com/subject/${subject._id}`;
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+      };
+      const [response1, response2] = await Promise.all([
+        axios.get(urlSubtopics, config),
+        axios.get(urlSubjectName, config),
+      ]);
+
+      if (response1.status === 200 && response2.status === 200) {
+        // console.log("Data from subtopic:", response1.data.data.sub_topic_data);
+        setSubtopics(response1.data.data.sub_topic_data);
+        // console.log(
+        //   "Data from subject:",
+        //   response2.data.data.question_data
+        // );
+        setSubjectname(response2.data.data);
+        // toast.success("Data fetched successfully!");
+      } else {
+        toast.error("Failed to fetch data from one or both endpoints.");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("An error occurred while fetching data.");
     }
   };
 
   useEffect(() => {
-    fetchSubjectname();
-    fetchSubtopics();
-    // console.log("add",subject);
+    fetchData();
   }, []);
 
   return (
@@ -452,7 +407,7 @@ function AddQuestion() {
                       </div>
                       <div className="flex items-center justify-end w-full">
                         <button
-                          onClick={AddStatement}
+                          // onClick={AddStatement}
                           className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
                         >
                           <svg
@@ -470,10 +425,10 @@ function AddQuestion() {
                           id="username"
                           type="text"
                           placeholder="Add"
-                          onChange={(e) => handleAddValue(e)}
+                          // onChange={(e) => handleAddValue(e)}
                         />
                       </div>
-                      <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-3 ">
+                      {/* <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-3 ">
                         {statement.map(function (item, index) {
                           return (
                             <div
@@ -504,7 +459,7 @@ function AddQuestion() {
                           powerful JavaScript library used for building dynamic
                           and interactive user interfaces.
                         </div>
-                      </div>
+                      </div> */}
                       {/* options */}
                       <div className=" p-4 space-y-4">
                         <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
@@ -694,7 +649,7 @@ function AddQuestion() {
                       </div>
                       <div className="flex items-center justify-end w-full">
                         <button
-                          onClick={AddStatement}
+                          // onClick={AddStatement}
                           className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
                         >
                           <svg
@@ -711,10 +666,10 @@ function AddQuestion() {
                         id="username"
                         type="text"
                         placeholder="Add"
-                        onChange={(e) => handleAddValue(e)}
+                        // onChange={(e) => handleAddValue(e)}
                       />
                       <div className="space-y-2">
-                        {statement.map(function (item, index) {
+                        {/* {statement.map(function (item, index) {
                           return (
                             <div
                               key={index}
@@ -723,7 +678,7 @@ function AddQuestion() {
                               {item}
                             </div>
                           );
-                        })}
+                        })} */}
                         <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
                           React, also known as ReactJS, is a popular and
                           powerful JavaScript library used for building dynamic
@@ -1036,7 +991,7 @@ function AddQuestion() {
                       </div>
                       <div className="flex items-center justify-end w-full">
                         <button
-                          onClick={AddStatement}
+                          // onClick={AddStatement}
                           className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
                         >
                           <svg
@@ -1054,11 +1009,11 @@ function AddQuestion() {
                           id="username"
                           type="text"
                           placeholder="Add"
-                          onChange={(e) => handleAddValue(e)}
+                          // onChange={(e) => handleAddValue(e)}
                         />
                       </div>
                       <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-3 ">
-                        {statement.map(function (item, index) {
+                        {/* {statement.map(function (item, index) {
                           return (
                             <div
                               key={index}
@@ -1067,7 +1022,7 @@ function AddQuestion() {
                               {item}
                             </div>
                           );
-                        })}
+                        })} */}
                         <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
                           React, also known as ReactJS, is a popular and
                           powerful JavaScript library used for building dynamic
@@ -1279,7 +1234,7 @@ function AddQuestion() {
                       </div>
                       <div className="flex items-center justify-end w-full">
                         <button
-                          onClick={AddStatement}
+                          // onClick={AddStatement}
                           className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
                         >
                           <svg
@@ -1296,10 +1251,10 @@ function AddQuestion() {
                         id="username"
                         type="text"
                         placeholder="Add"
-                        onChange={(e) => handleAddValue(e)}
+                        // onChange={(e) => handleAddValue(e)}
                       />
                       <div className="space-y-2">
-                        {statement.map(function (item, index) {
+                        {/* {statement.map(function (item, index) {
                           return (
                             <div
                               key={index}
@@ -1308,7 +1263,7 @@ function AddQuestion() {
                               {item}
                             </div>
                           );
-                        })}
+                        })} */}
                         <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
                           React, also known as ReactJS, is a popular and
                           powerful JavaScript library used for building dynamic

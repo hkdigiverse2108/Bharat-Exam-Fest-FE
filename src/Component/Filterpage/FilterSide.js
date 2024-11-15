@@ -3,7 +3,7 @@ import { RxCross1 } from "react-icons/rx";
 // import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
-function filterDataide({ filterData, onChange, apply, onClose }) {
+function filterDataide({ filterData, onChange, apply, onClose, lastModify }) {
   return (
     <div className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">
       <div className="flex items-center max-w-sm min-h-screen text-center">
@@ -110,6 +110,32 @@ function filterDataide({ filterData, onChange, apply, onClose }) {
                 className="space-y-2 text-sm"
                 aria-labelledby="dropdownDefault"
               >
+                {lastModify.map((option) => (
+                  <li
+                    key={option.id}
+                    className="flex items-center justify-between"
+                  >
+                    <label
+                      htmlFor={option.id}
+                      className="ml-2 text-md font-medium text-gray-700 dark:text-gray-100"
+                    >
+                      {option.label}
+                    </label>
+                    <input
+                      id={option.id}
+                      type="radio"
+                      name="sortOrder"
+                      checked={option.checked}
+                      onChange={onChange}
+                      className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
+                    />
+                  </li>
+                ))}
+              </ul>
+              {/* <ul
+                className="space-y-2 text-sm"
+                aria-labelledby="dropdownDefault"
+              >
                 <li className="flex items-center justify-between">
                   <label
                     htmlFor="newestFirst"
@@ -119,7 +145,7 @@ function filterDataide({ filterData, onChange, apply, onClose }) {
                   </label>
                   <input
                     id="newestFirst"
-                    type="checkbox"
+                    type="radio"
                     checked={filterData.newestFirst}
                     onChange={onChange}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
@@ -135,7 +161,7 @@ function filterDataide({ filterData, onChange, apply, onClose }) {
                   </label>
                   <input
                     id="olderFirst"
-                    type="checkbox"
+                    type="radio"
                     checked={filterData.olderFirst}
                     onChange={onChange}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
@@ -151,15 +177,15 @@ function filterDataide({ filterData, onChange, apply, onClose }) {
                   </label>
                   <input
                     id="lastModified"
-                    type="checkbox"
+                    type="radio"
                     checked={filterData.lastModified}
                     onChange={onChange}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
                   />
                 </li>
-              </ul>
+              </ul> */}
             </div>
-            <div className="rounded-lg space-y-2 shadow p-4">
+            {/* <div className="rounded-lg space-y-2 shadow p-4">
               <h6 className=" text-lg font-medium text-gray-700 dark:text-white">
                 Question Bank
               </h6>
@@ -216,7 +242,7 @@ function filterDataide({ filterData, onChange, apply, onClose }) {
                   />
                 </li>
               </ul>
-            </div>
+            </div> */}
           </div>
           <div className="w-full flex items-center space-x-4">
             <button

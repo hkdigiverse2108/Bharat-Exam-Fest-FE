@@ -22,8 +22,10 @@ export default function SingleSelect({ label, value, onChange, options }) {
   return (
     <>
       <FormControl className="container h-full" size="small">
+        <InputLabel id={`${label}-label`} size="small"></InputLabel>
         <Select
           labelId="my-select-label"
+          id={label}
           value={value}
           onChange={onChange}
           displayEmpty

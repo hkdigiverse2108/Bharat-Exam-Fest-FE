@@ -24,15 +24,13 @@ function SubjectDetails() {
   const questionList = useSelector((state) => state.userConfig.Questions[0]);
   const [confirm, setConfirm] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const [classNames, setClassNames] = useState([]);
-  const [selectedClass, setSelectedClass] = useState([]);
   const [subjectData, setSubjectData] = useState();
   const [itemToDelete, setItemToDelete] = useState(null);
   const [questions, setQustions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [subtopics, setSubtopics] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState([]);
-
+  const [subTopicName, setSubTopicName] = useState("");
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     easy: false,
@@ -41,10 +39,19 @@ function SubjectDetails() {
     newestFirst: false,
     olderFirst: false,
     lastModified: false,
-    question1: false,
-    question2: false,
-    question3: false,
+    // question1: false,
+    // question2: false,
+    // question3: false,
   });
+  const lastModifyfilter = [
+    { id: "newestFirst", label: "Newest First", checked: filters.newestFirst },
+    { id: "olderFirst", label: "Older First", checked: filters.olderFirst },
+    {
+      id: "lastModified",
+      label: "Last Modified",
+      checked: filters.lastModified,
+    },
+  ];
 
   const handleCheckboxChange = (event) => {
     const { id, checked } = event.target;
@@ -58,6 +65,17 @@ function SubjectDetails() {
     setToggle(!toggle);
   }
 
+  const resetFilters = () => {
+    setFilters({
+      easy: false,
+      medium: false,
+      hard: false,
+      newestFirst: false,
+      olderFirst: false,
+      lastModified: false,
+    });
+  };
+
   const applyFilters = () => {
     const checkedValues = Object.entries(filters)
       .filter(([key, value]) => value)
@@ -68,18 +86,19 @@ function SubjectDetails() {
     );
     setFilteredQuestions(filteredQuestions);
     handleFilterData();
+    // resetFilters();
     console.log("Checked Filters:", filteredQuestions);
   };
 
-  useEffect(() => {
-    const checkedValues = Object.entries(filters)
-      .filter(([key, value]) => value)
-      .map(([key]) => key);
-    // Function to sort questions based on the selected sort order
-    const sortQuestions = () => {
-      const subtopicIds = subtopics.map((subtopic) => subtopic._id);
-      let sorted = [...questions]; // Create a copy of the questions array
+  const handleSelectionChange = (e) => {
+    const { value } = e.target;
+    setSubTopicName(value._id);
+    setSelectedSubtopic(value);
+  };
 
+  useEffect(() => {
+    const sortQuestions = () => {
+      let sorted = [...questions];
       if (filters.newestFirst) {
         sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       } else if (filters.olderFirst) {
@@ -90,30 +109,8 @@ function SubjectDetails() {
 
       setFilteredQuestions(sorted);
     };
-
     sortQuestions();
-  }, [filters, questions]);
-
-  const handleSelectionChange = (e) => {
-    const { value } = e.target;
-
-    // const dataId = value.map((res) => res._id);
-    // const selected = subtopics.find((classItem) => classItem.name === value);
-    setSelectedSubtopic(value._id);
-    // console.log(dataId);
-  };
-
-  // useEffect(() => {
-  //   if (selectedSubtopic) {
-  //     const filtered = questions
-  //       .filter((question) => question)
-  //       .map((value, i) => value.subtopicIds[i] === selectedSubtopic);
-
-  //     setFilteredQuestions(filtered);
-  //   } else {
-  //     setFilteredQuestions(questions);
-  //   }
-  // }, [selectedSubtopic]);
+  }, [filters, questions, subTopicName]);
 
   useEffect(() => {
     const initialFilters = {};
@@ -143,49 +140,43 @@ function SubjectDetails() {
     setItemToDelete(value);
     setConfirm(!confirm);
   }
-  const fetchSubtopics = async () => {
-    try {
-      const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      console.log(response.data.data.sub_topic_data);
 
-      setSubtopics(response.data.data.sub_topic_data);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-  const fetchQuestions = async () => {
+  const fetchData = async () => {
     try {
+      const urlSubtopics = `https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10`;
+      const urlQuestions = `https://api-bef.hkdigiverse.com/question/all?page=1&limit=10&subjectFilter=${subject._id}`;
       let config = {
         method: "get",
         maxBodyLength: Infinity,
-        url: `https://api-bef.hkdigiverse.com/question/all?page=1&limit=10&subjectFilter=${subject._id}`,
         headers: {
           Authorization: accessToken,
           "Content-Type": "application/json",
         },
       };
+      const [response1, response2] = await Promise.all([
+        axios.get(urlSubtopics, config),
+        axios.get(urlQuestions, config),
+      ]);
 
-      axios.request(config).then((response) => {
-        if (response.status === 200) {
-          console.log("Question List", response.data.data.question_data);
-          dispatch(QuestionList(response.data.data.question_data));
-          setQustions(response.data.data.question_data);
-        } else {
-          console.log("no data ", response.message);
-        }
-      });
-    } catch (err) {
-      setError(err.message);
+      if (response1.status === 200 && response2.status === 200) {
+        // console.log("Data from subtopic:", response1.data.data.sub_topic_data);
+        setSubtopics(response1.data.data.sub_topic_data);
+        // console.log(
+        //   "Data from questionList:",
+        //   response2.data.data.question_data
+        // );
+        dispatch(QuestionList(response2.data.data.question_data));
+        setQustions(response2.data.data.question_data);
+        // toast.success("Data fetched successfully!");
+      } else {
+        toast.error("Failed to fetch data from one or both endpoints.");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("An error occurred while fetching data.");
     }
   };
+
   const deleteQuestion = async () => {
     try {
       let config = {
@@ -204,7 +195,7 @@ function SubjectDetails() {
           console.log(response.data);
           toast.success(response.data.message);
           handleDelete();
-          fetchQuestions();
+          fetchData();
         })
         .catch((error) => {
           console.error(error);
@@ -215,15 +206,9 @@ function SubjectDetails() {
   };
 
   useEffect(() => {
-    console.log("current ", subject);
-  }, [subject]);
-
-  useEffect(() => {
-    fetchQuestions();
-    fetchSubtopics();
+    fetchData();
     setSubjectData(subject);
-    // setFilteredQuestions(questionList);
-    console.log("questionList", subtopics);
+    // console.log(subtopics);
   }, []);
 
   return (
@@ -262,66 +247,80 @@ function SubjectDetails() {
                 {subject.subjectName}
               </p>
               <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-2 2xl:grid-cols-4 2xl:gap-6">
-                {/* <FilterQuestion
+                <FilterQuestion
                   label="Subject"
                   value={selectedSubtopic}
                   onChange={handleSelectionChange}
                   options={subtopics}
-                /> */}
+                />
               </div>
             </div>
           </div>
           <div className="w-full space-y-6 text-left  md:gap-16 dark:border-gray-700 font-sans">
             <ul className="space-y-4">
-              {filteredQuestions.map((value, index) => (
-                <li key={index} className="space-y-2">
-                  <div className="flex items-center justify-between text-lg font-medium text-gray-900 dark:text-white">
-                    <div className="flex items-center justify-between gap-x-4">
-                      <p className="block font-sans text-lg font-medium text-blue-gray-900 capitalize antialiased">
-                        {index + 1}
-                      </p>
-                      <p className="block font-sans text-lg font-medium text-blue-gray-900 capitalize antialiased">
-                        {value.englishQuestion.question}
-                      </p>
+              {filteredQuestions
+                .filter((question) =>
+                  subTopicName !== ""
+                    ? question.subtopicIds &&
+                      question.subtopicIds.length > 0 &&
+                      question.subtopicIds.includes(subTopicName)
+                    : question
+                )
+                .map((value, index) => (
+                  <li key={index} className="space-y-2">
+                    <div className="flex items-center justify-between text-lg font-medium text-gray-900 dark:text-white">
+                      <div className="flex items-center justify-between gap-x-4">
+                        <p className="block font-sans text-lg font-medium text-blue-gray-900 capitalize antialiased">
+                          {index + 1}
+                        </p>
+                        <p className="block font-sans text-lg font-medium text-blue-gray-900 capitalize antialiased">
+                          {value.englishQuestion.question}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-end space-x-4 pr-2">
+                        <span
+                          value="Verified"
+                          className={`${
+                            value.type === "easy"
+                              ? "bg-green-100  text-green-600"
+                              : value.type === "medium"
+                              ? "bg-yellow-100  text-yellow-600"
+                              : value.type === "hard"
+                              ? "bg-red-100  text-red-600"
+                              : "bg-gray-100  text-gray-900"
+                          } px-4 text-sm leading-8 font-medium rounded-full capitalize `}
+                        >
+                          {value.type}
+                        </span>
+                        <button
+                          onClick={() => handleDelete(value._id)}
+                          className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-red-100 border  hover:bg-opacity-90  "
+                        >
+                          <svg
+                            className="font-bold  w-5 h-5"
+                            viewBox="0 0 16 16"
+                          >
+                            <AiOutlineDelete />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleEditque(value)}
+                          className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-green-100 border  hover:bg-opacity-90  "
+                        >
+                          <svg
+                            className="font-bold  w-5 h-5"
+                            viewBox="0 0 17 17"
+                          >
+                            <TfiPencil />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-end space-x-4 pr-2">
-                      <span
-                        value="Verified"
-                        className={`${
-                          value.type === "easy"
-                            ? "bg-green-100  text-green-600"
-                            : value.type === "medium"
-                            ? "bg-yellow-100  text-yellow-600"
-                            : value.type === "hard"
-                            ? "bg-red-100  text-red-600"
-                            : "bg-gray-100  text-gray-900"
-                        } px-4 text-sm leading-5 font-medium rounded-full capitalize `}
-                      >
-                        {value.type}
-                      </span>
-                      <button
-                        onClick={() => handleDelete(value._id)}
-                        className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-red-100 border  hover:bg-opacity-90  "
-                      >
-                        <svg className="font-bold  w-5 h-5" viewBox="0 0 16 16">
-                          <AiOutlineDelete />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleEditque(value)}
-                        className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-green-100 border  hover:bg-opacity-90  "
-                      >
-                        <svg className="font-bold  w-5 h-5" viewBox="0 0 17 17">
-                          <TfiPencil />
-                        </svg>
-                      </button>
+                    <div className="rounded-md border border-gray-300 px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                      {value.englishQuestion.solution}
                     </div>
-                  </div>
-                  <div className="rounded-md border border-gray-300 px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                    {value.englishQuestion.solution}
-                  </div>
-                </li>
-              ))}
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
@@ -335,6 +334,7 @@ function SubjectDetails() {
         <div className={`${toggle === true ? "block" : "hidden"}`}>
           <FilterSide
             filterData={filters}
+            lastModify={lastModifyfilter}
             onChange={handleCheckboxChange}
             apply={applyFilters}
             onClose={handleFilterData}

@@ -14,7 +14,7 @@ function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 h-20 px-4 py-4  flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+      <header className="sticky top-0 z-20 h-20 px-4 py-4  flex w-full bg-white border-b border-gray-300 drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
         <div className="flex flex-grow items-center justify-between">
           <div className="flex items-center justify-start gap-x-20">
             <div className="flex items-center gap-2 sm:gap-4">
@@ -31,13 +31,13 @@ function Navbar() {
             </div>
             {/* navigationtab */}
             <nav className="hidden text-right lg:block ">
-              <ul className=" flex items-center justify-start duration-300 ease-linear  gap-x-1.5">
+              <ul className=" flex items-center justify-start duration-300 ease-linear text-lg font-medium  gap-x-1.5">
                 <li>
                   <NavLink
                     to="/"
                     className={`${
                       pathname === "/" && "text-white bg-orange-600"
-                    } group relative flex items-center gap-2.5 outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                    } group relative flex items-center gap-2.5 outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 `}
                   >
                     Dashboard
                   </NavLink>
@@ -52,7 +52,7 @@ function Navbar() {
                       pathname === "/editQuestion"
                         ? "text-white bg-orange-600"
                         : "text-black"
-                    } group relative flex items-center gap-2.5 outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
+                    } group relative flex items-center gap-2.5 outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4`}
                   >
                     Add Question
                   </NavLink>
@@ -66,11 +66,11 @@ function Navbar() {
             </div>
             <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
               <button
-                className=" text-md text-slate-500 p-2 mt-2 hover:bg-slate-500 hover:text-white rounded-full lg:hidden xl:hidden 2xl:hidden"
+                className=" text-md text-slate-600 p-2 mt-2 hover:bg-slate-6000 hover:text-white rounded-full lg:hidden xl:hidden 2xl:hidden"
                 onClick={Navigation}
                 title="Menu"
               >
-                <svg viewBox="0 0 16 16" className="h-6 w-6">
+                <svg viewBox="0 0 16 16" className="h-6 w-6 ">
                   <RiMenuLine />
                 </svg>
               </button>
@@ -82,7 +82,7 @@ function Navbar() {
       <div
         className={`${
           navbarOpen === true
-            ? "block lg:hidden w-full px-4 py-6 bg-sky-100 border-b shadow-md duration-300 ease-linear"
+            ? "block lg:hidden w-full px-4 py-6 bg-sky-50 border-b border-gray-300 shadow-md duration-300 ease-linear"
             : "hidden"
         }`}
         id="mobile-menu"

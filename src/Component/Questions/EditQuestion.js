@@ -13,13 +13,12 @@ import RadioButtons from "../Ui/RadioButtons";
 
 function EditQuestion() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { state } = location;
+  const classId = useSelector((state) => state.authConfig.userInfo[0]._id);
   const subject = useSelector((state) => state.userConfig.CurrentQue[0]);
   const [editQuestion, setEditQuestion] = useState({
     questionId: subject._id,
     subjectId: subject.subjectId,
-    classesId: subject.classesId,
+    classesId: classId,
     subtopicIds: subject.subtopicIds,
     questionBank: subject.questionBank,
     type: subject.type,
@@ -39,13 +38,11 @@ function EditQuestion() {
   });
   const [type, setType] = useState(editQuestion.type);
   const [questionType, setQuestionType] = useState(editQuestion.questionType);
-  const [classNames, setClassNames] = useState([]);
-  const [selectedClass, setSelectedClass] = useState([]);
   const [subtopics, setSubtopics] = useState([]);
   const [subTopicName, setSubTopicName] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState([]);
-  const [subjectname, setSubjectname] = useState("");
+  const [subjectname, setSubjectname] = useState([]);
 
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
@@ -86,17 +83,9 @@ function EditQuestion() {
     }));
   };
 
-
   const handleSubjectChange = (event) => {
     const { value } = event.target;
-    // const selectedClass = subjectname.find(
-    //   (classItem) => classItem.name === value
-    // );
     setSelectedSubject(value);
-    setEditQuestion((prev) => ({
-      ...prev,
-      subjectId: value._id,
-    }));
   };
 
   const handleSubtopicChange = (event) => {
@@ -143,7 +132,9 @@ function EditQuestion() {
       return newState;
     });
   };
-
+  useEffect(() => {
+    console.log("EDIT", editQuestion);
+  }, [editQuestion]);
   const isEmpty = () => {
     if (
       !editQuestion.subjectId ||
@@ -199,91 +190,117 @@ function EditQuestion() {
           data: data,
         };
 
-        axios
-          .request(config)
-          .then((response) => {
-            if (response.status === 200) {
-              toast.success(response.message);
-              navigate("/subjectDetails");
-              console.log("success", response.data);
-              console.log("edit msg", response.message);
-            } else {
-              console.log("failed", response);
-              console.log("not edit", response.message);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        const response = await axios.request(config);
+
+        if (response.status === 200) {
+          toast.success("Question edited successfully");
+          console.log("success", response.data);
+          navigate("/subjectDetails");
+        } else {
+          console.log("failed", response);
+          console.log("msg", response.message);
+        }
       }
     } catch (err) {
       console.error(err.message);
     }
   };
 
-  const fetchSubjectname = async () => {
+  // const fetchSubjectname = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://api-bef.hkdigiverse.com/subject/${subject.subjectId}`,
+  //       {
+  //         headers: {
+  //           Authorization: accessToken,
+  //           Accept: "application/json",
+  //         },
+  //       }
+  //     );
+  //     console.log(response.data.data);
+
+  //     setSubjectname(response.data.data);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
+  // const fetchSubtopics = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
+  //       {
+  //         headers: {
+  //           Authorization: accessToken,
+  //           Accept: "application/json",
+  //         },
+  //       }
+  //     );
+  //     const Subtopics = response.data.data.sub_topic_data.map(
+  //       (question) => question
+  //     );
+
+  //     const uniqueData = Subtopics.reduce((acc, current) => {
+  //       const exist = acc.find((item) => item._id === current._id);
+  //       if (!exist) {
+  //         acc.push(current);
+  //       }
+  //       return acc;
+  //     }, []);
+
+  //     const existSubtopic = editQuestion.subtopicIds.map((id) => {
+  //       const found = uniqueData.find((item) => item._id === id);
+  //       return found;
+  //     });
+
+  //     setSubtopics(uniqueData);
+  //     setSelectedSubtopic(existSubtopic);
+
+  //     // console.log(response.data.data.sub_topic_data);
+  //     // console.log("filter", existSubtopic);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
+
+  const fetchData = async () => {
     try {
-      const response = await axios.get(
-        `https://api-bef.hkdigiverse.com/subject/${subject.subjectId}`,
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      console.log(response.data.data.name);
+      const urlSubtopics = `https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10`;
+      const urlSubjectName = `https://api-bef.hkdigiverse.com/subject/${subject._id}`;
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+      };
+      const [response1, response2] = await Promise.all([
+        axios.get(urlSubtopics, config),
+        axios.get(urlSubjectName, config),
+      ]);
 
-      setSubjectname(response.data.data);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-  const fetchSubtopics = async () => {
-    try {
-      const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      const Subtopics = response.data.data.sub_topic_data.map(
-        (question) => question
-      );
-
-      const uniqueData = Subtopics.reduce((acc, current) => {
-        const exist = acc.find((item) => item._id === current._id);
-        if (!exist) {
-          acc.push(current);
-        }
-        return acc;
-      }, []);
-
-      const existSubtopic = editQuestion.subtopicIds.map((id) => {
-        const found = uniqueData.find((item) => item._id === id);
-        return found;
-      });
-
-      setSubtopics(uniqueData);
-      setSelectedSubtopic(existSubtopic);
-
-      // console.log(response.data.data.sub_topic_data);
-      // console.log("filter", existSubtopic);
-    } catch (err) {
-      console.error(err.message);
+      if (response1.status === 200 && response2.status === 200) {
+        // console.log("Data from subtopic:", response1.data.data.sub_topic_data);
+        setSubtopics(response1.data.data.sub_topic_data);
+        // console.log(
+        //   "Data from subject:",
+        //   response2.data.data.question_data
+        // );
+        setSubjectname(response2.data.data);
+        setSelectedSubject(response2.data.data.name);
+        // toast.success("Data fetched successfully!");
+      } else {
+        toast.error("Failed to fetch data from one or both endpoints.");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("An error occurred while fetching data.");
     }
   };
 
   useEffect(() => {
-    fetchSubjectname();
-    fetchSubtopics();
-    console.log("edit", state);
-    console.log("subject",subject);
+    fetchData();
   }, []);
-
 
   return (
     <>
@@ -336,7 +353,7 @@ function EditQuestion() {
               <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
                 Type
               </label>
-              <RadioButtons checkedValue={type}  onChange={handleTypeChange} />
+              <RadioButtons checkedValue={type} onChange={handleTypeChange} />
             </div>
           </div>
           {/* question_type */}
@@ -948,7 +965,10 @@ function EditQuestion() {
                                   id={option}
                                   type="radio"
                                   value={option}
-                                  checked={option === editQuestion.englishQuestion.answer}
+                                  checked={
+                                    option ===
+                                    editQuestion.englishQuestion.answer
+                                  }
                                   onChange={(e) => {
                                     setEditQuestion((prev) => ({
                                       ...prev,
@@ -965,7 +985,7 @@ function EditQuestion() {
                                   htmlFor={option}
                                   className="w-full py-3 ms-2 text-base font-medium text-gray-900 dark:text-gray-300"
                                 >
-                                  Option { option}
+                                  Option {option}
                                 </label>
                               </div>
                             </div>
@@ -982,7 +1002,6 @@ function EditQuestion() {
                           rows="4"
                           name={editQuestion.englishQuestion.solution}
                           value={editQuestion.englishQuestion.solution}
-
                           onChange={(e) =>
                             setEditQuestion((prev) => ({
                               ...prev,
@@ -1445,7 +1464,9 @@ function EditQuestion() {
                                   id={option}
                                   type="radio"
                                   value={option}
-                                  checked={option === editQuestion.hindiQuestion.answer}
+                                  checked={
+                                    option === editQuestion.hindiQuestion.answer
+                                  }
                                   onChange={(e) => {
                                     setEditQuestion((prev) => ({
                                       ...prev,
@@ -1462,7 +1483,7 @@ function EditQuestion() {
                                   htmlFor={option}
                                   className="w-full py-3 ms-2 text-base font-medium text-gray-900 dark:text-gray-300"
                                 >
-                                 Option {option}
+                                  Option {option}
                                 </label>
                               </div>
                             </div>

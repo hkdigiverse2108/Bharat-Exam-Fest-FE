@@ -22,17 +22,20 @@ export default function FilterQuestion({ label, value, onChange, options }) {
   return (
     <>
       <FormControl className="container h-full" size="small">
+        <InputLabel id={`${label}-label`} size="small"></InputLabel>
         <Select
           labelId="my-select-label"
           value={value}
           onChange={onChange}
+          id={label}
           displayEmpty
+          MenuProps={MenuProps}
         >
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
           {options.map((value) => (
-            <MenuItem key={value._id} value={value}>
+            <MenuItem key={value.name} value={value}>
               {value.name}
             </MenuItem>
           ))}

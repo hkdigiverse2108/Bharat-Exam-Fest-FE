@@ -25,12 +25,12 @@ export default function DropDown() {
         }}
       >
         <FormControl fullWidth>
-          {/* <InputLabel id="ranks">Rank</InputLabel> */}
+          <InputLabel id="ranks">Rank</InputLabel>
           <Select
             labelId="ranks"
             id="ranks"
             value={rank}
-            // label="Rank"
+            label="ranks"
             onChange={handleChange}
           >
             <MenuItem value="1st">1st</MenuItem>
