@@ -15,7 +15,7 @@ export default function AddContest({ onClose }) {
   );
 
   const [input, setInput] = useState({
-    contestName: "",
+    name: "",
   });
 
   function handleChange(e) {
@@ -26,7 +26,7 @@ export default function AddContest({ onClose }) {
 
   const addNewContest = async () => {
     try {
-      if (!input.contestName) {
+      if (!input.name) {
         toast.warning("Fill up empty space");
       } else {
         let data = JSON.stringify(input);
@@ -102,7 +102,7 @@ export default function AddContest({ onClose }) {
                 id="content"
                 placeholder="Enter content name"
                 onChange={(e) => handleChange(e)}
-                name="contestName"
+                name="name"
               />
             </div>
             <div className="flex items-center justify-center">

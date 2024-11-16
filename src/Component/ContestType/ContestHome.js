@@ -5,9 +5,15 @@ import Pagination from "../Pagination/Pagination";
 import AddContest from "./AddContest";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { ToastContainer, toast, cssTransition } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ConfirmationPage from "./ConfirmationPage";
 
 export default function ContestHome() {
   const [confirm, setConfirm] = useState(false);
+  const [toggle, setToggle] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+
   const [classes, setClasses] = useState([]);
   const [classesShow, setClassestShow] = useState([]);
   const [error, setError] = useState(null);
@@ -18,7 +24,7 @@ export default function ContestHome() {
 
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  // const Totalpage = Math.ceil(classes.length / itemsPerPage);
+  const Totalpage = Math.ceil(classes.length / itemsPerPage);
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   // const navigate = useNavigate();
@@ -46,6 +52,39 @@ export default function ContestHome() {
     }
   };
 
+  const deleteQuestion = async () => {
+    try {
+      let config = {
+        method: "delete",
+        maxBodyLength: Infinity,
+        url: `https://api-bef.hkdigiverse.com/contest/delete/${itemToDelete}`,
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .request(config)
+        .then((response) => {
+          console.log(response.data);
+          toast.success(response.data.message);
+          handleDelete();
+          fetchClasses();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+  function handleDelete(value) {
+    setItemToDelete(value);
+
+    setToggle(!toggle);
+  }
+
   useEffect(() => {
     setClassestShow(classes.slice(start, end));
   }, [classes, currentPage, end, start]);
@@ -68,7 +107,7 @@ export default function ContestHome() {
             <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
               <FaPlus />
             </svg>
-            <p className=" font-semibold">Add Introduction</p>
+            <p className=" font-semibold">Add ContestType</p>
           </button>
         </div>
         <div className="bg-white overflow-auto px-0">
@@ -94,57 +133,58 @@ export default function ContestHome() {
                 </th>
                 <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
                   <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
-                    Contest Type
-                  </p>
-                </th>
-                <th className="cursor-pointer border-y border-slate-200 bg-slate-300 hover:bg-slate-200 p-4 transition-colors ">
-                  <p className="antialiased font-sans text-sm flex items-center justify-between gap-2 font-normal">
                     Action
                   </p>
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    01
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    Image name
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    Content Name
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <button
-                    className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg  align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
-                    type="button"
-                  >
-                    <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                      <svg viewBox="0 0 16 16" className="w-6 h-6">
-                        <AiOutlineDelete />
-                      </svg>
-                    </span>
-                  </button>
-                </td>
-              </tr>
+              {classesShow.map((value, index) => (
+                <tr>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      {index + 1}
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      {value.name}
+                    </p>
+                  </td>
+
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <button
+                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg  align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                      type="button"
+                      onClick={() => handleDelete(value._id)}
+                    >
+                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                        <svg viewBox="0 0 16 16" className="w-6 h-6">
+                          <AiOutlineDelete />
+                        </svg>
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
         <Pagination
-          // total={Totalpage}
+          total={Totalpage}
           page={setCurrentPage}
           current={currentPage}
         />
       </section>
       <div className={`${confirm === true ? "block" : "hidden"}`}>
         <AddContest confirm={confirm} onClose={handleNavigate} />
+      </div>
+      <div className={`${toggle === true ? "block" : "hidden"}`}>
+        <ConfirmationPage
+          confirm={toggle}
+          onDelete={deleteQuestion}
+          onCancel={handleDelete}
+        />
       </div>
     </>
   );
