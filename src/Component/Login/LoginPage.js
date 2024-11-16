@@ -31,65 +31,116 @@ function LoginPage() {
     setInput({ ...input, [name]: value });
   }
 
-  async function handleLogin() {
-    await axios
-      .post(
-        `https://api-bef.hkdigiverse.com/auth/login`,
-        JSON.stringify(input),
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          validateStatus: function (status) {
-            return status >= 200 && status < 400;
-          },
-        }
-      )
-      .then((response) => {
-        console.log("Backend response", response.message);
-        if (response.status === 200) {
-          console.log("Backend response", response.data);
-          dispatch(loginSuccess(response.data.data));
-          setTimeout(() => {
-            toast.success(response.message);
-            navigate("/");
-          }, [1000]);
-        } else {
-          console.log("Backend response", response.error);
-          console.warn("Not Successfully");
-        }
-      });
+  async function handleNavigate() {
+    setConfirm(!confirm);
   }
 
   const [show, setShow] = useState(false);
 
+  // function Signup() {
+  //   try {
+  //     if (!uniqueId || !password) {
+  //       toast.warn("Fill up empty field!");
+  //     } else {
+  //       if (!uniqueId.match(emailpatton)) {
+  //         toast.warn("Email dosen't match!");
+  //       } else {
+  //         if (!password.match(spcl)) {
+  //           toast.warn("Must Include Symbol in Password!");
+  //         } else {
+  //           if (!password.match(numbers)) {
+  //             toast.warn("Must Include digit in Password!");
+  //           } else {
+  //             if (!password.match(upperCaseLetters)) {
+  //               toast.warn("Must Include upperCase Letters in Password!");
+  //             } else {
+  //               if (!password.match(lowerCaseLetters)) {
+  //                 toast.warn("Must Include lowerCase Letters in Password!");
+  //               } else {
+  //                 handleLogin();
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
+
+  async function handleLogin() {
+    try {
+      let userData = JSON.stringify(input);
+
+      let config = {
+        method: "post",
+        url: `https://api-bef.hkdigiverse.com/auth/login`,
+        maxBodyLength: Infinity,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: userData,
+      };
+      const response = await axios.request(config);
+
+      const { status, data, message, error } = response.data;
+
+      console.log("Backend response", message);
+
+      if (status === 200) {
+        console.log("Backend response", data);
+        dispatch(loginSuccess(data));
+        toast.success(message);
+        setTimeout(() => navigate("/"), 1000);
+        handleNavigate();
+      } else {
+        console.warn("Login failed:", error);
+        toast.error("Login failed: " + error);
+      }
+    } catch (err) {
+      console.error("Error during login:", err);
+      toast.error("An error occurred during login.");
+    }
+  }
+
   function Signup() {
     try {
-      if (!uniqueId || !password) {
-        toast.warn("Fill up empty field!");
+      const validationMessages = [];
+
+      if (!uniqueId) {
+        validationMessages.push("Fill up empty field!");
+      } else if (!uniqueId.match(emailpatton)) {
+        validationMessages.push("Email doesn't match!");
+      }
+
+      if (!password) {
+        validationMessages.push("Fill up empty field!");
       } else {
-        if (!uniqueId.match(emailpatton)) {
-          toast.warn("Email dosen't match!");
-        } else {
-          if (!password.match(spcl)) {
-            toast.warn("Must Include Symbol in Password!");
-          } else {
-            if (!password.match(numbers)) {
-              toast.warn("Must Include digit in Password!");
-            } else {
-              if (!password.match(upperCaseLetters)) {
-                toast.warn("Must Include upperCase Letters in Password!");
-              } else {
-                if (!password.match(lowerCaseLetters)) {
-                  toast.warn("Must Include lowerCase Letters in Password!");
-                } else {
-                  handleLogin();
-                }
-              }
-            }
-          }
+        if (!password.match(spcl)) {
+          validationMessages.push("Must include a symbol in password!");
+        }
+        if (!password.match(numbers)) {
+          validationMessages.push("Must include a digit in password!");
+        }
+        if (!password.match(upperCaseLetters)) {
+          validationMessages.push(
+            "Must include uppercase letters in password!"
+          );
+        }
+        if (!password.match(lowerCaseLetters)) {
+          validationMessages.push(
+            "Must include lowercase letters in password!"
+          );
         }
       }
+
+      if (validationMessages.length > 0) {
+        validationMessages.forEach((message) => toast.warn(message));
+        return;
+      }
+
+      handleLogin();
     } catch (error) {
       console.error(error);
     }

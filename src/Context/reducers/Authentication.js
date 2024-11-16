@@ -33,8 +33,6 @@ const Authentication = (state = authState, action) => {
       };
 
     case "LOGOUT":
-      console.log(action); 
-      
       return {
         ...state,
         isLoggedIn: false,

@@ -3,7 +3,7 @@ const initialData = {
   CurrentSubject: [],
   Questions: [],
   CurrentQue: [],
-  Logintype: "User",
+  Logintype: "Admin",
 };
 
 const DataProvider = (state = initialData, action) => {
@@ -11,19 +11,19 @@ const DataProvider = (state = initialData, action) => {
     case "SUBJECT":
       return {
         ...state,
-        Subject: [ action.payload],
+        Subject: [action.payload],
       };
 
     case "QUESTIONS":
       return {
         ...state,
-        Questions: [ action.payload],
+        Questions: [action.payload],
       };
 
     case "CURRENT":
       return {
         ...state,
-        CurrentSubject: [ action.payload],
+        CurrentSubject: [action.payload],
       };
 
     case "LOGIN_TYPE":
@@ -39,9 +39,7 @@ const DataProvider = (state = initialData, action) => {
       };
 
     case "LOGOUT":
-      return {
-        Logintype: "User",
-      };
+      return state;
 
     default:
       return state;

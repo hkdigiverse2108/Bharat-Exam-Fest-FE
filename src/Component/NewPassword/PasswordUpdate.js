@@ -16,7 +16,7 @@ export default function PasswordUpdate() {
   const userAccess = useSelector((state) => state.authConfig.userInfo[0]);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [currentUser, setCurrentUser] = useState({
-    uniqueId: userAccess._id,
+    uniqueId: userAccess.email,
     password: "",
     userType: userAccess.userType,
   });
@@ -25,7 +25,7 @@ export default function PasswordUpdate() {
       !currentUser.uniqueId ||
       !currentUser.password ||
       !currentUser.userType
-    ) { 
+    ) {
       return true;
     }
     return false;
@@ -36,9 +36,8 @@ export default function PasswordUpdate() {
       if (isEmpty()) {
         toast.warning("Please fill up empty fields.");
       } else {
-        if (!currentUser.password.match(confirmPassword)) {
+        if (currentUser.password !== confirmPassword) {
           toast.warn("Password dose not match");
-          return false;
         } else {
           let data = JSON.stringify(currentUser);
           console.log(currentUser);
@@ -60,7 +59,7 @@ export default function PasswordUpdate() {
               if (response.status === 200) {
                 console.log("success", response.data);
                 console.log("msg", response.message);
-                toast.success(response.message);
+                toast.success("Your password has been successfully reset!");
                 navigate("/");
               } else {
                 console.log("failed", response);
@@ -123,7 +122,7 @@ export default function PasswordUpdate() {
                 <button
                   type="button"
                   onClick={() => setToggle1(!toggle1)}
-                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none invalid:border-pink-500 invalid:text-pink-600 peer
+                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:ring-purple-600 focus:border-purple-600  invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 >
                   <svg className="w-5 h-5 text-blue-600" viewBox="0 0 16 16">
@@ -169,7 +168,7 @@ export default function PasswordUpdate() {
                 <button
                   type="button"
                   onClick={() => setToggle2(!toggle2)}
-                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none invalid:border-pink-500 invalid:text-pink-600 peer
+                  className="absolute inset-y-0 bottom-[25px] end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:ring-purple-600 focus:border-purple-600 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 >
                   <svg className="w-5 h-5 text-blue-600" viewBox="0 0 16 16">

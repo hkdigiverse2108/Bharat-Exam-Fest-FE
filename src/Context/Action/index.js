@@ -19,7 +19,7 @@ export const loginType = (data) => {
     };
 }
 
-export const logOut = (data) => {
+export const logOutAdmin = (data) => {
     return {
         type: "LOGOUT",
         payload: data
