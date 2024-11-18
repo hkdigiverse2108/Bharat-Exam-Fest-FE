@@ -192,42 +192,6 @@ function AddQuestion() {
     }
   };
 
-  // const fetchSubjectname = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `https://api-bef.hkdigiverse.com/subject/${subject._id}`,
-  //       {
-  //         headers: {
-  //           Authorization: accessToken,
-  //           Accept: "application/json",
-  //         },
-  //       }
-  //     );
-  //     setSubjectname(response.data.data);
-  //   } catch (err) {
-  //     console.error(err.message);
-  //     toast.error("Failed to fetch subject name.");
-  //   }
-  // };
-
-  // const fetchSubtopics = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
-  //       {
-  //         headers: {
-  //           Authorization: accessToken,
-  //           Accept: "application/json",
-  //         },
-  //       }
-  //     );
-  //     setSubtopics(response.data.data.sub_topic_data);
-  //   } catch (err) {
-  //     console.error(err.message);
-  //     toast.error("Failed to fetch subtopics.");
-  //   }
-  // };
-
   const fetchData = async () => {
     try {
       const urlSubtopics = `https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10`;
