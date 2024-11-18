@@ -3,7 +3,8 @@ import { VscSaveAs } from "react-icons/vsc";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { ToastContainer, toast, cssTransition } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddSubTopic({ onClose }) {
   const accessToken = useSelector(
@@ -114,6 +115,15 @@ export default function AddSubTopic({ onClose }) {
           </div>
         </div>
       </section>
+      <ToastContainer
+        draggable={false}
+        autoClose={2000}
+        position={"top-center"}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={false}
+        theme="dark"
+      />
     </>
   );
 }

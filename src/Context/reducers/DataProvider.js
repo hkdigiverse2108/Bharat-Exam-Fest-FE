@@ -1,6 +1,7 @@
 const initialData = {
   bannerDataList: [],
   imageData: [],
+  tearmAndCondition: null,
   howtoplayData: [],
   Logintype: "Admin",
 };
@@ -32,6 +33,12 @@ const DataProvider = (state = initialData, action) => {
       return {
         ...state,
         howtoplayData: [action.payload],
+      };
+
+      case 'SET_DATA':
+      return {
+        ...state,
+        tearmAndCondition: action.payload,
       };
 
     case "LOGIN_TYPE":

@@ -16,9 +16,7 @@ export default function ImgUpdatePage({ confirm, onClose }) {
     (state) => state.authConfig.userInfo[0].token
   );
   const bannerData = useSelector((state) => state.userConfig.imageData[0]);
-  console.log(bannerData);
-
-
+  // console.log(bannerData);
 
   const isEmpty = () => {
     if (imgEdit.bannerId === "" || imgEdit.image === "") {
@@ -47,7 +45,6 @@ export default function ImgUpdatePage({ confirm, onClose }) {
     }));
   };
 
-
   const handleFileChange = (e) => {
     const { files } = e.target;
     // console.log(URL.createObjectURL(files[0]));
@@ -55,12 +52,11 @@ export default function ImgUpdatePage({ confirm, onClose }) {
     if (files) {
       setImgEdit((prev) => ({
         ...prev,
-        image: "https://images.pexels.com/photos/757889/pexels-photo-757889.jpeg?auto=compress&cs=tinysrgb&w=600",
+        image:
+          "https://images.pexels.com/photos/757889/pexels-photo-757889.jpeg?auto=compress&cs=tinysrgb&w=600",
       }));
     }
   };
-
- 
 
   const EditBanner = async () => {
     try {
@@ -69,7 +65,7 @@ export default function ImgUpdatePage({ confirm, onClose }) {
       }
       let data = JSON.stringify(imgEdit);
       console.log(imgEdit);
-      
+
       let config = {
         method: "post",
         maxBodyLength: Infinity,
@@ -85,95 +81,100 @@ export default function ImgUpdatePage({ confirm, onClose }) {
       console.log(response.data);
 
       if (response.status === 200) {
-        toast.success("Banner edited successfully");
+        toast.success(response.data.data.message);
         dispatch(editBanner(imgEdit), updateImageData(null));
         onClose();
+      } else if (response.status === 500) {
+        toast.error(response.data.data.message);
       } else {
-        toast.error("Failed to add question");
+        toast.error(response.message);
       }
     } catch (err) {
       console.error(err.message);
-      toast.error("An error occurred while adding the question.");
+      console.error("An error occurred while adding the question.");
     }
   };
 
   return (
     <>
-    <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">
-      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
+      <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">
+        <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+          </div>
 
-        <span
-          className="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true"
-        >
-          &#8203;
-        </span>
-        <div className="inline-block mx-auto w-full bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:align-middle max-w-2xl">
-          <p className="text-3xl text-left w-full font-semibold text-slate-800">
-            Edit Image
-          </p>
-          <div className="space-y-3 border border-[#808836] rounded-lg p-4">
-            <div className="grid grid-cols-1 space-y-2">
-              <label
-                htmlFor="editimg"
-                className="capitalize text-base font-medium text-gray-800 dark:text-white"
-              >
-                Edit Image
-              </label>
-              <input
-                className="border-b w-full block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
-                type="text"
-                id="editimg"
-                name="image"
-                placeholder="Image"
-                value={imgEdit.image}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="p-4 w-full h-fit border border-[#65B741] bg-white shadow-sm rounded-xl">
-              <div className="space-y-2">
-                <p className="text-start capitalize text-base font-medium text-gray-700 dark:text-white">
-                  Banner Image
-                </p>
-                <input
-                  type="file"
-                  name="file"
-                  id="file"
-                  className="sr-only"
-                  onChange={handleFileChange}
-                />
-                <label
-                  htmlFor="file"
-                  className="relative flex items-center justify-start gap-x-4 text-center cursor-pointer"
-                >
-                  <span className="rounded-md border border-[#5F8670] py-2 px-8 text-base capitalize text-slate-700">
-                    choose file
-                  </span ><span className="text-md capitalize text-[#5F8670]">
-                    {imgEdit.image === "string" ? "no file chosen" : imgEdit.image}
-                  </span>
-                </label>
-              </div>
-            </div>
-            <p className="text-base text-gray-600">
-              <span>File type: jpg/jpeg/png</span>
+          <span
+            className="hidden sm:inline-block sm:align-middle sm:h-screen"
+            aria-hidden="true"
+          >
+            &#8203;
+          </span>
+          <div className="inline-block mx-auto w-full bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:align-middle max-w-2xl">
+            <p className="text-3xl text-left w-full font-semibold text-slate-800">
+              Edit Image
             </p>
-          </div>
-          <div className="flex items-center justify-center">
-            <button
-              type="submit"
-              onClick={EditBanner}
-              className="bg-orange-500 text-gray-100 px-20 py-2 rounded-full tracking-wide
+            <div className="space-y-3 border border-[#808836] rounded-lg p-4">
+              <div className="grid grid-cols-1 space-y-2">
+                <label
+                  htmlFor="editimg"
+                  className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                >
+                  Edit Image
+                </label>
+                <input
+                  className="border-b w-full block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
+                  type="text"
+                  id="editimg"
+                  name="image"
+                  placeholder="Image"
+                  value={imgEdit.image}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="p-4 w-full h-fit border border-[#65B741] bg-white shadow-sm rounded-xl">
+                <div className="space-y-2">
+                  <p className="text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+                    Banner Image
+                  </p>
+                  <input
+                    type="file"
+                    name="file"
+                    id="file"
+                    className="sr-only"
+                    onChange={handleFileChange}
+                  />
+                  <label
+                    htmlFor="file"
+                    className="relative flex items-center justify-start gap-x-4 text-center cursor-pointer"
+                  >
+                    <span className="rounded-md border border-[#5F8670] py-2 px-8 text-base capitalize text-slate-700">
+                      choose file
+                    </span>
+                    <span className="text-md capitalize text-[#5F8670]">
+                      {imgEdit.image === "string"
+                        ? "no file chosen"
+                        : imgEdit.image}
+                    </span>
+                  </label>
+                </div>
+              </div>
+              <p className="text-base text-gray-600">
+                <span>File type: jpg/jpeg/png</span>
+              </p>
+            </div>
+            <div className="flex items-center justify-center">
+              <button
+                type="submit"
+                onClick={EditBanner}
+                className="bg-orange-500 text-gray-100 px-20 py-2 rounded-full tracking-wide
               font-semibold focus:outline-none focus:shadow-outline hover:bg-orange-600 cursor-pointer transition ease-in duration-300"
-            >
-              Upload
-            </button>
+              >
+                Upload
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
       <ToastContainer
         draggable={false}
         autoClose={2000}

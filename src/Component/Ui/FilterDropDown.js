@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { FiFilter } from "react-icons/fi";
-import Calander from "./Calander";
+// import Calander from "./Calander";
 
 export default function FilterDropDown() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -19,6 +19,65 @@ export default function FilterDropDown() {
     setAnchorEl(null);
     // setDate(!date);
   };
+
+  // const filterByDay = (data) => {
+  //   const today = new Date();
+  //   const startOfDay = new Date(
+  //     today.getFullYear(),
+  //     today.getMonth(),
+  //     today.getDate()
+  //   );
+  //   const endOfDay = new Date(
+  //     today.getFullYear(),
+  //     today.getMonth(),
+  //     today.getDate() + 1
+  //   );
+
+  //   return data.filter((item) => {
+  //     const createdAt = new Date(item.createdAt);
+  //     return createdAt >= startOfDay && createdAt < endOfDay;
+  //   });
+  // };
+  // const filterByWeek = (data) => {
+  //   const today = new Date();
+  //   const weekStart = new Date(
+  //     today.getFullYear(),
+  //     today.getMonth(),
+  //     today.getDate() - today.getDay() + 1
+  //   ); // Monday
+  //   const weekEnd = new Date(
+  //     today.getFullYear(),
+  //     today.getMonth(),
+  //     today.getDate() - today.getDay() + 8
+  //   ); // Next Monday
+
+  //   return data.filter((item) => {
+  //     const createdAt = new Date(item.createdAt);
+  //     return createdAt >= weekStart && createdAt < weekEnd;
+  //   });
+  // };
+  // const filterByMonth = (data) => {
+  //   const today = new Date();
+  //   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  //   const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+
+  //   return data.filter((item) => {
+  //     const createdAt = new Date(item.createdAt);
+  //     return createdAt >= monthStart && createdAt < monthEnd;
+  //   });
+  // };
+  // const data = [
+  //   // ...  data
+  // ];
+
+  // const dayWiseData = filterByDay(data);
+  // console.log("Day-wise Data:", dayWiseData);
+
+  // const weekWiseData = filterByWeek(data);
+  // console.log("Week-wise Data:", weekWiseData);
+
+  // const monthWiseData = filterByMonth(data);
+  // console.log("Month-wise Data:", monthWiseData);
 
   return (
     <>

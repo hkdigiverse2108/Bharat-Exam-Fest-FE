@@ -1,27 +1,31 @@
 import React, { Suspense, useEffect, useState } from "react";
-import { FaRegImage } from "react-icons/fa6";
+import { FaPlus, FaRegImage } from "react-icons/fa6";
 import TextEditor from "../Ui/TextEditor";
-import Loading from "../Loader/Loading";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import { setTearmAndConditionData } from "../../Context/Action/index";
 import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
+import Loading from "../Loader/Loading";
 import { VscSaveAs } from "react-icons/vsc";
 
-export default function TermAndcondition() {
-  const dispatch = useDispatch();
-  const [termsConditionResponse, setTermsConditionResponse] = useState(null);
-  const [editorContent, setEditorContent] = useState(null);
+function Legality() {
+  const [privacyPolicy, setPrivacyPolicyResponse] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [formattedText, setFormattedText] = useState("");
+  const [editorContent, setEditorContent] = useState(null);
+
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
-  // const Data = useSelector((state) => state.userConfig.tearmAndCondition);
-  // console.log(Data);
-  const fetchTermsConditionAPI = async () => {
-    const url = `https://api-bef.hkdigiverse.com/terms-condition`;
+
+  function handleGetPlainText(value) {
+    setFormattedText(value);
+  }
+  // useEffect(() => {
+  //   console.log("editor", formattedText);
+  // }, [formattedText]);
+
+  const fetchPrivacyPolicyAPI = async () => {
+    const url = `https://api-bef.hkdigiverse.com/privacy-policy`;
 
     try {
       const response = await fetch(url, {
@@ -38,9 +42,10 @@ export default function TermAndcondition() {
       if (response.status === 200) {
         const parsedData = decodedData;
         if (parsedData.status === 200) {
-          setTermsConditionResponse(parsedData.data);
-          setEditorContent(parsedData.data.termsCondition);
-          dispatch(setTearmAndConditionData(parsedData.data));
+          setPrivacyPolicyResponse(parsedData.data);
+          setEditorContent(parsedData.data.privacyPolicy);
+
+          // toast.success(parsedData.message);
         } else {
           console.error(parsedData.message);
         }
@@ -59,8 +64,7 @@ export default function TermAndcondition() {
       console.error("An error occurred while fetching data.");
     }
   };
-
-  // const addOrEditTearmAndCondition = async () => {
+  // const addOrEditLegality = async () => {
   //   try {
   //     if (!name) {
   //       toast.warning("Fill up empty space");
@@ -105,26 +109,19 @@ export default function TermAndcondition() {
   //   }
   // };
 
-  const [formattedText, setFormattedText] = useState("");
-
-  function handleGetPlainText(value) {
-    setFormattedText(value);
-  }
-  // useEffect(() => {
-  //   console.log("editor", formattedText);
-  // }, [formattedText]);
-
   useEffect(() => {
-    fetchTermsConditionAPI();
+    fetchPrivacyPolicyAPI();
   }, []);
+
   return (
     <>
       <div className="bg-white overflow-hidden shadow rounded-2xl border">
         <div className="space-y-4 p-4">
           <div className="flex flex-row items-center justify-between">
             <h3 className="text-3xl capitalize text-left leading-10 font-semibold text-slate-800">
-              terms and condition
+              legality
             </h3>
+
             <div className="flex items-center justify-center">
               <button
                 // onClick={EditQuestion}
@@ -158,7 +155,6 @@ export default function TermAndcondition() {
             </div>
           </div>
         </div>
-
         <Suspense fallback={<Loading />}>
           <TextEditor
             content={editorContent}
@@ -185,3 +181,5 @@ export default function TermAndcondition() {
     </>
   );
 }
+
+export default Legality;

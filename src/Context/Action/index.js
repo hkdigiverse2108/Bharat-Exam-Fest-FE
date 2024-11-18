@@ -57,3 +57,9 @@ export const bannerDataList = (data) => {
       payload: data,
     };
   };
+  export const setTearmAndConditionData = (data) => {
+    return {
+      type: 'SET_DATA',
+      payload: data,
+    };
+  };

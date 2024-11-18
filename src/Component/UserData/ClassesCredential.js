@@ -12,6 +12,7 @@ import axios from "axios";
 
 export default function ClassesCredential() {
   // const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [dataToDisplay, setDataToDisplay] = useState([]);
   const ITEMS_PER_PAGE = 5;
@@ -22,23 +23,15 @@ export default function ClassesCredential() {
     (state) => state.authConfig.userInfo[0].token
   );
   const [confirm, setConfirm] = useState(false);
-  const navigate = useNavigate();
   function handleAddUser(value) {
-    navigate("/addUser",{state:value});
+    navigate("/addUser", { state: value });
   }
   function handleEdit(value) {
-    navigate("/editUser",{state:value});
+    navigate("/editUser", { state: value });
   }
   function handleDelete() {
     setConfirm(!confirm);
   }
-
-
-  useEffect(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    setDataToDisplay(data.slice(start, end));
-  }, [currentPage]);
 
   const fetchData = async () => {
     try {
@@ -51,13 +44,16 @@ export default function ClassesCredential() {
           },
         }
       );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      if (response.status === 200) {
+        const classeesData = response.data.data.classes_data;
+        // console.log(classeesData);
+        setData(classeesData);
+        setDataToDisplay(
+          response.data.data.classes_data.slice(0, ITEMS_PER_PAGE)
+        );
+      } else {
+        throw new Error(`Error fetching subjects: ${response.data.message}`);
       }
-      setData(response.data.classes_data);
-      setDataToDisplay(
-        response.data.data.subject_data.slice(0, ITEMS_PER_PAGE)
-      );
     } catch (err) {
       setError(err.message);
     }
@@ -66,6 +62,12 @@ export default function ClassesCredential() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    setDataToDisplay(data.slice(start, end));
+  }, [currentPage]);
 
   return (
     <>

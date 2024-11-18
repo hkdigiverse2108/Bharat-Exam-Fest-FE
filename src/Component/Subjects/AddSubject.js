@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-
+import { ToastContainer, toast, cssTransition } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { VscSaveAs } from "react-icons/vsc";
 import MultipleSelect from "../Ui/MultiSelection";
 import axios from "axios";
-import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function AddSubject() {
@@ -144,6 +144,15 @@ export default function AddSubject() {
           </button>
         </div>
       </section>
+      <ToastContainer
+        draggable={false}
+        autoClose={2000}
+        position={"top-center"}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={false}
+        theme="dark"
+      />
     </>
   );
 }

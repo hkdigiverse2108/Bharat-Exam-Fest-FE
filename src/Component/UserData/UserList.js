@@ -16,6 +16,7 @@ const UserList = () => {
   const ITEMS_PER_PAGE = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState([]);
+  const [totalUser, setTotalUsers] = useState(0);
   const Totalpage = Math.ceil(users.length / ITEMS_PER_PAGE);
   const [dataToDisplay, setDataToDisplay] = useState([]);
   const [error, setError] = useState(null);
@@ -62,12 +63,20 @@ const UserList = () => {
           },
         }
       );
-      console.log(response.data.data.subject_data);
-
-      setUsers(response.data.data.subject_data);
-      setDataToDisplay(
-        response.data.data.subject_data.slice(0, ITEMS_PER_PAGE)
-      );
+      if (response.status === 200) {
+        // console.log(response.data.data);
+        const subjectData = response.data.data.subject_data;
+        // console.log(subjectData);
+        setTotalUsers(response.data.data.totalData);
+        setUsers(subjectData);
+        setDataToDisplay(subjectData.slice(0, ITEMS_PER_PAGE));
+      } else {
+        throw new Error(`Error fetching subjects: ${response.data.message}`);
+      }
+      // setUsers(response.data.data.subject_data);
+      // setDataToDisplay(
+      //   response.data.data.subject_data.slice(0, ITEMS_PER_PAGE)
+      // );
     } catch (err) {
       setError(err.message);
     }
@@ -88,7 +97,6 @@ const UserList = () => {
     fetchSubjects();
   }, []);
 
-  
   useEffect(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     const end = start + ITEMS_PER_PAGE;
@@ -97,7 +105,6 @@ const UserList = () => {
 
   return (
     <>
-
       <section className=" space-y-6 pb-4">
         <div className="shadow-md">
           <div className="relative rounded-t-xl px-4 py-2 overflow-hidden text-slate-700 bg-white  bg-clip-border">
@@ -115,7 +122,9 @@ const UserList = () => {
                   <span className="font-semibold  text-sm capitalize text-gray-100">
                     total users application
                   </span>
-                  <p className="text-xl text-gray-100 font-medium ">70</p>
+                  <p className="text-xl text-gray-100 font-medium ">
+                    {totalUser}
+                  </p>
                 </div>
               </button>
             </div>
@@ -267,7 +276,7 @@ const UserList = () => {
                     </td>
                     <td className="p-4 border-b border-blue-gray-50">
                       <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                        {user.city}
+                        {user.city || "none"}
                       </p>
                     </td>
                     <td className="p-4 border-b border-blue-gray-50">
@@ -302,7 +311,7 @@ const UserList = () => {
           />
         </div>
 
-        <ClassesCredential/>
+        <ClassesCredential />
       </section>
     </>
   );

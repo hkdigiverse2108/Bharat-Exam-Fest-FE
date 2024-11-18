@@ -14,21 +14,20 @@ function BannerData() {
   const [confirm, setConfirm] = useState(false);
   const [toggle, setToggle] = useState(false);
   const DataList = useSelector((state) => state.userConfig.bannerDataList[0]);
-
   const [bannerData, setBannerData] = useState(DataList);
   const [dataToDisplay, setDataToDisplay] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
 
   // Calculate total pages based on data length and items per page
-  // const calculateTotalPages = (dataLength, itemsPerPage) => {
-  //   if (itemsPerPage <= 0) {
-  //     return 0;
-  //   }
-  //   return Math.ceil(dataLength / itemsPerPage);
-  // };
+  const calculateTotalPages = (dataLength, itemsPerPage) => {
+    if (itemsPerPage <= 0) {
+      return 0;
+    }
+    return Math.ceil(dataLength / itemsPerPage);
+  };
 
-  // const TotalPages = calculateTotalPages(DataList.length, ITEMS_PER_PAGE);
+  const TotalPages = calculateTotalPages(DataList.length, ITEMS_PER_PAGE);
 
   // Update displayed data when currentPage or DataList changes
   useEffect(() => {
@@ -120,7 +119,7 @@ function BannerData() {
             </tbody>
           </table>
           <Pagination
-            // total={TotalPages}
+            total={TotalPages}
             page={setCurrentPage}
             current={currentPage}
           />
