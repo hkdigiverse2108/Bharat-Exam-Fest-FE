@@ -137,7 +137,6 @@ function AddQuestion() {
         [name]: value,
       }));
     }
-  
   };
 
   const isEmpty = () => {
@@ -181,7 +180,8 @@ function AddQuestion() {
       const response = await axios.request(config);
 
       if (response.status === 200) {
-        toast.success("Question added successfully");
+        // toast.success("Question added successfully");
+        toast.success(response.data);
         navigate("/subjectDetails");
       } else {
         toast.error("Failed to add question");

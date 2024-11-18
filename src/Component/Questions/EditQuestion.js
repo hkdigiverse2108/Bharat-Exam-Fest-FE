@@ -193,7 +193,7 @@ function EditQuestion() {
         const response = await axios.request(config);
 
         if (response.status === 200) {
-          toast.success("Question edited successfully");
+          toast.success(response.data);
           console.log("success", response.data);
           navigate("/subjectDetails");
         } else {
@@ -265,7 +265,7 @@ function EditQuestion() {
   const fetchData = async () => {
     try {
       const urlSubtopics = `https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10`;
-      const urlSubjectName = `https://api-bef.hkdigiverse.com/subject/${subject._id}`;
+      const urlSubjectName = `https://api-bef.hkdigiverse.com/subject/${subject.subjectId}`;
       let config = {
         method: "get",
         maxBodyLength: Infinity,
@@ -282,6 +282,10 @@ function EditQuestion() {
       if (response1.status === 200 && response2.status === 200) {
         // console.log("Data from subtopic:", response1.data.data.sub_topic_data);
         setSubtopics(response1.data.data.sub_topic_data);
+        const filteredData = response1.data.data.sub_topic_data.filter((item) =>
+          subject.subtopicIds.includes(item._id)
+        );
+        setSelectedSubtopic(filteredData);
         // console.log(
         //   "Data from subject:",
         //   response2.data.data.question_data
@@ -294,7 +298,7 @@ function EditQuestion() {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("An error occurred while fetching data.");
+      console.log("An error occurred while fetching data.");
     }
   };
 

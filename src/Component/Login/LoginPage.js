@@ -89,18 +89,19 @@ function LoginPage() {
       console.log("Backend response", message);
 
       if (status === 200) {
-        console.log("Backend response", data);
+        console.log("Backend response", response);
         dispatch(loginSuccess(data));
-        toast.success(message);
+        toast.success(response.data.message);
         setTimeout(() => navigate("/"), 1000);
         handleNavigate();
+      } else if (response.status === 400) {
+        toast.error(response.data.message);
       } else {
         console.warn("Login failed:", error);
-        toast.error("Login failed: " + error);
+        toast.error("Login failed: " + response.data.message);
       }
     } catch (err) {
       console.error("Error during login:", err);
-      toast.error("An error occurred during login.");
     }
   }
 
@@ -156,7 +157,7 @@ function LoginPage() {
           <div className="flex flex-col space-y-2 w-full h-full">
             <div>
               <input
-                className="text-black text-md px-4 py-6  border-2 border-gray-200 h-10 w-full rounded-lg invalid:border-pink-500 invalid:text-pink-600 peer
+                className="text-black text-md px-4 py-6  border-2 border-gray-200 h-10 w-full rounded-lg focus:outline-none focus:ring-purple-600 focus:border-purple-600 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                 type="uniqueId"
                 name="uniqueId"
@@ -172,7 +173,7 @@ function LoginPage() {
 
             <div className="relative w-full ">
               <input
-                className="text-black text-md px-4 py-6 border-2 border-gray-200 h-10 w-full rounded-lg"
+                className="text-black text-md px-4 py-6 border-2 border-gray-200 focus:outline-none focus:ring-purple-600 focus:border-purple-600 h-10 w-full rounded-lg"
                 type={show ? "text" : "password"}
                 name="password"
                 value={password || ""}

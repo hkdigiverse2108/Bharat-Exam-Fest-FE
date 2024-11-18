@@ -77,7 +77,7 @@ const DropdownUser = () => {
           <div
             className={`absolute right-0 top-14 flex w-62.5 flex-col rounded-md border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark`}
           >
-            <ul className="flex flex-col dark:text-white text-left font-medium capitalize">
+            <ul className="flex flex-col dark:text-white gap-y-2 text-left font-medium capitalize">
               <li onClick={Navigation}>
                 <NavLink to="/resetpassword">
                   <button
@@ -95,11 +95,7 @@ const DropdownUser = () => {
               <li onClick={handleToggle}>
                 <button
                   type="button"
-                  className={`${
-                    pathname === "/resetpassword"
-                      ? "text-white bg-gray-600"
-                      : "text-black"
-                  }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600`}
+                  className="py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600"
                 >
                   Log Out
                 </button>

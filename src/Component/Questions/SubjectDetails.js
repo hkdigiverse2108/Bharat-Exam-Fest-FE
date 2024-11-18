@@ -30,7 +30,7 @@ function SubjectDetails() {
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [subtopics, setSubtopics] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState([]);
-  const [subTopicName, setSubTopicName] = useState("");
+  const [subTopicName, setSubTopicName] = useState(null);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     easy: false,
@@ -92,6 +92,7 @@ function SubjectDetails() {
 
   const handleSelectionChange = (e) => {
     const { value } = e.target;
+
     setSubTopicName(value._id);
     setSelectedSubtopic(value);
   };
@@ -260,7 +261,7 @@ function SubjectDetails() {
             <ul className="space-y-4">
               {filteredQuestions
                 .filter((question) =>
-                  subTopicName !== ""
+                  subTopicName !== null
                     ? question.subtopicIds &&
                       question.subtopicIds.length > 0 &&
                       question.subtopicIds.includes(subTopicName)
