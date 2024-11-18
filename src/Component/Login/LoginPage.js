@@ -89,16 +89,16 @@ function LoginPage() {
       console.log("Backend response", message);
 
       if (status === 200) {
-        console.log("Backend response", response);
+        // console.log("Backend response", response);
         dispatch(loginSuccess(data));
         toast.success(response.data.message);
-        setTimeout(() => navigate("/"), 1000);
+        navigate("/");
         handleNavigate();
       } else if (response.status === 400) {
-        toast.error(response.data.message);
+        console.log(response.data.message);
       } else {
         console.warn("Login failed:", error);
-        toast.error("Login failed: " + response.data.message);
+        console.log("Login failed: " + response.data.message);
       }
     } catch (err) {
       console.error("Error during login:", err);
