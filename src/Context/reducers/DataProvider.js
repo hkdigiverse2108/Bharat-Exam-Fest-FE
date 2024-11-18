@@ -1,6 +1,7 @@
-
 const initialData = {
   bannerDataList: [],
+  imageData: [],
+  howtoplayData: [],
   Logintype: "Admin",
 };
 
@@ -12,16 +13,25 @@ const DataProvider = (state = initialData, action) => {
         bannerDataList: [action.payload],
       };
 
-    case "QUESTIONS":
+    case "EDITIMG":
       return {
         ...state,
-        Questions: [ action.payload],
+        bannerDataList: state.bannerDataList.map((banner) =>
+          banner._id === action.payload._id
+            ? { ...banner, ...action.payload }
+            : []
+        ),
       };
 
-    case "CURRENT":
+    case "UPDATE_IMAGE_DATA":
       return {
         ...state,
-        CurrentSubject: [ action.payload],
+        imageData: [action.payload],
+      };
+    case "HOW_TO_PLAY":
+      return {
+        ...state,
+        howtoplayData: [action.payload],
       };
 
     case "LOGIN_TYPE":
@@ -30,17 +40,8 @@ const DataProvider = (state = initialData, action) => {
         Logintype: action.payload,
       };
 
-    case "EDIT":
-      return {
-        ...state,
-        CurrentQue: [action.payload],
-      };
-
     case "LOGOUT":
-      return {
-        User: [],
-        Logintype: "User",
-      };
+      return state;
 
     default:
       return state;

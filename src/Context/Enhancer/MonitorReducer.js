@@ -1,34 +1,38 @@
-const round = (number) => Math.round(number * 100) / 100;
+const roundToTwoDecimalPlaces = (number) => Math.round(number * 100) / 100;
 
 const MonitorReducerEnhancer =
   (createStore) => (reducer, preloadedState, enhancer) => {
     const monitoredReducer = (state, action) => {
-      const start = performance.now();
+      const startTime = performance.now();
       const newState = reducer(state, action);
-      const end = performance.now();
-      const diff = round(end - start);
-      console.log("reducer process time:", diff);
+      const endTime = performance.now();
+
+      const duration = roundToTwoDecimalPlaces(endTime - startTime);
+      console.log("Reducer process time:", duration, "ms");
 
       return newState;
     };
 
-    // const preloadedState = () => {
-    //   const initialState = localStorage.getItem("auth");
-    //   try {
-    //     if (initialState === null) {
-    //       return undefined;
-    //     } else {
-    //       setTimeout(() => {
-    //         console.log("stored data after reload", initialState);
-    //       }, 2000);
-    //       return initialState;
-    //     }
-    //   } catch (error) {
-    //     console.warn(error);
-    //   }
-    // };
+    // Function to retrieve preloaded state from localStorage
+    const getPreloadedState = () => {
+      try {
+        const storedState = localStorage.getItem("auth");
+        if (storedState) {
+          const parsedState = JSON.parse(storedState);
+          console.log("Stored data after reload:", parsedState);
+          return parsedState;
+        }
+        return undefined;
+      } catch (error) {
+        console.warn("Error retrieving state from localStorage:", error);
+        return undefined;
+      }
+    };
 
-    return createStore(monitoredReducer, preloadedState, enhancer);
+    // Use the getPreloadedState function to set the initial state
+    const initialState = preloadedState || getPreloadedState();
+
+    return createStore(monitoredReducer, initialState, enhancer);
   };
 
 export default MonitorReducerEnhancer;

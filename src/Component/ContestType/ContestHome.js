@@ -13,11 +13,9 @@ export default function ContestHome() {
   const [confirm, setConfirm] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-
   const [classes, setClasses] = useState([]);
   const [classesShow, setClassestShow] = useState([]);
   const [error, setError] = useState(null);
-
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );

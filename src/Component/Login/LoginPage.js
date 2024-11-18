@@ -59,7 +59,7 @@ function LoginPage() {
       if (status === 200) {
         console.log("Backend response", data);
         dispatch(loginSuccess(data));
-        toast.success(message);
+        toast.success('Login successfully');
         setTimeout(() => navigate("/"), 1000);
         handleNavigate();
       } else {

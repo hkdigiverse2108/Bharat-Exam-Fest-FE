@@ -3,25 +3,54 @@ import { LuPencilLine } from "react-icons/lu";
 import Pagination from "../Pagination/Pagination";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import ImgUpdatePage from "./ImgUpdatePage";
+import { editBanner, updateImageData } from "../../Context/Action/index";
 
-function BannerData({ onShow }) {
+function BannerData() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [confirm, setConfirm] = useState(false);
+  const [toggle, setToggle] = useState(false);
   const DataList = useSelector((state) => state.userConfig.bannerDataList[0]);
-//   console.log(DataList);
 
   const [bannerData, setBannerData] = useState(DataList);
   const [dataToDisplay, setDataToDisplay] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
-  const Totalpage = Math.ceil(bannerData.length / ITEMS_PER_PAGE);
 
+  // Calculate total pages based on data length and items per page
+  // const calculateTotalPages = (dataLength, itemsPerPage) => {
+  //   if (itemsPerPage <= 0) {
+  //     return 0;
+  //   }
+  //   return Math.ceil(dataLength / itemsPerPage);
+  // };
+
+  // const TotalPages = calculateTotalPages(DataList.length, ITEMS_PER_PAGE);
+
+  // Update displayed data when currentPage or DataList changes
   useEffect(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     const end = start + ITEMS_PER_PAGE;
-    setDataToDisplay(bannerData.slice(start, end));
-  }, [currentPage]);
+    setDataToDisplay(DataList.slice(start, end));
+  }, [currentPage, DataList]);
+
+  // Update banner data when DataList changes
+  useEffect(() => {
+    if (DataList.length > 0) {
+      setBannerData(DataList);
+    }
+  }, [DataList]);
+
+  function handleToggle() {
+    setToggle(!toggle);
+  }
+  const handleData = (value) => {
+    dispatch(updateImageData(value));
+    handleToggle();
+  };
 
   return (
     <>
@@ -77,7 +106,7 @@ function BannerData({ onShow }) {
                     <button
                       className="relative h-10 w-10 select-none rounded-lg text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
                       type="button"
-                      onClick={onShow}
+                      onClick={() => handleData(value)}
                     >
                       <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
                         <svg viewBox="0 0 16 16" className="w-6 h-6">
@@ -91,11 +120,14 @@ function BannerData({ onShow }) {
             </tbody>
           </table>
           <Pagination
-            total={Totalpage}
+            // total={TotalPages}
             page={setCurrentPage}
             current={currentPage}
           />
         </div>
+      </div>
+      <div className={`${toggle === true ? "block" : "hidden"}`}>
+        <ImgUpdatePage confirm={toggle} onClose={handleToggle} />
       </div>
     </>
   );

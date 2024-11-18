@@ -1,20 +1,100 @@
-import React, { useState } from "react";
-// import { LuPencilLine } from "react-icons/lu";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
 import Pagination from "../Pagination/Pagination";
 import FilterdropDown from "../ContestEarning/FilterdropDown";
-// import AddIntroduction from "./AddIntroduction";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { howtoplayList } from "../../Context/Action";
+import { toast } from "react-toastify";
 
 export default function HowToPlay() {
-  const [toggle, setToggle] = useState(false);
-
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+  const [toggle, setToggle] = useState(false);
   function handleNavigate() {
-    // setConfirm(!confirm);
     navigate("/addIntroduction");
   }
+  const [howToPlayData, setHowToPlayData] = useState(null);
+  const [howToPlayList, setHowToPlayList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const fetchHowToPlayAPI = async () => {
+    const url = `https://api-bef.hkdigiverse.com/how-to-play/all?page=1&limit=10`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: "*/*",
+          Authorization: accessToken,
+        },
+      });
+
+      // console.log("URL:", url);
+      const decodedData = await response.json();
+      // console.log("Response Body:", decodedData.data.how_to_play_data);
+
+      if (response.status === 200) {
+        const parsedData = decodedData;
+        setHowToPlayData(parsedData);
+        setHowToPlayList(parsedData.data?.how_to_play_data || []);
+        dispatch(howtoplayList(parsedData.data?.how_to_play_data));
+        setIsLoading(false);
+        // toast.success(parsedData.message);
+      } else {
+        setIsLoading(false);
+        const errorMsg = `Failed to load data. Status code: ${response.status}`;
+        console.error(errorMsg);
+        setErrorMessage(errorMsg);
+        // toast.error(errorMsg);
+      }
+    } catch (error) {
+      console.error("Error fetching how to play data:", error);
+      setIsLoading(false);
+      setErrorMessage("An error occurred while fetching data.");
+      toast.error("An error occurred while fetching data.");
+    }
+  };
+
+  const deleteSubtopic = async (value) => {
+    try {
+      let config = {
+        method: "delete",
+        maxBodyLength: Infinity,
+        url: `https://api-bef.hkdigiverse.com/how-to-play/delete/${value}`,
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .request(config)
+        .then((response) => {
+          if (response.status === 200) {
+            toast.success("How to Play entry deleted successfully");
+
+            fetchHowToPlayAPI();
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+  useEffect(() => {
+    fetchHowToPlayAPI();
+    // fetchData();
+  }, []);
 
   return (
     <>
@@ -75,45 +155,48 @@ export default function HowToPlay() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    dear
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
-                  <img
-                    src="i1.png"
-                    alt="Foo eating a sandwich."
-                    className="w-42 mx-auto h-30"
-                  />
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    name
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
-                  <a
-                    href="https://youtu.be/Njyx5ZuwEHI?list=RDIl9si46XKzs"
-                    className="text-sm text-sky-500 underline antialiased font-sans leading-normal font-normal"
-                  >
-                    https://youtu.be/Njyx5ZuwEHI?list=RDIl9si46XKzs
-                  </a>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <button
-                    className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
-                    type="button"
-                  >
-                    <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                      <svg viewBox="0 0 16 16" className="w-6 h-6">
-                        <AiOutlineDelete />
-                      </svg>
-                    </span>
-                  </button>
-                </td>
-              </tr>
+              {howToPlayList.map((item, index) => (
+                <tr key={index}> 
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      {index + 1}
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
+                    <img
+                      src={item.image}
+                      alt="Foo eating a sandwich."
+                      className="w-42 mx-auto h-30"
+                    />
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      {item.title}
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
+                    <a
+                      href={item.link}
+                      className="text-sm text-sky-500 underline antialiased font-sans leading-normal font-normal"
+                    >
+                      {item.link}
+                    </a>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <button
+                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                      type="button"
+                      onClick={() => deleteSubtopic(item._id)}
+                    >
+                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                        <svg viewBox="0 0 16 16" className="w-6 h-6">
+                          <AiOutlineDelete />
+                        </svg>
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

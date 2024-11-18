@@ -1,7 +1,7 @@
 const userInfo = JSON.parse(localStorage.getItem("auth"));
-console.log("authentication",userInfo);
+console.log("authentication", userInfo);
 
-const authState = userInfo 
+const authState = userInfo
   ? { isLoggedIn: true, userInfo }
   : { isLoggedIn: false, userInfo: null };
 
@@ -33,8 +33,6 @@ const Authentication = (state = authState, action) => {
       };
 
     case "LOGOUT":
-      console.log(action); 
-      
       return {
         ...state,
         isLoggedIn: false,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom/client";
 import "./index.css";
@@ -10,12 +10,21 @@ import Store from "./Context/Store/Store";
 Store.subscribe(() => console.log(Store.getState()));
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const Root = () => {
+  const value = useMemo(() => {
+    return Store;
+  }, []);
+
+  return (
+    <Provider store={value}>
+      <App />
+    </Provider>
+  );
+};
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Provider store={Store}>
-        <App />
-      </Provider>
+      <Root />
     </BrowserRouter>
   </React.StrictMode>
 );

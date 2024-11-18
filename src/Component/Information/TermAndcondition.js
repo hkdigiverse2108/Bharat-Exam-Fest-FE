@@ -1,9 +1,65 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { FaRegImage } from "react-icons/fa6";
 import TextEditor from "../Ui/TextEditor";
 import Loading from "../Loader/Loading";
+import axios from "axios";
+
+import { ToastContainer, toast, cssTransition } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 
 export default function TermAndcondition() {
+  const [termsConditionResponse, setTermsConditionResponse] = useState(null);
+  const [editorContent, setEditorContent] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+  const fetchTermsConditionAPI = async () => {
+    const url = `https://api-bef.hkdigiverse.com/terms-condition`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: "*/*",
+          Authorization: accessToken,
+        },
+      });
+
+      const decodedData = await response.json();
+      // console.log(response);
+
+      if (response.status === 200) {
+        const parsedData = decodedData;
+        // console.log(parsedData.data);
+        if (parsedData.status === 200) {
+          
+          setTermsConditionResponse(parsedData.data);
+          setEditorContent(parsedData)
+          // toast.success(parsedData.message);
+        } else {
+          console.error(parsedData.message);
+        }
+      } else if (response.status === 404) {
+        const errorMsg = decodedData.message || "Data not found";
+        setErrorMessage(errorMsg);
+        console.error(errorMsg);
+      } else {
+        const errorMsg = `Failed to load data. Status code: ${response.status}`;
+        setErrorMessage(errorMsg);
+        console.error(errorMsg);
+      }
+    } catch (error) {
+      console.error("Error fetching terms and conditions:", error);
+      setErrorMessage("An error occurred while fetching data.");
+      console.error("An error occurred while fetching data.");
+    }
+  };
+
+  useEffect(() => {
+    fetchTermsConditionAPI();
+  }, []);
   return (
     <>
       <div className="bg-white overflow-hidden shadow rounded-2xl border">
@@ -30,9 +86,18 @@ export default function TermAndcondition() {
           </div>
         </div>
         <Suspense fallback={<Loading />}>
-          <TextEditor />
+          <TextEditor ontent={termsConditionResponse} setContent={setTermsConditionResponse}/>
         </Suspense>
       </div>
+      <ToastContainer
+        draggable={false}
+        autoClose={2000}
+        position={"top-center"}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={false}
+        theme="dark"
+      />
     </>
   );
 }

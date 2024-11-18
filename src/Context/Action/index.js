@@ -19,11 +19,11 @@ export const loginType = (data) => {
     };
 }
 
-export const logOut = (data) => {
-    return {
-        type: "LOGOUT",
-        payload: data
-    };
+export const logOutAdmin = (data) => {
+  return {
+      type: "LOGOUT",
+      payload: data
+  };
 }
 
 export const updateData = (data) => {
@@ -40,21 +40,20 @@ export const bannerDataList = (data) => {
     };
   };
 
-  export const QuestionList = (data) => {
+  export const editBanner = (data) => {
     return {
-      type: "QUESTIONS",
+      type: "EDITIMG",
       payload: data,
     };
   };
-  export const CurrentData = (data) => {
+  export const updateImageData = (data) => ({
+    type: "UPDATE_IMAGE_DATA",
+    payload: data,
+  });
+
+  export const howtoplayList = (data) => {
     return {
-      type: "CURRENT",
-      payload: data,
-    };
-  };
-  export const CurrentQuestion = (data) => {
-    return {
-      type: "EDIT",
+      type: "HOW_TO_PLAY",
       payload: data,
     };
   };

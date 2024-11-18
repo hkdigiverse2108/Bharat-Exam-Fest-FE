@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { GoSearch } from "react-icons/go";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { SlArrowDownCircle, SlArrowUpCircle } from "react-icons/sl";
 import { RiMenuLine } from "react-icons/ri";
+import { useDispatch } from "react-redux";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LogoutConfimation from "./LogoutConfimation";
+import { logOut } from "../../Context/Action/Auth";
+import { logOutAdmin } from "../../Context/Action";
 
 function Navbar() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const { pathname } = useLocation();
+  const [confirm, setConfirm] = useState(false);
 
   const [navbarOpen, setNavbarOpen] = useState(false);
   const [toggle, setToggle] = useState(false);
@@ -15,6 +23,20 @@ function Navbar() {
   function Navigation() {
     setToggle(!toggle);
   }
+
+  function handleToggle() {
+    setConfirm(!confirm);
+  }
+
+  const handleLogout = () => {
+    toast.success("Logout successfully");
+    Navigation();
+    handleToggle();
+    setTimeout(() => {
+      dispatch(logOut(), logOutAdmin());
+      navigate("/");
+    }, [1000]);
+  };
 
   return (
     <>
@@ -374,7 +396,7 @@ function Navbar() {
       <div
         className={`${
           toggle === true
-            ? " absolute overflow-hidden w-52  z-20 duration-300 ease-linear origin-top-right top-16 right-2  bg-white dark:bg-gray-800  rounded-lg shadow-xl border border-gray-500 dark:border-transparent"
+            ? " absolute right-0 top-14 flex w-62.5 flex-col rounded-md border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
             : "hidden"
         } `}
       >
@@ -393,7 +415,26 @@ function Navbar() {
               </button>
             </NavLink>
           </li>
+          <li onClick={Navigation}>
+            <button
+              type="button"
+              className={`${
+                pathname === "/resetpassword"
+                  ? "text-white bg-gray-600"
+                  : "text-black"
+              }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600`}
+            >
+              Log Out
+            </button>
+          </li>
         </ul>
+      </div>
+      <div className={`${confirm === true ? "block" : "hidden"}`}>
+        <LogoutConfimation
+          confirm={confirm}
+          onLogout={handleLogout}
+          onCancel={handleToggle}
+        />
       </div>
     </>
   );
