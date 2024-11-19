@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 export default function RadioButtons({ checkedValue,onChange }) {
-  const type = ["easy", "medium", "tough"];
+  const type = ["Concept", "Aptitude", "Random"];
   return (
     <>
       <div className="flex gap-6">

@@ -52,15 +52,16 @@ function filterDataide({ filterData, onChange, apply, onClose, lastModify }) {
               >
                 <li className="flex items-center justify-between">
                   <label
-                    htmlFor="easy"
+                    htmlFor="Concept"
                     className="ml-2 text-md font-medium text-gray-700 dark:text-gray-100"
                   >
-                    Easy
+                    Concept
                   </label>
                   <input
-                    id="easy"
+                    id="Concept"
                     type="checkbox"
-                    checked={filterData.easy}
+                    name="Concept"
+                    checked={filterData.Concept}
                     onChange={onChange}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
                   />
@@ -68,15 +69,16 @@ function filterDataide({ filterData, onChange, apply, onClose, lastModify }) {
 
                 <li className="flex items-center justify-between">
                   <label
-                    htmlFor="medium"
+                    htmlFor="Aptitude"
                     className="ml-2 text-md font-medium text-gray-700 dark:text-gray-100"
                   >
-                    Medium
+                    Aptitude
                   </label>
                   <input
-                    id="medium"
+                    id="Aptitude"
                     type="checkbox"
-                    checked={filterData.medium}
+                    name="Aptitude"
+                    checked={filterData.Aptitude}
                     onChange={onChange}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
                   />
@@ -84,15 +86,16 @@ function filterDataide({ filterData, onChange, apply, onClose, lastModify }) {
 
                 <li className="flex items-center justify-between">
                   <label
-                    htmlFor="hard"
+                    htmlFor="Random"
                     className="ml-2 text-md font-medium text-gray-700 dark:text-gray-100"
                   >
-                    Hard
+                    Random
                   </label>
                   <input
-                    id="hard"
+                    id="Random"
                     type="checkbox"
-                    checked={filterData.hard}
+                    name="Random"
+                    checked={filterData.Random}
                     onChange={onChange}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
                   />

@@ -19,7 +19,7 @@ function AddQuestion() {
   );
   const subject = useSelector((state) => state.userConfig.CurrentSubject[0]);
 
-  const [type, setType] = useState("");
+  const [type, setType] = useState("Concept");
   const [questionType, setQuestionType] = useState("normal");
   const [subtopics, setSubtopics] = useState([]);
   const [subjectname, setSubjectname] = useState([]);
@@ -282,7 +282,7 @@ function AddQuestion() {
               <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
                 Type
               </label>
-              <RadioButtons onChange={handleTypeChange} />
+              <RadioButtons checkedValue={type} onChange={handleTypeChange} />
             </div>
           </div>
           {/* question_type */}
