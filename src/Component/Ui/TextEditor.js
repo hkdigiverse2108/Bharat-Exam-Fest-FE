@@ -29,383 +29,186 @@ import {
   FaMinus,
   FaTable,
 } from "react-icons/fa";
-const TextEditor = ({content, onTextChange = () => {} }) => {
+
+const toolbarItems = [
+  {
+    type: "select",
+    command: "fontName",
+    options: ["Arial", "Courier New", "Georgia", "Times New Roman", "Verdana"],
+    tooltip: "Font Family",
+  },
+  {
+    type: "select",
+    command: "fontSize",
+    options: ["1", "3", "5", "7"],
+    labels: ["Small", "Normal", "Large", "Huge"],
+    tooltip: "Font Size",
+  },
+  { type: "button", command: "bold", icon: <FaBold />, tooltip: "Bold" },
+  {
+    type: "button",
+    command: "italic",
+    icon: <FaItalic />,
+    tooltip: "Italic",
+  },
+  {
+    type: "button",
+    command: "underline",
+    icon: <FaUnderline />,
+    tooltip: "Underline",
+  },
+  {
+    type: "button",
+    command: "strikeThrough",
+    icon: <FaStrikethrough />,
+    tooltip: "Strikethrough",
+  },
+  { type: "color", command: "foreColor", tooltip: "Text Color" },
+  { type: "color", command: "hiliteColor", tooltip: "Highlight Color" },
+  {
+    type: "button",
+    command: "subscript",
+    icon: <FaSubscript />,
+    tooltip: "Subscript",
+  },
+  {
+    type: "button",
+    command: "superscript",
+    icon: <FaSuperscript />,
+    tooltip: "Superscript",
+  },
+  {
+    type: "select",
+    command: "formatBlock",
+    options: ["H1", "H2", "H3", "H4", "P"],
+    labels: ["Header 1", "Header 2", "Header 3", "Header 4", "Paragraph"],
+    tooltip: "Block Format",
+  },
+  {
+    type: "button",
+    command: "blockquote",
+    icon: <FaQuoteRight />,
+    tooltip: "Blockquote",
+  },
+  {
+    type: "button",
+    command: "insertOrderedList",
+    icon: <FaListOl />,
+    tooltip: "Ordered List",
+  },
+  {
+    type: "button",
+    command: "insertUnorderedList",
+    icon: <FaListUl />,
+    tooltip: "Unordered List",
+  },
+  {
+    type: "button",
+    command: "createLink",
+    icon: <FaLink />,
+    prompt: "Enter the URL",
+    tooltip: "Insert Link",
+  },
+  {
+    type: "button",
+    command: "insertImage",
+    icon: <FaImage />,
+    prompt: "Enter the image URL",
+    tooltip: "Insert Image",
+  },
+  {
+    type: "button",
+    command: "insertHTML",
+    icon: <FaVideo />,
+    prompt: "Enter the video embed code",
+    tooltip: "Insert Video",
+  },
+  {
+    type: "button",
+    command: "removeFormat",
+    icon: <FaEraser />,
+    tooltip: "Remove Formatting",
+  },
+  {
+    type: "button",
+    command: "justifyLeft",
+    icon: <FaAlignLeft />,
+    tooltip: "Align Left",
+  },
+  {
+    type: "button",
+    command: "justifyCenter",
+    icon: <FaAlignCenter />,
+    tooltip: "Align Center",
+  },
+  {
+    type: "button",
+    command: "justifyRight",
+    icon: <FaAlignRight />,
+    tooltip: "Align Right",
+  },
+  {
+    type: "button",
+    command: "justifyFull",
+    icon: <FaAlignJustify />,
+    tooltip: "Justify",
+  },
+  {
+    type: "button",
+    command: "indent",
+    icon: <FaIndent />,
+    tooltip: "Indent",
+  },
+  {
+    type: "button",
+    command: "outdent",
+    icon: <FaOutdent />,
+    tooltip: "Outdent",
+  },
+  {
+    type: "button",
+    command: "insertHorizontalRule",
+    icon: <FaMinus />,
+    tooltip: "Horizontal Line",
+  },
+  {
+    type: "button",
+    command: "insertTable",
+    icon: <FaTable />,
+    prompt: "Enter table HTML",
+    tooltip: "Insert Table",
+  },
+];
+
+const TextEditor = ({ content, onTextChange = () => {} }) => {
   const [text, setText] = useState(content);
   const editorRef = useRef(null);
   const [isPlaceholderVisible, setIsPlaceholderVisible] = useState(true);
-  const handleCommand = (e,command, value = null) => {
+
+  const handleCommand = (command, value = null) => {
     document.execCommand(command, false, value);
     if (editorRef.current) {
       onTextChange(editorRef.current.innerHTML);
-      setIsPlaceholderVisible(e.target.innerHTML === '');
+      setIsPlaceholderVisible(editorRef.current.innerHTML === "");
     }
   };
+
   const handleChange = (e) => {
     if (editorRef.current) {
       onTextChange(editorRef.current.innerHTML);
-      setIsPlaceholderVisible(e.target.innerHTML === '');
+      setIsPlaceholderVisible(editorRef.current.innerHTML === "");
     }
   };
 
-  const toolbarItems = [
-    {
-      type: "select",
-      command: "fontName",
-      options: [
-        "Arial",
-        "Courier New",
-        "Georgia",
-        "Times New Roman",
-        "Verdana",
-      ],
-      tooltip: "Font Family",
-    },
-    {
-      type: "select",
-      command: "fontSize",
-      options: ["1", "3", "5", "7"],
-      labels: ["Small", "Normal", "Large", "Huge"],
-      tooltip: "Font Size",
-    },
-    { type: "button", command: "bold", icon: <FaBold />, tooltip: "Bold" },
-    {
-      type: "button",
-      command: "italic",
-      icon: <FaItalic />,
-      tooltip: "Italic",
-    },
-    {
-      type: "button",
-      command: "underline",
-      icon: <FaUnderline />,
-      tooltip: "Underline",
-    },
-    {
-      type: "button",
-      command: "strikeThrough",
-      icon: <FaStrikethrough />,
-      tooltip: "Strikethrough",
-    },
-    { type: "color", command: "foreColor", tooltip: "Text Color" },
-    { type: "color", command: "hiliteColor", tooltip: "Highlight Color" },
-    {
-      type: "button",
-      command: "subscript",
-      icon: <FaSubscript />,
-      tooltip: "Subscript",
-    },
-    {
-      type: "button",
-      command: "superscript",
-      icon: <FaSuperscript />,
-      tooltip: "Superscript",
-    },
-    {
-      type: "select",
-      command: "formatBlock",
-      options: ["H1", "H2", "H3", "H4", "P"],
-      labels: ["Header 1", "Header 2", "Header 3", "Header 4", "Paragraph"],
-      tooltip: "Block Format",
-    },
-    {
-      type: "button",
-      command: "blockquote",
-      icon: <FaQuoteRight />,
-      tooltip: "Blockquote",
-    },
-    {
-      type: "button",
-      command: "insertOrderedList",
-      icon: <FaListOl />,
-      tooltip: "Ordered List",
-    },
-    {
-      type: "button",
-      command: "insertUnorderedList",
-      icon: <FaListUl />,
-      tooltip: "Unordered List",
-    },
-    {
-      type: "button",
-      command: "createLink",
-      icon: <FaLink />,
-      prompt: "Enter the URL",
-      tooltip: "Insert Link",
-    },
-    {
-      type: "button",
-      command: "insertImage",
-      icon: <FaImage />,
-      prompt: "Enter the image URL",
-      tooltip: "Insert Image",
-    },
-    {
-      type: "button",
-      command: "insertHTML",
-      icon: <FaVideo />,
-      prompt: "Enter the video embed code",
-      tooltip: "Insert Video",
-    },
-    {
-      type: "button",
-      command: "removeFormat",
-      icon: <FaEraser />,
-      tooltip: "Remove Formatting",
-    },
-    {
-      type: "button",
-      command: "justifyLeft",
-      icon: <FaAlignLeft />,
-      tooltip: "Align Left",
-    },
-    {
-      type: "button",
-      command: "justifyCenter",
-      icon: <FaAlignCenter />,
-      tooltip: "Align Center",
-    },
-    {
-      type: "button",
-      command: "justifyRight",
-      icon: <FaAlignRight />,
-      tooltip: "Align Right",
-    },
-    {
-      type: "button",
-      command: "justifyFull",
-      icon: <FaAlignJustify />,
-      tooltip: "Justify",
-    },
-    {
-      type: "button",
-      command: "indent",
-      icon: <FaIndent />,
-      tooltip: "Indent",
-    },
-    {
-      type: "button",
-      command: "outdent",
-      icon: <FaOutdent />,
-      tooltip: "Outdent",
-    },
-    {
-      type: "button",
-      command: "insertHorizontalRule",
-      icon: <FaMinus />,
-      tooltip: "Horizontal Line",
-    },
-    {
-      type: " button",
-      command: "insertTable",
-      icon: <FaTable />,
-      prompt: "Enter table HTML",
-      tooltip: "Insert Table",
-    },
-  ];
 
   useEffect(() => {
-    if (text === '') {
-        setIsPlaceholderVisible(true);
+    if (text === "") {
+      setIsPlaceholderVisible(true);
     }
-}, [text]);
+  }, [text]);
 
   return (
     <div className=" w-full overflow-none">
-      {/* <div className="flex flex-wrap items-center space-x-2 mb-4">
-        <select
-          onChange={(e) => handleCommand("fontName", e.target.value)}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <option value="Arial">Arial</option>
-          <option value="Courier New">Courier New</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Times New Roman">Times New Roman</option>
-          <option value="Verdana">Verdana</option>
-        </select>
-        <select
-          onChange={(e) => handleCommand("fontSize", e.target.value)}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <option value="1">Small</option>
-          <option value="3">Normal</option>
-          <option value="5">Large</option>
-          <option value="7">Huge</option>
-        </select>
-        <button
-          onClick={() => handleCommand("bold")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaBold />
-        </button>
-        <button
-          onClick={() => handleCommand("italic")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaItalic />
-        </button>
-        <button
-          onClick={() => handleCommand("underline")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaUnderline />
-        </button>
-        <button
-          onClick={() => handleCommand("strikeThrough")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaStrikethrough />
-        </button>
-        <input
-          type="color"
-          onChange={(e) => handleCommand("foreColor", e.target.value)}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-        />
-        <input
-          type="color"
-          onChange={(e) => handleCommand("hiliteColor", e.target.value)}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-        />
-        <button
-          onClick={() => handleCommand("subscript")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaSubscript />
-        </button>
-        <button
-          onClick={() => handleCommand("superscript")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaSuperscript />
-        </button>
-        <div className="relative">
-          <select
-            onChange={(e) => handleCommand("formatBlock", e.target.value)}
-            className="appearance-none px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-          >
-            <option value="H1">Header 1</option>
-            <option value="H2">Header 2</option>
-            <option value="H3">Header 3</option>
-            <option value="H4">Header 4</option>
-            <option value="P">Paragraph</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg
-              className="fill-current h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-            >
-              <path d="M7 10l5 5 5-5H7z" />
-            </svg>
-          </div>
-        </div>
-        <button
-          onClick={() => handleCommand("blockquote")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaQuoteRight />
-        </button>
-        <button
-          onClick={() => handleCommand("insertOrderedList")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaListOl />
-        </button>
-        <button
-          onClick={() => handleCommand("insertUnorderedList")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaListUl />
-        </button>
-        <button
-          onClick={() =>
-            handleCommand("createLink", prompt("Enter the URL", "http://"))
-          }
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaLink />
-        </button>
-        <button
-          onClick={() =>
-            handleCommand(
-              "insertImage",
-              prompt("Enter the image URL", "http://")
-            )
-          }
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaImage />
-        </button>
-        <button
-          onClick={() =>
-            handleCommand(
-              "insertHTML",
-              prompt("Enter the video embed code", "<iframe></iframe>")
-            )
-          }
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaVideo />
-        </button>
-        <button
-          onClick={() => handleCommand("removeFormat")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaEraser />
-        </button>
-        <button
-          onClick={() => handleCommand("justifyLeft")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaAlignLeft />
-        </button>
-        <button
-          onClick={() => handleCommand("justifyCenter")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaAlignCenter />
-        </button>
-        <button
-          onClick={() => handleCommand("justifyRight")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaAlignRight />
-        </button>
-        <button
-          onClick={() => handleCommand("justifyFull")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaAlignJustify />
-        </button>
-        <button
-          onClick={() => handleCommand("indent")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaIndent />
-        </button>
-        <button
-          onClick={() => handleCommand("outdent")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaOutdent />
-        </button>
-        <button
-          onClick={() => handleCommand("insertHorizontalRule")}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaMinus />
-        </button>
-        <button
-          onClick={() =>
-            handleCommand(
-              "insertTable",
-              prompt("Enter table HTML", "<table><tr><td></td></tr></table>")
-            )
-          }
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          <FaTable />
-        </button>
-      </div> */}
       <div className="flex flex-wrap items-center gap-3 border border-orange-400 p-2 rounded">
         {toolbarItems.map((item, index) => {
           if (item.type === "select") {
@@ -430,10 +233,8 @@ const TextEditor = ({content, onTextChange = () => {} }) => {
                 <button
                   onClick={() => {
                     if (item.prompt) {
-                      handleCommand(
-                        item.command,
-                        prompt(item.prompt, "http://")
-                      );
+                      const value = prompt(item.prompt, "http://");
+                      handleCommand(item.command, value);
                     } else {
                       handleCommand(item.command);
                     }
@@ -463,13 +264,16 @@ const TextEditor = ({content, onTextChange = () => {} }) => {
       <div
         ref={editorRef}
         contentEditable="true"
-        onInput={() => handleChange()}
+        onInput={(e) => handleChange(e)}
         className=" p-4 rounded-b-2xl editable-area border-0 border-slate-400 focus:border-black h-64 overflow-auto"
         style={{ whiteSpace: "pre-wrap" }}
-        defaultValue={content}
-      >
-       
-      </div>
+        // defaultValue={content}
+      />
+      {isPlaceholderVisible && (
+        <div className="absolute text-gray-400 pointer-events-none">
+          Start typing...
+        </div>
+      )}
     </div>
   );
 };

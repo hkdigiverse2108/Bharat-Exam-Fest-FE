@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function AddClasses({ confirm, setConfirm }) {
+export default function AddClasses({ confirm, setConfirm ,onClose}) {
   const [toggle, setToggle] = useState(false);
   const [show, setShow] = useState(false);
 
@@ -86,7 +86,7 @@ export default function AddClasses({ confirm, setConfirm }) {
       <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">
         <div className="flex items-center justify-center min-h-screen text-center sm:block">
           <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={onClose}></div>
           </div>
           <span
             className="hidden sm:inline-block sm:align-middle sm:h-screen"

@@ -39,35 +39,8 @@ export default function ClassesHomePage() {
     handleNavigate();
   };
 
-  const deleteSubject = async (value) => {
-    try {
-      let config = {
-        method: "delete",
-        maxBodyLength: Infinity,
-        url: `https://api-bef.hkdigiverse.com//contest/delete/${value}`,
-        headers: {
-          Authorization: accessToken,
-          "Content-Type": "application/json",
-        },
-      };
-
-      axios
-        .request(config)
-        .then((response) => {
-          console.log(response.data);
-
-          toast.success("Subject delete");
-          fetchSubjects();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-  const fetchSubjects = async () => {
+ 
+  const fetchClassData = async () => {
     try {
       const response = await axios.get(
         "https://api-bef.hkdigiverse.com/classes/all?page=1&limit=10",
@@ -87,12 +60,41 @@ export default function ClassesHomePage() {
     }
   };
 
+  const deleteSubject = async (value) => {
+    try {
+      let config = {
+        method: "delete",
+        maxBodyLength: Infinity,
+        url: `https://api-bef.hkdigiverse.com//contest/delete/${value}`,
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .request(config)
+        .then((response) => {
+          console.log(response.data);
+
+          toast.success("Subject delete");
+          fetchClassData();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+
   useEffect(() => {
     setDataToDisplay(data.slice(start, end));
   }, [currentPage]);
 
   useEffect(() => {
-    fetchSubjects();
+    fetchClassData();
   }, []);
 
   return (

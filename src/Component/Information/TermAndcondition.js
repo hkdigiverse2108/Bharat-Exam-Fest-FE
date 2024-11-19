@@ -14,6 +14,9 @@ export default function TermAndcondition() {
   const dispatch = useDispatch();
   const [termsConditionResponse, setTermsConditionResponse] = useState(null);
   const [editorContent, setEditorContent] = useState(null);
+  const [editorText, setEditorText] = useState({
+    termsCondition: "",
+  });
   const [errorMessage, setErrorMessage] = useState("");
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
@@ -39,6 +42,7 @@ export default function TermAndcondition() {
         const parsedData = decodedData;
         if (parsedData.status === 200) {
           setTermsConditionResponse(parsedData.data);
+
           setEditorContent(parsedData.data.termsCondition);
           dispatch(setTearmAndConditionData(parsedData.data));
         } else {
@@ -60,55 +64,60 @@ export default function TermAndcondition() {
     }
   };
 
-  // const addOrEditTearmAndCondition = async () => {
-  //   try {
-  //     if (!name) {
-  //       toast.warning("Fill up empty space");
-  //     } else {
-  //       let data = JSON.stringify(input);
+  const addOrEditTearmAndCondition = async () => {
+    try {
+      if (!editorText.termsCondition) {
+        toast.warning("Fill up empty space");
+      } else {
+        let data = JSON.stringify(editorText);
+        console.log(editorText);
 
-  //       let config = {
-  //         method: "post",
-  //         url: `https://api-bef.hkdigiverse.com/auth/login`,
-  //         maxBodyLength: Infinity,
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         data: data,
-  //       };
-  //       const response = await axios.request(config);
+        let config = {
+          method: "post",
+          url: `https://api-bef.hkdigiverse.com/terms-condition/add/edit`,
+          maxBodyLength: Infinity,
+          headers: {
+            Authorization: accessToken,
+            "Content-Type": "application/json",
+          },
+          data: data,
+        };
+        const response = await axios.request(config);
 
-  //       axios
-  //         .request(config)
-  //         .then((response) => {
-  //           console.log(response.data);
-  //           toast.success("Subtopic add");
-  //         })
-  //         .catch((error) => {
-  //           console.error(error);
-  //         });
-  //       if (response.status === 200) {
-  //         // console.log("Backend response", response);
-  //         // dispatch(loginSuccess(data));
-  //         toast.success(response.data.message);
-  //         // navigate("/");
-  //         // handleNavigate();
-  //       } else if (response.status === 400) {
-  //         console.log(response.data.message);
-  //       } else {
-  //         // console.warn("Login failed:", error);
-  //         console.log("Login failed: " + response.data.message);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
+        axios
+          .request(config)
+          .then((response) => {
+            console.log(response.data);
+            // toast.success("Subtopic add");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        if (response.status === 200) {
+          // console.log("Backend response", response);
+          // dispatch(loginSuccess(data));
+          toast.success(response.data.message);
+          // navigate("/");
+          // handleNavigate();
+        } else if (response.status === 400) {
+          console.log(response.data.message);
+        } else {
+          // console.warn("Login failed:", error);
+          console.log("Login failed: " + response.data.message);
+        }
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
   const [formattedText, setFormattedText] = useState("");
 
   function handleGetPlainText(value) {
     setFormattedText(value);
+    setEditorText({
+      termsCondition: value,
+    });
   }
   // useEffect(() => {
   //   console.log("editor", formattedText);
@@ -127,7 +136,7 @@ export default function TermAndcondition() {
             </h3>
             <div className="flex items-center justify-center">
               <button
-                // onClick={EditQuestion}
+                onClick={addOrEditTearmAndCondition}
                 className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90  "
               >
                 <svg

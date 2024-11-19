@@ -25,6 +25,7 @@ import PasswordUpdate from "./Component/NewPassword/PasswordUpdate";
 import CreateContest from "./Component/AddContest/CreateContest";
 import AddContestHomepage from "./Component/AddContest/AddContestHomepage";
 import EditSubTopic from "./Component/Subjects/AddSubTopic.js";
+import EditContest from "./Component/ContestType/EditContest.js";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -56,6 +57,7 @@ function App() {
             <Route path="/report" element={<ReportHomePage />} />
             <Route path="/addContest" element={<AddContestHomepage />} />
             <Route path="/createContest" element={<CreateContest />} />
+            <Route path="/editContest" element={<EditContest />} />
             <Route path="/contestEarning" element={<ContestEarningHome />} />
             <Route path="/classes" element={<ClassesHomePage />} />
             <Route path="/contestType" element={<ContestHome />} />

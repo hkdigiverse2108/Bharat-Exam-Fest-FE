@@ -5,10 +5,15 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../Pagination/Pagination";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import useGetAllContestData from "../../Hooks/useGetAllContestData";
+import { editContestData } from "../../Context/Action";
 
 export default function AddContestHomepage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  useGetAllContestData();
 
   const [confirm, setConfirm] = useState(false);
   const [data, setData] = useState([]);
@@ -21,14 +26,47 @@ export default function AddContestHomepage() {
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
-  const [input, setInput] = useState({
-    classname: "",
-    referralcode: "",
+  const DataList = useSelector((state) => state.userConfig.contestData);
+
+  const [contestData, setContestData] = useState({
+    name: "",
+    type: "",
+    startDate: "",
+    endDate: "",
+    totalSpots: 0,
+    fees: 0,
+    winningAmountPerFee: 0,
+    winnerPercentage: 0,
+    ranks: [
+      {
+        place: "",
+      },
+    ],
+    totalQuestions: 0,
+    totalTime: "",
+    totalMarks: 0,
+    classesId: "",
   });
-  const { classname, referralcode } = input;
+
+  const {
+    name,
+    type,
+    startDate,
+    endDate,
+    totalSpots,
+    fees,
+    winningAmountPerFee,
+    winnerPercentage,
+    ranks,
+    totalQuestions,
+    totalTime,
+    totalMarks,
+    classesId,
+  } = contestData;
+
   function handleChange(e) {
     const { name, value } = e.target;
-    setInput({ ...input, [name]: value });
+    setContestData({ ...contestData, [name]: value });
   }
 
   function handleNavigate() {
@@ -39,7 +77,14 @@ export default function AddContestHomepage() {
     navigate("/createContest");
   }
 
-  const fetchSubjects = async () => {
+
+  const handleData = (value) => {
+    dispatch(editContestData(value));
+    navigate("/editContest");
+    
+  };
+
+  const fetchContestData = async () => {
     try {
       const response = await axios.get(
         "https://api-bef.hkdigiverse.com/contest/all?page=1&limit=10",
@@ -50,27 +95,26 @@ export default function AddContestHomepage() {
           },
         }
       );
-      console.log(response.data.data.contest_data);
-
+      // console.log("contest_data", response.data.data.contest_data);
       setData(response.data.data.contest_data);
       setDataToDisplay(
-        response.data.data.classes_data.slice(0, ITEMS_PER_PAGE)
+        response.data.data.contest_data.slice(0, ITEMS_PER_PAGE)
       );
     } catch (err) {
       setError(err.message);
     }
   };
 
-  // const SimpleDate = ({ dateString }) => {
-  //   const date = new Date(dateString);
-  //   const formattedDate = date.toLocaleDateString();
+  const SimpleDate = ({ dateString }) => {
+    const date = new Date(dateString);
+    const formattedDate = date.toLocaleDateString();
 
-  //   return (
-  //     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-  //       {formattedDate}
-  //     </p>
-  //   );
-  // };
+    return (
+      <p className="block antialiased font-sans text-sm leading-normal font-normal">
+        {formattedDate}
+      </p>
+    );
+  };
 
   useEffect(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -79,7 +123,7 @@ export default function AddContestHomepage() {
   }, [currentPage]);
 
   useEffect(() => {
-    fetchSubjects();
+    fetchContestData();
   }, []);
 
   return (
@@ -160,67 +204,68 @@ export default function AddContestHomepage() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    username1@1
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    Guaranted
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    01/01/2022
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    01/01/2023
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    100/150
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
-                  <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                    ₹ 100
-                  </p>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
-                  <li className="py-1 px-2 text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-500">
-                    Active{" "}
-                  </li>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50 w-[20px] text-center">
-                  <div className="flex items-center justify-evenly  gap-2 font-sans text-md font-medium leading-none text-slate-800">
-                    <button
-                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                      type="button"
-                    >
-                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                        <svg viewBox="0 0 16 16" className="w-5 h-5">
-                          <LuPencilLine />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
-                      type="button"
-                    >
-                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                        <svg viewBox="0 0 16 16" className="w-6 h-6">
-                          <AiOutlineDelete />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              {dataToDisplay.map((value, index) => (
+                <tr key={index}>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      username1@1
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      Guaranted
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
+                    <SimpleDate dateString={value.startDate} />
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
+                    <SimpleDate dateString={value.endDate} />
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      100/150
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
+                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                      ₹ 100
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
+                    <li className="py-1 px-2 text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-500">
+                      Active{" "}
+                    </li>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50 w-[20px] text-center">
+                    <div className="flex items-center justify-evenly  gap-2 font-sans text-md font-medium leading-none text-slate-800">
+                      <button
+                        className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        type="button"
+                        onClick={() => handleData(value)}
+
+                      >
+                        <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                          <svg viewBox="0 0 16 16" className="w-5 h-5">
+                            <LuPencilLine />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                        type="button"
+
+                      >
+                        <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                          <svg viewBox="0 0 16 16" className="w-6 h-6">
+                            <AiOutlineDelete />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

@@ -5,7 +5,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { useState } from "react";
 
-export default function DropDown() {
+export default function DropDown({ value, onChange }) {
   const [rank, setRank] = useState("");
 
   const handleChange = (event) => {
@@ -29,9 +29,8 @@ export default function DropDown() {
           <Select
             labelId="ranks"
             id="ranks"
-            value={rank}
-            // label="Rank"
-            onChange={handleChange}
+            value={value} // Use the value prop passed from the parent
+            onChange={onChange} 
           >
             <MenuItem value="1st">1st</MenuItem>
             <MenuItem value="2nd">2nd</MenuItem>

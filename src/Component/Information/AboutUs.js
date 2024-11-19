@@ -1,10 +1,13 @@
 import React, { Suspense, useEffect, useState } from "react";
-import { FaPlus, FaRegImage } from "react-icons/fa6";
+import { FaRegImage } from "react-icons/fa6";
 import TextEditor from "../Ui/TextEditor";
+import Loading from "../Loader/Loading";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setTearmAndConditionData } from "../../Context/Action/index";
 import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
-import Loading from "../Loader/Loading";
 import { VscSaveAs } from "react-icons/vsc";
 
 function AboutUs() {
@@ -12,20 +15,25 @@ function AboutUs() {
   const [errorMessage, setErrorMessage] = useState("");
   const [formattedText, setFormattedText] = useState("");
   const [editorContent, setEditorContent] = useState(null);
-
+  const [editorText, setEditorText] = useState({
+    aboutUs: "",
+  });
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
 
   function handleGetPlainText(value) {
     setFormattedText(value);
+    setEditorText({
+      aboutUs: value,
+    });
   }
   // useEffect(() => {
   //   console.log("editor", formattedText);
   // }, [formattedText]);
 
-  const fetchPrivacyPolicyAPI = async () => {
-    const url = `https://api-bef.hkdigiverse.com/privacy-policy`;
+  const fetchAboutUsAPI = async () => {
+    const url = `https://api-bef.hkdigiverse.com/about-us`;
 
     try {
       const response = await fetch(url, {
@@ -64,53 +72,55 @@ function AboutUs() {
       console.error("An error occurred while fetching data.");
     }
   };
-  // const addOrEditAboutUs = async () => {
-  //   try {
-  //     if (!name) {
-  //       toast.warning("Fill up empty space");
-  //     } else {
-  //       let data = JSON.stringify(input);
+  const addOrEditAboutUs = async () => {
+    try {
+      if (!editorText.aboutUs) {
+        toast.warning("Fill up empty space");
+      } else {
+        let data = JSON.stringify(editorText);
+        console.log(editorText);
 
-  //       let config = {
-  //         method: "post",
-  //         url: `https://api-bef.hkdigiverse.com/auth/login`,
-  //         maxBodyLength: Infinity,
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         data: data,
-  //       };
-  //       const response = await axios.request(config);
+        let config = {
+          method: "post",
+          url: `https://api-bef.hkdigiverse.com/about-us/add/edit`,
+          maxBodyLength: Infinity,
+          headers: {
+            Authorization: accessToken,
+            "Content-Type": "application/json",
+          },
+          data: data,
+        };
+        const response = await axios.request(config);
 
-  //       axios
-  //         .request(config)
-  //         .then((response) => {
-  //           console.log(response.data);
-  //           toast.success("Subtopic add");
-  //         })
-  //         .catch((error) => {
-  //           console.error(error);
-  //         });
-  //       if (response.status === 200) {
-  //         // console.log("Backend response", response);
-  //         // dispatch(loginSuccess(data));
-  //         toast.success(response.data.message);
-  //         // navigate("/");
-  //         // handleNavigate();
-  //       } else if (response.status === 400) {
-  //         console.log(response.data.message);
-  //       } else {
-  //         // console.warn("Login failed:", error);
-  //         console.log("Login failed: " + response.data.message);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
+        axios
+          .request(config)
+          .then((response) => {
+            console.log(response.data);
+            // toast.success("Subtopic add");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        if (response.status === 200) {
+          // console.log("Backend response", response);
+          // dispatch(loginSuccess(data));
+          toast.success(response.data.message);
+          // navigate("/");
+          // handleNavigate();
+        } else if (response.status === 400) {
+          console.log(response.data.message);
+        } else {
+          // console.warn("Login failed:", error);
+          console.log("Login failed: " + response.data.message);
+        }
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
   useEffect(() => {
-    fetchPrivacyPolicyAPI();
+    fetchAboutUsAPI();
   }, []);
 
   return (
@@ -124,7 +134,7 @@ function AboutUs() {
 
             <div className="flex items-center justify-center">
               <button
-                // onClick={EditQuestion}
+                onClick={addOrEditAboutUs}
                 className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90  "
               >
                 <svg

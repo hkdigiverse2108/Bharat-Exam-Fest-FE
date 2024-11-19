@@ -41,6 +41,7 @@
     "ckeditor5-premium-features": "^43.2.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.5",
     "editor": "^1.0.0",
     "highlight.js": "^11.10.0",
     "install": "^0.13.0",

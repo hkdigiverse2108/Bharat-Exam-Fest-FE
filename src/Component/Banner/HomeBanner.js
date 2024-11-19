@@ -68,7 +68,7 @@ export default function HomeBanner() {
 
   return (
     <>
-      <section className=" space-y-6">
+      <section className="space-y-6">
         <BannerData />
         <ResultBanner />
       </section>

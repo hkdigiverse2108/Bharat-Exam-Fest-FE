@@ -15,8 +15,7 @@ export default function ImgUpdatePage({ confirm, onClose }) {
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
-  const bannerData = useSelector((state) => state.userConfig.imageData[0]);
-  // console.log(bannerData);
+  const bannerData = useSelector((state) => state.userConfig.imageData);
 
   const isEmpty = () => {
     if (imgEdit.bannerId === "" || imgEdit.image === "") {
@@ -25,17 +24,11 @@ export default function ImgUpdatePage({ confirm, onClose }) {
     return false;
   };
   const [imgEdit, setImgEdit] = useState({
-    bannerId: bannerData._id,
-    image: bannerData.image,
+    bannerId: "",
+    image: "",
+    type: "",
+    link: "",
   });
-
-  useEffect(() => {
-    // Set initial state when component mounts
-    setImgEdit({
-      bannerId: bannerData._id,
-      image: bannerData.image,
-    });
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,6 +36,11 @@ export default function ImgUpdatePage({ confirm, onClose }) {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handleNavigate = (e) => {
+    dispatch(updateImageData());
+    onClose();
   };
 
   const handleFileChange = (e) => {
@@ -69,7 +67,7 @@ export default function ImgUpdatePage({ confirm, onClose }) {
       let config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: `https://api-bef.hkdigiverse.com/banner/edit/${bannerData._id}`,
+        url: `https://api-bef.hkdigiverse.com/banner/edit/${imgEdit.bannerId}`,
         headers: {
           Authorization: accessToken,
           "Content-Type": "application/json",
@@ -94,13 +92,28 @@ export default function ImgUpdatePage({ confirm, onClose }) {
       console.error("An error occurred while adding the question.");
     }
   };
+  
+  useEffect(() => {
+    if (bannerData) {
+      // console.log(bannerData);
+      setImgEdit({
+        bannerId: bannerData._id,
+        image: bannerData.image,
+        type: bannerData.type,
+        link: "",
+      });
+    }
+  }, [bannerData]);
 
   return (
     <>
       <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">
         <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            <div
+              className="absolute inset-0 bg-gray-500 opacity-75"
+              onClick={handleNavigate}
+            ></div>
           </div>
 
           <span
@@ -114,12 +127,19 @@ export default function ImgUpdatePage({ confirm, onClose }) {
               Edit Image
             </p>
             <div className="space-y-3 border border-[#808836] rounded-lg p-4">
+              <img
+                src={imgEdit.image}
+                width="300px"
+                className="border-b  block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
+                alt="Generated"
+              />
+
               <div className="grid grid-cols-1 space-y-2">
                 <label
                   htmlFor="editimg"
                   className="capitalize text-base font-medium text-gray-800 dark:text-white"
                 >
-                  Edit Image
+                  Navigation Link
                 </label>
                 <input
                   className="border-b w-full block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
@@ -132,9 +152,9 @@ export default function ImgUpdatePage({ confirm, onClose }) {
                 />
               </div>
               <div className="p-4 w-full h-fit border border-[#65B741] bg-white shadow-sm rounded-xl">
-                <div className="space-y-2">
+                <div className="space-y-2 overflow-hidden">
                   <p className="text-start capitalize text-base font-medium text-gray-700 dark:text-white">
-                    Banner Image
+                    Edit Banner Image
                   </p>
                   <input
                     type="file"
@@ -150,7 +170,7 @@ export default function ImgUpdatePage({ confirm, onClose }) {
                     <span className="rounded-md border border-[#5F8670] py-2 px-8 text-base capitalize text-slate-700">
                       choose file
                     </span>
-                    <span className="text-md capitalize text-[#5F8670]">
+                    <span className="text-md text-ellipsis text-[#5F8670]">
                       {imgEdit.image === "string"
                         ? "no file chosen"
                         : imgEdit.image}
@@ -161,6 +181,23 @@ export default function ImgUpdatePage({ confirm, onClose }) {
               <p className="text-base text-gray-600">
                 <span>File type: jpg/jpeg/png</span>
               </p>
+              <div className="grid grid-cols-1 space-y-2">
+                <label
+                  htmlFor="editimg"
+                  className="capitalize text-base font-medium text-gray-800 dark:text-white"
+                >
+                  Navigational Link
+                </label>
+                <input
+                  className="border-b w-full block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
+                  type="text"
+                  id="editimg"
+                  name="image"
+                  placeholder="Image"
+                  value={imgEdit.image}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
             <div className="flex items-center justify-center">
               <button

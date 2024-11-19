@@ -14,7 +14,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addClassesData } from "../../Context/Action";
 
-export default function CreateContest() {
+export default function EditContest() {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
 
@@ -35,6 +35,10 @@ export default function CreateContest() {
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
+  const contestFromRedux = useSelector(
+    (state) => state.userConfig.editContestData
+  );
+  console.log(contestFromRedux);
 
   const [contestData, setContestData] = useState({
     name: "",
@@ -86,6 +90,17 @@ export default function CreateContest() {
     }));
   };
 
+  // const handleRankChange = (index, e) => {
+  //   const { name, value } = e.target;
+
+  //   const newRanks = [...contestData.ranks];
+  //   newRanks[index] = { ...newRanks[index], [name]: value };
+  //   setContestData((prevData) => ({
+  //     ...prevData,
+  //     ranks: newRanks,
+  //   }));
+  // };
+
   const handleRankChange = (index, event) => {
     const updatedRanks = [...contestData.ranks];
     updatedRanks[index].place = event.target.value; // Update the place value
@@ -105,12 +120,11 @@ export default function CreateContest() {
     id: classItem._id, // Use the actual _id as the id
     label: classItem.name, // Use the name as the label
   }));
-  console.log(className);
-
   const [selectedValues, setSelectedValues] = useState([]);
 
   const handleCheckboxChange = (event) => {
     const value = event.target.id;
+    console.log(value);
 
     setSelectedValues((prevSelectedValues) => {
       if (prevSelectedValues.includes(value)) {
@@ -147,11 +161,25 @@ export default function CreateContest() {
       totalTime: timerange,
     }));
   };
-
-  // useEffect(() => {
-  //   console.log(startDate);
-  //   console.log(endDate);
-  // }, [endDate, startDate]);
+  useEffect(() => {
+    if (contestFromRedux) {
+      setContestData({
+        name: contestFromRedux.name,
+        type: contestFromRedux.type,
+        startDate: contestFromRedux.startDate,
+        endDate: contestFromRedux.endDate,
+        totalSpots: contestFromRedux.totalSpots,
+        fees: contestFromRedux.fees,
+        winningAmountPerFee: contestFromRedux.winningAmountPerFee,
+        winnerPercentage: contestFromRedux.winnerPercentage,
+        ranks: contestFromRedux.ranks.map((rank) => ({ place: rank.place })),
+        totalQuestions: contestFromRedux.totalQuestions,
+        totalTime: contestFromRedux.totalTime,
+        totalMarks: contestFromRedux.totalMarks,
+        classesId: contestFromRedux.classesId,
+      });
+    }
+  }, [contestFromRedux]);
 
   const AddNewContest = async () => {
     try {
@@ -206,6 +234,13 @@ export default function CreateContest() {
     } catch (err) {
       setError(err.message);
     }
+  };
+  const SimpleDate = ({ dateString }) => {
+    const date = new Date(dateString);
+    const formattedDate = date.toLocaleDateString();
+console.log(formattedDate);
+
+    return formattedDate ;
   };
 
   useEffect(() => {
@@ -301,7 +336,7 @@ export default function CreateContest() {
                     type="text"
                     id="dateRange"
                     name="dateRange"
-                    value={dateRang}
+                    value={contestData.startDate}
                     onClick={() => setDate(!date)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending time"
@@ -318,7 +353,7 @@ export default function CreateContest() {
                     type="text"
                     id="timeRange"
                     name="timeRange"
-                    value={timeRang}
+                    value={contestData.totalTime}
                     onClick={() => setTime(!time)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending date"

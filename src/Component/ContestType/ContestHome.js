@@ -8,8 +8,10 @@ import axios from "axios";
 import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ConfirmationPage from "./ConfirmationPage";
+import useGetAllContestData from "../../Hooks/useGetAllContestData";
 
 export default function ContestHome() {
+  useGetAllContestData();
   const [confirm, setConfirm] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
@@ -19,7 +21,7 @@ export default function ContestHome() {
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
-
+  const DataList = useSelector((state) => state.userConfig.contestData);
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const Totalpage = Math.ceil(classes.length / itemsPerPage);
@@ -41,7 +43,7 @@ export default function ContestHome() {
           },
         }
       );
-      console.log(response.data.data.contest_data);
+      // console.log(response.data.data.contest_data);
 
       setClasses(response.data.data.contest_data);
       setClassestShow(response.data.data.contest_data.slice(0, end));
@@ -89,6 +91,8 @@ export default function ContestHome() {
 
   useEffect(() => {
     fetchClasses();
+
+    console.log(DataList);
   }, [confirm]);
 
   return (
@@ -138,7 +142,7 @@ export default function ContestHome() {
             </thead>
             <tbody>
               {classesShow.map((value, index) => (
-                <tr>
+                <tr key={index}>
                   <td className="p-4 border-b border-blue-gray-50">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
                       {index + 1}
