@@ -68,16 +68,22 @@ export const bannerDataList = (data) => {
     type: 'SET_CONTEST_DATA',
     payload: contestData,
   });
-
+  
   export const addClassesData = (data) => ({
     type: 'ADD_CLASSES_DATA',
     payload: data,
-});
+  });
+  
+  export const editContestData = (data) => ({
+    type: 'EDIT_CONTEST_DATA',
+    payload: data,
+  });
 
-export const editContestData = (data) => ({
-  type: 'EDIT_CONTEST_DATA',
-  payload: data,
-});
+  export const contestTypeData = (data) => ({
+    type: 'CONTEST_TYPE',
+    payload: data,
+  });
+
 export const editContestTypeData = (data) => ({
   type: 'EDIT_CONTEST_TYPE_DATA',
   payload: data,

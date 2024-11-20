@@ -21,18 +21,36 @@ function LoginPage() {
 
   const [confirm, setConfirm] = useState(false);
   const [show, setShow] = useState(false);
+
   const [input, setInput] = useState({
     uniqueId: "",
     password: "",
-    userType: "admin",
+    userType: "classes",
   });
-  const { uniqueId, password, userType } = input;
-
+  const { uniqueId, password } = input;
   function handleChange(e) {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
   }
+  const [otpValue, setOtpValue] = useState({
+    otp: "",
+    userType: "classes",
+  });
 
+  const handleChangeOTP = (e, index) => {
+    const { value } = e.target;
+    if (/^[0-9]$/.test(value) || value === "") {
+      const newOtp = otpValue.otp.split("");
+      newOtp[index] = value;
+      setOtpValue({
+        ...otpValue,
+        otp: newOtp.join(""),
+      });
+    }
+  };
+  const isEmpty = () => {
+    return otpValue.otp === "" && !otpValue.userType;
+  };
   async function handleNavigate() {
     setConfirm(!confirm);
   }
@@ -40,6 +58,7 @@ function LoginPage() {
   async function handleLogin() {
     try {
       let userData = JSON.stringify(input);
+      console.log("Login", input);
 
       let config = {
         method: "post",
@@ -50,53 +69,80 @@ function LoginPage() {
         },
         data: userData,
       };
-      const response = await axios.request(config);
 
+      const response = await axios.request(config);
       const { status, data, message, error } = response.data;
 
-      console.log("Backend response", message);
-
-      if (status === 200) {
-        console.log("Backend response", data);
-        dispatch(loginSuccess(data));
-        // toast.success("Login successfully");
-        // setTimeout(() => navigate("/"), 1000);
-        // handleNavigate();
+      if (response.status === 200) {
+        handleNavigate();
+      } else if (response.status === 400) {
+        toast.error(response.data.message);
       } else {
         console.warn("Login failed:", error);
-        toast.error("Login failed: " + error);
+        console.log("Login failed: " + error.message);
       }
     } catch (err) {
       console.error("Error during login:", err);
-      toast.error("An error occurred during login.");
     }
   }
+
+  const verifyOtp = async () => {
+    try {
+      if (isEmpty()) {
+        toast.warning("Fill up empty space");
+        return false;
+      } else {
+        let data = JSON.stringify(otpValue);
+
+        let config = {
+          method: "post",
+          maxBodyLength: Infinity,
+          url: "https://api-bef.hkdigiverse.com/auth/otp/verify",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: data,
+        };
+
+        const response = await axios.request(config);
+
+        if (response.data.status === 200) {
+          console.log(response.data);
+          toast.success("OTP verified and Login successfully");
+          dispatch(loginSuccess(response.data));
+          navigate("/");
+          handleNavigate();
+          return true;
+        } else {
+          console.error("OTP verification failed");
+          return false;
+        }
+      }
+    } catch (err) {
+      console.error(err.message);
+      console.error("An error occurred during OTP verification");
+      return false;
+    }
+  };
 
   function Signup() {
     try {
       const validationMessages = [];
 
-      if (!uniqueId) {
-        validationMessages.push("Fill up empty field!");
-      } else if (!uniqueId.match(emailpatton)) {
-        validationMessages.push("Email doesn't match!");
-      }
-
-      if (!password) {
+      if (!uniqueId || !password) {
         validationMessages.push("Fill up empty field!");
       } else {
-        if (!password.match(spcl)) {
+        if (!uniqueId.match(emailpatton)) {
+          validationMessages.push("Email doesn't match!");
+        } else if (!password.match(spcl)) {
           validationMessages.push("Must include a symbol in password!");
-        }
-        if (!password.match(numbers)) {
+        } else if (!password.match(numbers)) {
           validationMessages.push("Must include a digit in password!");
-        }
-        if (!password.match(upperCaseLetters)) {
+        } else if (!password.match(upperCaseLetters)) {
           validationMessages.push(
             "Must include uppercase letters in password!"
           );
-        }
-        if (!password.match(lowerCaseLetters)) {
+        } else if (!password.match(lowerCaseLetters)) {
           validationMessages.push(
             "Must include lowercase letters in password!"
           );
@@ -195,7 +241,15 @@ function LoginPage() {
           </button>
         </div>
         <div className={`${confirm === true ? "block" : "hidden"}`}>
-          <OtpVerify confirm={confirm} setConfirm={handleNavigate} />
+          <OtpVerify
+            confirm={confirm}
+            setConfirm={handleLogin}
+            onClose={handleNavigate}
+            email={input.uniqueId} // Pass the user's email or any relevant data
+            otpValue={otpValue}
+            handleChangeOTP={handleChangeOTP}
+            handleOtpverify={verifyOtp}
+          />
         </div>
       </section>
       <ToastContainer

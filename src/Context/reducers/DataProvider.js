@@ -7,6 +7,7 @@ const initialData = {
   howtoplayData: [],
   contestData: [],
   editContestData: null,
+  contestType: [],
   editContestTypeData: null,
   classesData: [],
   Logintype: "Admin",
@@ -35,6 +36,7 @@ const DataProvider = (state = initialData, action) => {
         ...state,
         imageData: action.payload,
       };
+
     case "HOW_TO_PLAY":
       return {
         ...state,
@@ -50,11 +52,15 @@ const DataProvider = (state = initialData, action) => {
     case "SET_CONTEST_DATA":
       return { ...state, contestData: action.payload };
 
+    case "CONTEST_TYPE":
+      return { ...state, contestData: action.payload };
+
     case "EDIT_CONTEST_DATA":
       return {
         ...state,
         editContestData: action.payload,
       };
+
     case "EDIT_CONTEST_TYPE_DATA":
       return {
         ...state,

@@ -10,11 +10,10 @@ import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ConfirmationPage from "./ConfirmationPage";
 import useGetAllContestData from "../../Hooks/useGetAllContestData";
-import { editContestTypeData } from "../../Context/Action";
+import { contestTypeData, editContestTypeData } from "../../Context/Action";
 import EditContestType from "./EditContestType";
 
 export default function ContestHome() {
-  useGetAllContestData();
   const dispatch = useDispatch();
   const [confirm, setConfirm] = useState(false);
   const [show, setShow] = useState(false);
@@ -26,7 +25,8 @@ export default function ContestHome() {
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
-  const DataList = useSelector((state) => state.userConfig.contestData);
+  // const DataList = useSelector((state) => state.userConfig.contestType);
+
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const Totalpage = Math.ceil(contest.length / itemsPerPage);
@@ -53,6 +53,7 @@ export default function ContestHome() {
         const responseData = response.data.data.contest_type_data;
         setContest(responseData);
         setContestDataShow(responseData.slice(0, end));
+        dispatch(contestTypeData(responseData));
       } else {
         console.error(response.data.message);
       }
@@ -61,12 +62,80 @@ export default function ContestHome() {
     }
   };
 
-  const deleteQuestion = async () => {
+  // const contestFromRedux = useSelector(
+  //   (state) => state.userConfig.editContestTypeData
+  // );
+
+  const [input, setInput] = useState({
+    contestTypeId: "",
+    name: "",
+  });
+
+  const handleData = (value) => {
+    dispatch(editContestTypeData(value));
+    setInput({ contestTypeId: value._id, name: value.name });
+    setShow(!show);
+  };
+  const handleShow = () => {
+    setShow(!show);
+  };
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setInput({ ...input, [name]: value });
+    
+  }
+
+  const isEmpty = () => {
+    if (input.name === "" && input.contestTypeId === "") {
+      return true;
+    }
+    return false;
+  };
+
+  const editContestType = async () => {
+    try {
+      if (isEmpty()) {
+        toast.warning("Fill up empty space");
+      } else {
+        let userData = JSON.stringify(input);
+
+        let config = {
+          method: "post",
+          maxBodyLength: Infinity,
+          url: "https://api-bef.hkdigiverse.com/contest-type/edit",
+          headers: {
+            Authorization: accessToken,
+            "Content-Type": "application/json",
+          },
+          data: userData,
+        };
+        const response = await axios.request(config);
+
+        const { status, data, message, error } = response.data;
+
+        if (status === 200) {
+          // console.log("Backend response", data);
+          handleShow();
+          toast.success(message);
+          dispatch(editContestTypeData());
+          fetchContestTypeData();
+        } else {
+          console.warn("contest add failed:", error);
+        }
+      }
+    } catch (err) {
+      console.error("Error add contest:", err.message);
+    }
+  };
+
+
+  const deleteContestType = async () => {
     try {
       let config = {
         method: "delete",
         maxBodyLength: Infinity,
-        url: `https://api-bef.hkdigiverse.com/contest/delete/${itemToDelete}`,
+        url: `https://api-bef.hkdigiverse.com/contest-type/delete/${itemToDelete}`,
         headers: {
           Authorization: accessToken,
           "Content-Type": "application/json",
@@ -76,7 +145,7 @@ export default function ContestHome() {
       axios
         .request(config)
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
           toast.success(response.data.message);
           handleDelete();
           fetchContestTypeData();
@@ -89,18 +158,10 @@ export default function ContestHome() {
     }
   };
 
-  const handleData = (value) => {
-    dispatch(editContestTypeData(value));
-    // navigate("/editContest");
-    setShow(!show);
-  };
-
   function handleDelete(value) {
     setItemToDelete(value);
     setToggle(!toggle);
   }
-
-
 
   useEffect(() => {
     setContestDataShow(contest.slice(start, end));
@@ -171,7 +232,7 @@ export default function ContestHome() {
                   </td>
 
                   <td className="p-4 border-b border-blue-gray-50">
-                    <div className="flex items-center justify-center  gap-x-4 font-sans text-md font-medium leading-none text-slate-800">
+                    <div className="flex items-center justify-evenly font-sans text-md font-medium leading-none text-slate-800">
                       <button
                         className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                         type="button"
@@ -188,6 +249,7 @@ export default function ContestHome() {
                         className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
                         type="button"
                         title="Delete"
+                        onClick={() => handleDelete(value._id)}
                       >
                         <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
                           <svg viewBox="0 0 16 16" className="w-6 h-6">
@@ -212,12 +274,18 @@ export default function ContestHome() {
         <AddContest confirm={confirm} onClose={handleNavigate} />
       </div>
       <div className={`${show === true ? "block" : "hidden"}`}>
-        <EditContestType show={show} onClose={handleNavigate} />
+        <EditContestType
+          show={show}
+          editData={input}
+          onClose={handleShow}
+          onChange={handleChange}
+          onSubmit={editContestType}
+        />
       </div>
       <div className={`${toggle === true ? "block" : "hidden"}`}>
         <ConfirmationPage
           confirm={toggle}
-          onDelete={deleteQuestion}
+          onDelete={deleteContestType}
           onCancel={handleDelete}
         />
       </div>

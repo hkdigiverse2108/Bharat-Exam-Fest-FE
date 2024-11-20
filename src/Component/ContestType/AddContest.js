@@ -9,7 +9,6 @@ import axios from "axios";
 
 export default function AddContest({ onClose }) {
   // const navigate = useNavigate();
-  // const [error, setError] = useState(null);
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
   );
@@ -51,14 +50,10 @@ export default function AddContest({ onClose }) {
 
         const { status, data, message, error } = response.data;
 
-        console.log("Backend response", message);
-
-        if (status === 200) {
+        if (response.data.status === 200) {
           console.log("Backend response", data);
-          toast.success(message);
+          toast.success("Contest type added successfully");
           onClose();
-          // navigate("/addContest");
-          // dispatch(addClassesData(data));
         } else {
           console.warn("contest add failed:", error);
         }
@@ -67,7 +62,6 @@ export default function AddContest({ onClose }) {
       console.error("Error add contest:", err.message);
     }
   };
-  
 
   return (
     <>

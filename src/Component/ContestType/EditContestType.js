@@ -6,80 +6,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { editContestTypeData } from "../../Context/Action";
+import { contestTypeData, editContestTypeData } from "../../Context/Action";
 
-function EditContestType({ onClose }) {
-  // const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
-  const contestFromRedux = useSelector(
-    (state) => state.userConfig.editContestTypeData
-  );
-
-  const [input, setInput] = useState({
-    name: "",
-  });
-
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setInput({ ...input, [name]: value });
-  }
-
-  const isEmpty = () => {
-    if (input.name === "") {
-      return true;
-    }
-    return false;
-  };
-
-  const editContestType = async () => {
-    try {
-      if (isEmpty()) {
-        toast.warning("Fill up empty space");
-      } else {
-        let userData = JSON.stringify(input);
-
-        let config = {
-          method: "post",
-          maxBodyLength: Infinity,
-          url: "https://api-bef.hkdigiverse.com/contest-type/edit",
-          headers: {
-            Authorization: accessToken,
-            "Content-Type": "application/json",
-          },
-          data: userData,
-        };
-        const response = await axios.request(config);
-
-        const { status, data, message, error } = response.data;
-
-        if (status === 200) {
-          console.log("Backend response", data);
-          toast.success(message);
-          dispatch(editContestTypeData());
-          onClose();
-          // navigate("/addContest");
-          // dispatch(addClassesData(data));
-        } else {
-          console.warn("contest add failed:", error);
-        }
-      }
-    } catch (err) {
-      console.error("Error add contest:", err.message);
-    }
-  };
-
-  useEffect(() => {
-    if (contestFromRedux) {
-      setInput({
-        name: contestFromRedux.name,
-      });
-    }
-  }, [contestFromRedux]);
-
+function EditContestType({ show, editData, onClose, onChange, onSubmit }) {
   return (
     <>
       <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out ">
@@ -99,12 +28,12 @@ function EditContestType({ onClose }) {
           <div className="inline-block mx-auto w-full  bg-white rounded-lg space-y-6 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all  sm:align-middle max-w-5xl md:max-w-2xl">
             <div className="text-left">
               <h3 className="text-2xl text-left w-full font-semibold text-slate-800">
-                Add Content Type
+                Edit Content Type
               </h3>
             </div>
             <div className="grid grid-cols-1 space-y-2 w-full">
               <label
-                htmlFor="contentType"
+                htmlFor="name"
                 className="capitalize text-base font-medium text-gray-700 dark:text-white"
               >
                 contentType name
@@ -112,17 +41,16 @@ function EditContestType({ onClose }) {
               <input
                 className="w-full text-base p-2 rounded-md border border-gray-400 focus:outline-none focus:border-indigo-500"
                 type="text"
-                id="contentType"
-                value={input.name}
-                placeholder="Enter content name"
-                onChange={(e) => handleChange(e)}
+                id="name"
                 name="name"
+                value={editData.name}
+                onChange={onChange}
               />
             </div>
             <div className="flex items-center justify-center">
               <button
                 className="inline-flex items-center space-x-2 rounded-lg px-4 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90"
-                onClick={editContestType}
+                onClick={onSubmit}
               >
                 <svg
                   className="font-bold text-white w-4 h-4"

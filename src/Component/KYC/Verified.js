@@ -1,10 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "../Pagination/Pagination";
 
 export default function Verified({ verifiedData }) {
-  console.log(verifiedData);
+  const [userStatuses, setUserStatuses] = useState({});
 
-  const [status, setStatus] = useState("Verified");
+  useEffect(() => {
+    const initialUserStatuses = verifiedData.reduce((acc, user) => {
+      acc[user._id] = user.status;
+      return acc;
+    }, {});
+    setUserStatuses(initialUserStatuses);
+  }, [verifiedData]);
+
+  const handleStatusChange = (userId, newStatus) => {
+    setUserStatuses((prevStatuses) => ({
+      ...prevStatuses,
+      [userId]: newStatus,
+    }));
+  };
   return (
     <>
       <section className="shadow-md">
@@ -105,7 +118,7 @@ export default function Verified({ verifiedData }) {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {verifiedData.map((user) => {
+              {verifiedData.map((user, index) => {
                 const {
                   _id,
                   idNumber,
@@ -115,12 +128,12 @@ export default function Verified({ verifiedData }) {
                   status,
                 } = user;
                 const fullName = `${userInfo.firstName} ${userInfo.lastName}`;
-                const dob = new Date(userInfo.dob).toLocaleDateString(); // Format date
+                const dob = new Date(userInfo.dob).toLocaleDateString();
                 const mobile = `${userInfo.contact.countryCode} ${userInfo.contact.mobile}`;
 
                 return (
                   <>
-                    <tr key={_id} className="border-y border-slate-200">
+                    <tr key={index} className="border-y border-slate-200">
                       <td className="p-2 text-sm text-slate-500 overflow-hidden text-ellipsis">
                         {idNumber}
                       </td>
@@ -151,17 +164,19 @@ export default function Verified({ verifiedData }) {
                       <td className="p-3 whitespace-nowrap">
                         <select
                           name="status"
-                          value={status}
+                          value={userStatuses[_id]}
+                          onChange={(e) =>
+                            handleStatusChange(_id, e.target.value)
+                          }
                           className={`${
-                            status === "Verified"
+                            userStatuses[_id] === "verified"
                               ? "bg-green-100 text-green-600"
-                              : status === "Pending"
+                              : userStatuses[_id] === "pending"
                               ? "bg-yellow-100 text-yellow-600"
-                              : status === "Unverified"
+                              : userStatuses[_id] === "unverified"
                               ? "bg-red-100 text-red-600"
                               : "bg-gray-100 text-gray-900"
                           } text-md text-center rounded-full cursor-pointer appearance-none focus:outline-none block max-w-md px-2`}
-                          onChange={(e) => setStatus(e.target.value)}
                         >
                           <option
                             value="Verified"
