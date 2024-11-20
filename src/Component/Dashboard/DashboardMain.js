@@ -2,6 +2,7 @@ import React from "react";
 import Dashboard from "./Dashboard";
 import ContestwiseEarn from "./ContestwiseEarn";
 import Privacy from "./Privacy";
+import OtpVerify from "../OtpVerify/OtpVerify";
 
 export default function DashboardMain() {
   return (

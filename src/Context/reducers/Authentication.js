@@ -1,4 +1,4 @@
-const userInfo = JSON.parse(localStorage.getItem("user"));
+const userInfo = JSON.parse(localStorage.getItem("Auth"));
 console.log("authentication",userInfo);
 
 const authState = userInfo 
