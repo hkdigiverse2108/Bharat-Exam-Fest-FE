@@ -78,3 +78,7 @@ export const editContestData = (data) => ({
   type: 'EDIT_CONTEST_DATA',
   payload: data,
 });
+export const editContestTypeData = (data) => ({
+  type: 'EDIT_CONTEST_TYPE_DATA',
+  payload: data,
+});

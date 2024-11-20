@@ -1,3 +1,5 @@
+import { editContestTypeData } from "../Action";
+
 const initialData = {
   bannerDataList: [],
   imageData: [],
@@ -5,6 +7,7 @@ const initialData = {
   howtoplayData: [],
   contestData: [],
   editContestData: null,
+  editContestTypeData: null,
   classesData: [],
   Logintype: "Admin",
 };
@@ -50,7 +53,12 @@ const DataProvider = (state = initialData, action) => {
     case "EDIT_CONTEST_DATA":
       return {
         ...state,
-        editContestData: action.payload, 
+        editContestData: action.payload,
+      };
+    case "EDIT_CONTEST_TYPE_DATA":
+      return {
+        ...state,
+        editContestTypeData: action.payload,
       };
 
     case "ADD_CLASSES_DATA":

@@ -1,17 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { VscSaveAs } from "react-icons/vsc";
 import MultipleSelect from "../Ui/MultiSelection";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import { editContestTypeData } from "../../Context/Action";
 
-export default function AddContest({ onClose }) {
+function EditContestType({ onClose }) {
   // const navigate = useNavigate();
-  // const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
+  );
+  const contestFromRedux = useSelector(
+    (state) => state.userConfig.editContestTypeData
   );
 
   const [input, setInput] = useState({
@@ -30,7 +35,7 @@ export default function AddContest({ onClose }) {
     return false;
   };
 
-  const AddNewContestType = async () => {
+  const editContestType = async () => {
     try {
       if (isEmpty()) {
         toast.warning("Fill up empty space");
@@ -40,7 +45,7 @@ export default function AddContest({ onClose }) {
         let config = {
           method: "post",
           maxBodyLength: Infinity,
-          url: "https://api-bef.hkdigiverse.com/contest-type/add",
+          url: "https://api-bef.hkdigiverse.com/contest-type/edit",
           headers: {
             Authorization: accessToken,
             "Content-Type": "application/json",
@@ -51,11 +56,10 @@ export default function AddContest({ onClose }) {
 
         const { status, data, message, error } = response.data;
 
-        console.log("Backend response", message);
-
         if (status === 200) {
           console.log("Backend response", data);
           toast.success(message);
+          dispatch(editContestTypeData());
           onClose();
           // navigate("/addContest");
           // dispatch(addClassesData(data));
@@ -67,7 +71,14 @@ export default function AddContest({ onClose }) {
       console.error("Error add contest:", err.message);
     }
   };
-  
+
+  useEffect(() => {
+    if (contestFromRedux) {
+      setInput({
+        name: contestFromRedux.name,
+      });
+    }
+  }, [contestFromRedux]);
 
   return (
     <>
@@ -93,15 +104,16 @@ export default function AddContest({ onClose }) {
             </div>
             <div className="grid grid-cols-1 space-y-2 w-full">
               <label
-                htmlFor="content"
+                htmlFor="contentType"
                 className="capitalize text-base font-medium text-gray-700 dark:text-white"
               >
-                content name
+                contentType name
               </label>
               <input
                 className="w-full text-base p-2 rounded-md border border-gray-400 focus:outline-none focus:border-indigo-500"
                 type="text"
-                id="content"
+                id="contentType"
+                value={input.name}
                 placeholder="Enter content name"
                 onChange={(e) => handleChange(e)}
                 name="name"
@@ -110,7 +122,7 @@ export default function AddContest({ onClose }) {
             <div className="flex items-center justify-center">
               <button
                 className="inline-flex items-center space-x-2 rounded-lg px-4 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90"
-                onClick={AddNewContestType}
+                onClick={editContestType}
               >
                 <svg
                   className="font-bold text-white w-4 h-4"
@@ -137,3 +149,5 @@ export default function AddContest({ onClose }) {
     </>
   );
 }
+
+export default EditContestType;

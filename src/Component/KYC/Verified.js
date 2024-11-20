@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import Pagination from "../Pagination/Pagination";
 
-export default function Verified() {
+export default function Verified({ verifiedData }) {
+  console.log(verifiedData);
+
   const [status, setStatus] = useState("Verified");
   return (
     <>
@@ -103,63 +105,93 @@ export default function Verified() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr className="border-y border-slate-200">
-                <td className="p-2 text-sm text-slate-500 overflow-hidden text-ellipsis">
-                  001
-                </td>
-                <td className="p-3 whitespace-nowrap">dear</td>
-                <td className="p-3 whitespace-nowrap">20/10/2024</td>
-                <td className="p-3 whitespace-nowrap">d@gmail.com</td>
-                <td className="p-3 whitespace-nowrap">+91 7894561230</td>
-                <td className="p-3 whitespace-nowrap">proof</td>
-                <td className="p-3 whitespace-nowrap">dear#2024</td>
-                <td className="p-3 whitespace-nowrap">
-                  <img src="i1.png" alt="img" className="w-42  h-10" />
-                </td>
-                <td className="p-3 whitespace-nowrap">
-                  <img src="i1.png" alt="img" className="w-42  h-10" />
-                </td>
-                <td className="p-3 whitespace-nowrap">
-                  <select
-                    name="status"
-                    value={status}
-                    className={`${
-                      status === "Verified"
-                        ? "bg-green-100  text-green-600"
-                        : status === "Pending"
-                        ? "bg-yellow-100  text-yellow-600"
-                        : status === "Unverified"
-                        ? "bg-red-100  text-red-600"
-                        : "bg-gray-100  text-gray-900"
-                    } text-md text-center rounded-full cursor-pointer appearance-none focus:outline-none block max-w-md px-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white `}
-                    onChange={(e) => setStatus(e.target.value)}
-                  >
-                    <option
-                      value="Verified"
-                      className="px-2 text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-500"
-                    >
-                      Verified
-                    </option>
-                    <option
-                      className="px-2 text-sm leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-500"
-                      value="Pending"
-                    >
-                      Pending
-                    </option>
-                    <option
-                      className="px-2 text-sm leading-5 font-semibold rounded-full bg-red-100 text-red-500"
-                      value="Unverified"
-                    >
-                      Unverified
-                    </option>
-                  </select>
-                </td>
-                <td className="p-3 whitespace-nowrap">
-                  <button className="px-4 py-1 font-medium text-white bg-orange-600 rounded-md hover:bg-orange-500 focus:outline-none focus:shadow-outline-blue  transition duration-150 ease-in-out">
-                    save
-                  </button>
-                </td>
-              </tr>
+              {verifiedData.map((user) => {
+                const {
+                  _id,
+                  idNumber,
+                  user: userInfo,
+                  frontSideImage,
+                  backSideImage,
+                  status,
+                } = user;
+                const fullName = `${userInfo.firstName} ${userInfo.lastName}`;
+                const dob = new Date(userInfo.dob).toLocaleDateString(); // Format date
+                const mobile = `${userInfo.contact.countryCode} ${userInfo.contact.mobile}`;
+
+                return (
+                  <>
+                    <tr key={_id} className="border-y border-slate-200">
+                      <td className="p-2 text-sm text-slate-500 overflow-hidden text-ellipsis">
+                        {idNumber}
+                      </td>
+                      <td className="p-3 whitespace-nowrap">{fullName}</td>
+                      <td className="p-3 whitespace-nowrap">{dob}</td>
+                      <td className="p-3 whitespace-nowrap">
+                        {userInfo.email}
+                      </td>
+                      <td className="p-3 whitespace-nowrap">{mobile}</td>
+                      <td className="p-3 whitespace-nowrap">{user.idProof}</td>
+                      <td className="p-3 whitespace-nowrap">
+                        {userInfo.uniqueId}
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        <img
+                          src={frontSideImage}
+                          alt="Front ID"
+                          className="w-42 h-10"
+                        />
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        <img
+                          src={backSideImage}
+                          alt="Back ID"
+                          className="w-42 h-10"
+                        />
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        <select
+                          name="status"
+                          value={status}
+                          className={`${
+                            status === "Verified"
+                              ? "bg-green-100 text-green-600"
+                              : status === "Pending"
+                              ? "bg-yellow-100 text-yellow-600"
+                              : status === "Unverified"
+                              ? "bg-red-100 text-red-600"
+                              : "bg-gray-100 text-gray-900"
+                          } text-md text-center rounded-full cursor-pointer appearance-none focus:outline-none block max-w-md px-2`}
+                          onChange={(e) => setStatus(e.target.value)}
+                        >
+                          <option
+                            value="Verified"
+                            className="px-2 text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-500"
+                          >
+                            Verified
+                          </option>
+                          <option
+                            value="Pending"
+                            className="px-2 text-sm leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-500"
+                          >
+                            Pending
+                          </option>
+                          <option
+                            value="Unverified"
+                            className="px-2 text-sm leading-5 font-semibold rounded-full bg-red-100 text-red-500"
+                          >
+                            Unverified
+                          </option>
+                        </select>
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        <button className="px-4 py-1 font-medium text-white bg-orange-600 rounded-md hover:bg-orange-500 focus:outline-none focus:shadow-outline-blue transition duration-150 ease-in-out">
+                          Save
+                        </button>
+                      </td>
+                    </tr>
+                  </>
+                );
+              })}
             </tbody>
           </table>
         </div>

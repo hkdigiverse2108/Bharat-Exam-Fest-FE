@@ -20,9 +20,9 @@ export default function Calendar({
   const [endDate, setEndDate] = useState(selectedEndDate || today || null);
   const handleSave = () => {
     if (startDate && endDate) {
-      const DateRang = `${dayjs(startDate).format("MM/DD/YYYY")} - ${dayjs(
+      const DateRang = `${dayjs(startDate).format("DD/MM/YYYY")} - ${dayjs(
         endDate
-      ).format("MM/DD/YYYY")}`;
+      ).format("DD/MM/YYYY")}`;
 
       onDateRangeChange(startDate, endDate, DateRang);
       onClose();

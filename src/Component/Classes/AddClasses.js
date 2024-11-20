@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function AddClasses({ confirm, setConfirm ,onClose}) {
+export default function AddClasses({ confirm, setConfirm, onClose }) {
   const [toggle, setToggle] = useState(false);
   const [show, setShow] = useState(false);
 
@@ -37,7 +37,12 @@ export default function AddClasses({ confirm, setConfirm ,onClose}) {
 
   const addNewClass = async ({ onClose }) => {
     try {
-      if (!input.name || !input.email || !input.password || !input.referralCode) {
+      if (
+        !input.name ||
+        !input.email ||
+        !input.password ||
+        !input.referralCode
+      ) {
         toast.warning("Fill up empty space");
       } else {
         let data = JSON.stringify(input);
@@ -59,10 +64,8 @@ export default function AddClasses({ confirm, setConfirm ,onClose}) {
           .then((response) => {
             if (response.status === 200) {
               console.log("success", response.data);
-              navigate("/classes");
               toast.success(response.message);
-
-              onClose(response.data.message);
+              onClose();
             } else {
               console.log("failed", response);
               toast.error(response.message);
@@ -86,7 +89,10 @@ export default function AddClasses({ confirm, setConfirm ,onClose}) {
       <section className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">
         <div className="flex items-center justify-center min-h-screen text-center sm:block">
           <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={onClose}></div>
+            <div
+              className="absolute inset-0 bg-gray-500 opacity-75"
+              onClick={onClose}
+            ></div>
           </div>
           <span
             className="hidden sm:inline-block sm:align-middle sm:h-screen"

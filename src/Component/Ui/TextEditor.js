@@ -267,13 +267,9 @@ const TextEditor = ({ content, onTextChange = () => {} }) => {
         onInput={(e) => handleChange(e)}
         className=" p-4 rounded-b-2xl editable-area border-0 border-slate-400 focus:border-black h-64 overflow-auto"
         style={{ whiteSpace: "pre-wrap" }}
-        // defaultValue={content}
+        defaultValue={text}
       />
-      {isPlaceholderVisible && (
-        <div className="absolute text-gray-400 pointer-events-none">
-          Start typing...
-        </div>
-      )}
+      
     </div>
   );
 };

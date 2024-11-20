@@ -51,7 +51,7 @@ export default function ClassesHomePage() {
           },
         }
       );
-      console.log(response.data.data.classes_data);
+      console.log("classes_data",response.data.data.classes_data);
 
       setData(response.data.data.classes_data);
       setDataToDisplay(response.data.data.classes_data.slice(0, itemsPerPage));

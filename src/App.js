@@ -25,7 +25,7 @@ import PasswordUpdate from "./Component/NewPassword/PasswordUpdate";
 import CreateContest from "./Component/AddContest/CreateContest";
 import AddContestHomepage from "./Component/AddContest/AddContestHomepage";
 import EditSubTopic from "./Component/Subjects/AddSubTopic.js";
-import EditContest from "./Component/ContestType/EditContest.js";
+import EditContest from "./Component/AddContest/EditContest.js";
 
 function App() {
   const [loading, setLoading] = useState(false);

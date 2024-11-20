@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
 import useGetAllContestData from "../../Hooks/useGetAllContestData";
 import { editContestData } from "../../Context/Action";
+import OtpVerify from "../OtpVerify/OtpVerify";
 
 export default function AddContestHomepage() {
   const dispatch = useDispatch();
@@ -48,22 +49,6 @@ export default function AddContestHomepage() {
     classesId: "",
   });
 
-  const {
-    name,
-    type,
-    startDate,
-    endDate,
-    totalSpots,
-    fees,
-    winningAmountPerFee,
-    winnerPercentage,
-    ranks,
-    totalQuestions,
-    totalTime,
-    totalMarks,
-    classesId,
-  } = contestData;
-
   function handleChange(e) {
     const { name, value } = e.target;
     setContestData({ ...contestData, [name]: value });
@@ -77,11 +62,9 @@ export default function AddContestHomepage() {
     navigate("/createContest");
   }
 
-
   const handleData = (value) => {
     dispatch(editContestData(value));
     navigate("/editContest");
-    
   };
 
   const fetchContestData = async () => {
@@ -95,7 +78,7 @@ export default function AddContestHomepage() {
           },
         }
       );
-      // console.log("contest_data", response.data.data.contest_data);
+      console.log("contest_data", response.data.data.contest_data);
       setData(response.data.data.contest_data);
       setDataToDisplay(
         response.data.data.contest_data.slice(0, ITEMS_PER_PAGE)
@@ -224,7 +207,7 @@ export default function AddContestHomepage() {
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                      100/150
+                      {value.totalSpots}
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
@@ -243,7 +226,6 @@ export default function AddContestHomepage() {
                         className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                         type="button"
                         onClick={() => handleData(value)}
-
                       >
                         <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
                           <svg viewBox="0 0 16 16" className="w-5 h-5">
@@ -254,7 +236,6 @@ export default function AddContestHomepage() {
                       <button
                         className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
                         type="button"
-
                       >
                         <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
                           <svg viewBox="0 0 16 16" className="w-6 h-6">
@@ -274,6 +255,7 @@ export default function AddContestHomepage() {
           page={setCurrentPage}
           current={currentPage}
         />
+        {/* <OtpVerify /> */}
       </section>
 
       {/* <Calander/> */}

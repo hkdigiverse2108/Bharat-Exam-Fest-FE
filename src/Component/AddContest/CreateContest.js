@@ -88,8 +88,8 @@ export default function CreateContest() {
 
   const handleRankChange = (index, event) => {
     const updatedRanks = [...contestData.ranks];
-    updatedRanks[index].place = event.target.value; // Update the place value
-    setContestData({ ...contestData, ranks: updatedRanks }); // Update the state
+    updatedRanks[index].place = event.target.value;
+    setContestData({ ...contestData, ranks: updatedRanks });
   };
 
   const handleAddRank = () => {
@@ -102,10 +102,9 @@ export default function CreateContest() {
   };
 
   const className = data.map((classItem) => ({
-    id: classItem._id, // Use the actual _id as the id
-    label: classItem.name, // Use the name as the label
+    id: classItem._id,
+    label: classItem.name,
   }));
-  console.log(className);
 
   const [selectedValues, setSelectedValues] = useState([]);
 
@@ -158,8 +157,7 @@ export default function CreateContest() {
       if (isEmpty()) {
         toast.warning("Fill up empty space");
       } else {
-        let data = JSON.stringify(contestData);
-        console.log(contestData);
+        let userData = JSON.stringify(contestData);
 
         let config = {
           method: "post",
@@ -169,23 +167,26 @@ export default function CreateContest() {
             Authorization: accessToken,
             "Content-Type": "application/json",
           },
-          data: data,
+          data: userData,
         };
+        const response = await axios.request(config);
 
-        axios
-          .request(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-            navigate("/addContest");
-            toast.success("Contest added successfully");
-            dispatch(addClassesData(data));
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        const { status, data, message, error } = response.data;
+
+        console.log("Backend response", message);
+
+        if (status === 200) {
+          console.log("Backend response", data);
+          toast.success(message);
+          navigate("/addContest");
+          dispatch(addClassesData(data));
+        } else {
+          console.warn("contest add failed:", error);
+          // toast.error("contest failed: " + error);
+        }
       }
     } catch (err) {
-      console.error(err.message);
+      console.error("Error add contest:", err.message);
     }
   };
 
@@ -200,7 +201,6 @@ export default function CreateContest() {
           },
         }
       );
-      console.log(response.data.data.classes_data);
 
       setData(response.data.data.classes_data);
     } catch (err) {
@@ -229,7 +229,7 @@ export default function CreateContest() {
               <p className="flex items-center capitalize text-xl font-medium text-slate-800 dark:text-white">
                 Classes Name
               </p>
-              <div className="max-w-2xl grid grid-cols-2 md:grid-cols-2 text-sm font-medium text-gray-900 text-start dark:text-white">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 md:gap-4 2xl:grid-cols-4 2xl:gap-4 text-sm font-medium text-gray-900 text-start dark:text-white">
                 {className.map((option) => (
                   <div
                     key={option.id}
@@ -304,7 +304,7 @@ export default function CreateContest() {
                     value={dateRang}
                     onClick={() => setDate(!date)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                    placeholder="Choose starting/ending time"
+                    placeholder="Choose starting/ending date"
                   />
                 </li>
                 <li className="space-y-1">
@@ -321,7 +321,7 @@ export default function CreateContest() {
                     value={timeRang}
                     onClick={() => setTime(!time)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                    placeholder="Choose starting/ending date"
+                    placeholder="Choose starting/ending time"
                     maxLength="19"
                   />
                 </li>
@@ -440,24 +440,6 @@ export default function CreateContest() {
                     </li>
                   </React.Fragment>
                 ))}
-                {/* {contestData.ranks.map((rank, index) => (
-                  <React.Fragment key={index}>
-                    <li key={index} className="space-y-1">
-                      <label
-                        htmlFor={`place-${index + 1}`}
-                        className="capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        1st/2nd/3rd Place
-                      </label>
-                      <DropDown
-                        value={rank.place}
-                        onChange={(e) => handleRankChange(index + 1, e)}
-                        name="place"
-                        id={`place-${index + 1}`}
-                      />
-                    </li>
-                  </React.Fragment>
-                ))} */}
               </ul>
               <button
                 onClick={handleAddRank}

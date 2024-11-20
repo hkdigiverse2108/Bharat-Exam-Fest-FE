@@ -59,9 +59,9 @@ function LoginPage() {
       if (status === 200) {
         console.log("Backend response", data);
         dispatch(loginSuccess(data));
-        toast.success('Login successfully');
-        setTimeout(() => navigate("/"), 1000);
-        handleNavigate();
+        // toast.success("Login successfully");
+        // setTimeout(() => navigate("/"), 1000);
+        // handleNavigate();
       } else {
         console.warn("Login failed:", error);
         toast.error("Login failed: " + error);
@@ -195,7 +195,7 @@ function LoginPage() {
           </button>
         </div>
         <div className={`${confirm === true ? "block" : "hidden"}`}>
-          <OtpVerify confirm={confirm} setConfirm={() => handleNavigate()} />
+          <OtpVerify confirm={confirm} setConfirm={handleNavigate} />
         </div>
       </section>
       <ToastContainer

@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
+import { LuPencilLine } from "react-icons/lu";
 import { AiOutlineDelete } from "react-icons/ai";
 import Pagination from "../Pagination/Pagination";
 import AddContest from "./AddContest";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ConfirmationPage from "./ConfirmationPage";
 import useGetAllContestData from "../../Hooks/useGetAllContestData";
+import { editContestTypeData } from "../../Context/Action";
+import EditContestType from "./EditContestType";
 
 export default function ContestHome() {
   useGetAllContestData();
+  const dispatch = useDispatch();
   const [confirm, setConfirm] = useState(false);
+  const [show, setShow] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const [classes, setClasses] = useState([]);
-  const [classesShow, setClassestShow] = useState([]);
+  const [contest, setContest] = useState([]);
+  const [contestDataShow, setContestDataShow] = useState([]);
   const [error, setError] = useState(null);
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].token
@@ -24,7 +29,7 @@ export default function ContestHome() {
   const DataList = useSelector((state) => state.userConfig.contestData);
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const Totalpage = Math.ceil(classes.length / itemsPerPage);
+  const Totalpage = Math.ceil(contest.length / itemsPerPage);
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   // const navigate = useNavigate();
@@ -32,10 +37,10 @@ export default function ContestHome() {
     setConfirm(!confirm);
   }
 
-  const fetchClasses = async () => {
+  const fetchContestTypeData = async () => {
     try {
       const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/contest/all?page=1&limit=10",
+        "https://api-bef.hkdigiverse.com/contest-type/all?page=1&limit=10",
         {
           headers: {
             Authorization: accessToken,
@@ -43,10 +48,14 @@ export default function ContestHome() {
           },
         }
       );
-      // console.log(response.data.data.contest_data);
-
-      setClasses(response.data.data.contest_data);
-      setClassestShow(response.data.data.contest_data.slice(0, end));
+      if (response.status === 200) {
+        console.log("contest_type_data", response.data.data.contest_type_data);
+        const responseData = response.data.data.contest_type_data;
+        setContest(responseData);
+        setContestDataShow(responseData.slice(0, end));
+      } else {
+        console.error(response.data.message);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -70,7 +79,7 @@ export default function ContestHome() {
           console.log(response.data);
           toast.success(response.data.message);
           handleDelete();
-          fetchClasses();
+          fetchContestTypeData();
         })
         .catch((error) => {
           console.error(error);
@@ -79,20 +88,27 @@ export default function ContestHome() {
       console.error(err.message);
     }
   };
+
+  const handleData = (value) => {
+    dispatch(editContestTypeData(value));
+    // navigate("/editContest");
+    setShow(!show);
+  };
+
   function handleDelete(value) {
     setItemToDelete(value);
-
     setToggle(!toggle);
   }
 
-  useEffect(() => {
-    setClassestShow(classes.slice(start, end));
-  }, [classes, currentPage, end, start]);
+
 
   useEffect(() => {
-    fetchClasses();
+    setContestDataShow(contest.slice(start, end));
+  }, [contest, currentPage, end, start]);
 
-    console.log(DataList);
+  useEffect(() => {
+    fetchContestTypeData();
+    // console.log(DataList);
   }, [confirm]);
 
   return (
@@ -141,7 +157,7 @@ export default function ContestHome() {
               </tr>
             </thead>
             <tbody>
-              {classesShow.map((value, index) => (
+              {contestDataShow.map((value, index) => (
                 <tr key={index}>
                   <td className="p-4 border-b border-blue-gray-50">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
@@ -155,17 +171,31 @@ export default function ContestHome() {
                   </td>
 
                   <td className="p-4 border-b border-blue-gray-50">
-                    <button
-                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg  align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
-                      type="button"
-                      onClick={() => handleDelete(value._id)}
-                    >
-                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                        <svg viewBox="0 0 16 16" className="w-6 h-6">
-                          <AiOutlineDelete />
-                        </svg>
-                      </span>
-                    </button>
+                    <div className="flex items-center justify-center  gap-x-4 font-sans text-md font-medium leading-none text-slate-800">
+                      <button
+                        className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        type="button"
+                        onClick={() => handleData(value)}
+                        title="Edit"
+                      >
+                        <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                          <svg viewBox="0 0 16 16" className="w-5 h-5">
+                            <LuPencilLine />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                        type="button"
+                        title="Delete"
+                      >
+                        <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                          <svg viewBox="0 0 16 16" className="w-6 h-6">
+                            <AiOutlineDelete />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -180,6 +210,9 @@ export default function ContestHome() {
       </section>
       <div className={`${confirm === true ? "block" : "hidden"}`}>
         <AddContest confirm={confirm} onClose={handleNavigate} />
+      </div>
+      <div className={`${show === true ? "block" : "hidden"}`}>
+        <EditContestType show={show} onClose={handleNavigate} />
       </div>
       <div className={`${toggle === true ? "block" : "hidden"}`}>
         <ConfirmationPage

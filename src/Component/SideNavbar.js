@@ -96,7 +96,8 @@ function SideNavbar() {
                   <span
                     className={`${
                       pathname === "/addContest" ||
-                      pathname === "/createContest"
+                      pathname === "/createContest" ||
+                      pathname === "/editContest"
                         ? "border-l-4 border-orange-500"
                         : "border-none"
                     } rounded-r-lg `}
@@ -104,7 +105,8 @@ function SideNavbar() {
                   <span
                     className={`${
                       pathname === "/addContest" ||
-                      pathname === "/createContest"
+                      pathname === "/createContest" ||
+                      pathname === "/editContest"
                         ? "text-white bg-orange-500"
                         : "text-black"
                     } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}

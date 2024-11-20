@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addClassesData } from "../../Context/Action";
+import { format } from "date-fns";
 
 export default function EditContest() {
   const dispatch = useDispatch();
@@ -38,7 +39,6 @@ export default function EditContest() {
   const contestFromRedux = useSelector(
     (state) => state.userConfig.editContestData
   );
-  console.log(contestFromRedux);
 
   const [contestData, setContestData] = useState({
     name: "",
@@ -90,21 +90,10 @@ export default function EditContest() {
     }));
   };
 
-  // const handleRankChange = (index, e) => {
-  //   const { name, value } = e.target;
-
-  //   const newRanks = [...contestData.ranks];
-  //   newRanks[index] = { ...newRanks[index], [name]: value };
-  //   setContestData((prevData) => ({
-  //     ...prevData,
-  //     ranks: newRanks,
-  //   }));
-  // };
-
   const handleRankChange = (index, event) => {
     const updatedRanks = [...contestData.ranks];
-    updatedRanks[index].place = event.target.value; // Update the place value
-    setContestData({ ...contestData, ranks: updatedRanks }); // Update the state
+    updatedRanks[index].place = event.target.value;
+    setContestData({ ...contestData, ranks: updatedRanks });
   };
 
   const handleAddRank = () => {
@@ -117,42 +106,64 @@ export default function EditContest() {
   };
 
   const className = data.map((classItem) => ({
-    id: classItem._id, // Use the actual _id as the id
-    label: classItem.name, // Use the name as the label
+    id: classItem._id,
+    label: classItem.name,
   }));
   const [selectedValues, setSelectedValues] = useState([]);
 
   const handleCheckboxChange = (event) => {
     const value = event.target.id;
     console.log(value);
-
-    setSelectedValues((prevSelectedValues) => {
-      if (prevSelectedValues.includes(value)) {
-        return prevSelectedValues.filter((v) => v !== value);
-      } else {
-        return [...prevSelectedValues, value];
-      }
-    });
+    if (value) {
+      setSelectedValues((prev) => [...prev, value]);
+    } else {
+      setSelectedValues((prev) => prev.filter((id) => id !== value));
+    }
     setContestData((prevData) => ({
       ...prevData,
       classesId: value,
     }));
   };
 
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(contestData.startDate);
+  const [endDate, setEndDate] = useState(contestData.endDate);
+  const formatDate = (
+    dateString,
+    options = { year: "numeric", month: "2-digit", day: "2-digit" },
+    locale = "en-US"
+  ) => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      throw new Error("Invalid date string");
+    }
+    return date.toLocaleDateString(locale, options);
+  };
+
+  const getCombinedDate = (contestData) => {
+    try {
+      const startDateFormatted = formatDate(contestData.startDate);
+      const endDateFormatted = formatDate(contestData.endDate);
+      return `${startDateFormatted} - ${endDateFormatted}`;
+    } catch (error) {
+      console.error(error.message);
+      return null; // Return null or a default value in case of an error
+    }
+  };
 
   const handleDateRangeChange = (start, end, dateRang) => {
     setStartDate(start);
     setEndDate(end);
     setDateRange(dateRang);
-
     setContestData((prevData) => ({
       ...prevData,
       startDate: start,
       endDate: end,
     }));
   };
+  useEffect(() => {
+    console.log("date",dateRang);
+    
+  },[dateRang]);
 
   const handleTimeRangeChange = (timerange) => {
     setTimeRange(timerange);
@@ -178,6 +189,9 @@ export default function EditContest() {
         totalMarks: contestFromRedux.totalMarks,
         classesId: contestFromRedux.classesId,
       });
+      setSelectedValues(contestFromRedux.classesId);
+      const combinedDate = getCombinedDate(contestFromRedux);
+      setDateRange(combinedDate);
     }
   }, [contestFromRedux]);
 
@@ -228,23 +242,16 @@ export default function EditContest() {
           },
         }
       );
-      console.log(response.data.data.classes_data);
-
+      // console.log("classes_data", response.data.data.classes_data);
       setData(response.data.data.classes_data);
     } catch (err) {
       setError(err.message);
     }
   };
-  const SimpleDate = ({ dateString }) => {
-    const date = new Date(dateString);
-    const formattedDate = date.toLocaleDateString();
-console.log(formattedDate);
-
-    return formattedDate ;
-  };
 
   useEffect(() => {
     fetchClassData();
+    console.log(contestData);
   }, []);
 
   return (
@@ -253,7 +260,7 @@ console.log(formattedDate);
         <div className="space-y-6 ">
           <div className="space-y-2">
             <p className="text-3xl tracking-tight font-medium text-left text-gray-900 dark:text-white capitalize">
-              Contest Creation
+              Contest Edit
             </p>
             <p className="text-lg font-normal text-left text-slate-700 dark:text-white">
               Manage your contests easily from here.
@@ -264,10 +271,10 @@ console.log(formattedDate);
               <p className="flex items-center capitalize text-xl font-medium text-slate-800 dark:text-white">
                 Classes Name
               </p>
-              <div className="max-w-2xl grid grid-cols-2 md:grid-cols-2 text-sm font-medium text-gray-900 text-start dark:text-white">
-                {className.map((option) => (
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 md:gap-4 2xl:grid-cols-4 2xl:gap-4 text-sm font-medium text-gray-900 text-start dark:text-white">
+                {className.map((option, index) => (
                   <div
-                    key={option.id}
+                    key={index}
                     className="space-x-2 inline-flex items-center"
                   >
                     <input
@@ -336,7 +343,7 @@ console.log(formattedDate);
                     type="text"
                     id="dateRange"
                     name="dateRange"
-                    value={contestData.startDate}
+                    value={dateRang}
                     onClick={() => setDate(!date)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending time"
@@ -530,7 +537,7 @@ console.log(formattedDate);
           onChange={handleChange}
           confirm={date}
           onClose={handleDateshow}
-          selected={startDate}
+          selected={dateRang}
           onChangeStartdate={(date) => {
             setStartDate(date);
             setContestData((prevData) => ({
