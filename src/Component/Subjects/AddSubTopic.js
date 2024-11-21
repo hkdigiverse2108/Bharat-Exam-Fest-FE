@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function AddSubTopic({ onClose }) {
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
   const [input, setInput] = useState({
     name: "",

@@ -13,16 +13,9 @@ export default function ImgUpdatePage({ confirm, onClose }) {
   const dispatch = useDispatch();
 
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
   const bannerData = useSelector((state) => state.userConfig.imageData);
-
-  const isEmpty = () => {
-    if (imgEdit.bannerId === "" || imgEdit.image === "") {
-      return true;
-    }
-    return false;
-  };
   const [imgEdit, setImgEdit] = useState({
     bannerId: "",
     image: "",
@@ -30,6 +23,12 @@ export default function ImgUpdatePage({ confirm, onClose }) {
     link: "",
   });
 
+  const isEmpty = () => {
+    if (imgEdit.bannerId === "" || imgEdit.image === "") {
+      return true;
+    }
+    return false;
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setImgEdit((prevData) => ({
@@ -92,7 +91,7 @@ export default function ImgUpdatePage({ confirm, onClose }) {
       console.error("An error occurred while adding the question.");
     }
   };
-  
+
   useEffect(() => {
     if (bannerData) {
       // console.log(bannerData);

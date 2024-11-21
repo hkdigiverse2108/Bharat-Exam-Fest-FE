@@ -41,14 +41,7 @@ function Navbar() {
   return (
     <>
       <div className="h-16 bg-white flex items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11 ">
-        <div className="flex items-center justify-center lg:hidden text-3xl font-semibold px-6">
-          <span className=" text-center  text-orange-600  whitespace-nowrap">
-            Dash
-          </span>
-          <span className=" text-center text-black whitespace-nowrap">
-            Stack
-          </span>
-        </div>
+     
 
         <div className="hidden sm:block ">
           <div className="relative ">
@@ -72,10 +65,10 @@ function Navbar() {
         <div className=" hidden text-right lg:block">
           <div className="flex items-center gap-2 2xsm:gap-4">
             <div className="flex justify-center items-center space-x-3 overflow-hidden">
-              <div className="relative w-10 h-10 rounded-full overflow-hidden ">
+              <div className="relative w-15 h-15 rounded-full overflow-hidden ">
                 <img
-                  src="https://images.unsplash.com/photo-1610397095767-84a5b4736cbd?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80"
-                  alt="Admin"
+                  src="BEFLogo.png"
+                  alt="Bharat Exam Fest"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -201,14 +194,18 @@ function Navbar() {
               >
                 <span
                   className={`${
-                    pathname === "/addContest" || pathname === "/createContest" || pathname === "/editContest"
+                    pathname === "/addContest" ||
+                    pathname === "/createContest" ||
+                    pathname === "/editContest"
                       ? "border-l-4 border-orange-500"
                       : "border-none"
                   } rounded-r-lg `}
                 ></span>
                 <span
                   className={`${
-                    pathname === "/addContest" || pathname === "/createContest" || pathname === "/editContest"
+                    pathname === "/addContest" ||
+                    pathname === "/createContest" ||
+                    pathname === "/editContest"
                       ? "text-white bg-orange-500"
                       : "text-black"
                   } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}

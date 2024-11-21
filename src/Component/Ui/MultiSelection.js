@@ -17,58 +17,23 @@ const MenuProps = {
   },
 };
 
-export default function MultipleSelect({ onChange }) {
-  const [subtopics, setSubtopics] = useState([]);
-  const [selectedNames, setSelectedNames] = useState([]);
-  const [selectedId, setSelectedId] = useState([]);
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
-  const handleChange = (event) => {
-    const { value } = event.target;
-    const dataId = value.map((res) => res?._id);
-    setSelectedNames(value);
-    onChange(dataId);
-    // console.log(value);
-    console.log(dataId);
-  };
-
-  const fetchSubtopics = async () => {
-    try {
-      const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10",
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      // console.log(response.data.data.sub_topic_data);
-      setSubtopics(response.data.data.sub_topic_data);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchSubtopics();
-  }, []);
+export default function MultipleSelect({ label, value, onChange, options }) {
   return (
     <>
       <FormControl className="container h-full">
-        <InputLabel id="demo-multiple-name-label" size="small">
-          Subtopics
+        <InputLabel id={`${label}-label`} size="small">
+          {label}
         </InputLabel>
         <Select
           multiple
-          value={selectedNames}
-          onChange={handleChange}
+          label={label}
+          value={value}
+          onChange={onChange}
           renderValue={(selected) => selected.map((s) => s.name).join(", ")}
           size="small"
           MenuProps={MenuProps}
         >
-          {subtopics.map((value) => (
+          {options.map((value) => (
             <MenuItem key={value._id} value={value}>
               {value.name}
             </MenuItem>

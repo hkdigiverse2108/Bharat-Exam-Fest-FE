@@ -10,6 +10,9 @@ const initialData = {
   contestType: [],
   editContestTypeData: null,
   classesData: [],
+  subjectList: [],
+  editSubjectData: null,
+  subtopicList: [],
   Logintype: "Admin",
 };
 
@@ -73,6 +76,23 @@ const DataProvider = (state = initialData, action) => {
         classesData: [...state.classesData, action.payload],
       };
 
+    case "SUBJECT_LIST":
+      return {
+        ...state,
+        subjectData: action.payload,
+      };
+
+    case "SUBJECT_EDIT":
+      return {
+        ...state,
+        editSubjectData: action.payload,
+      };
+
+    case "SUBTOPICS":
+      return {
+        ...state,
+        subtopicList: action.payload,
+      };
     case "LOGIN_TYPE":
       return {
         ...state,

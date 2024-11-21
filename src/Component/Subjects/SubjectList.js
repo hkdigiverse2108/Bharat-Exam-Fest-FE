@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LuPencilLine } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -8,9 +8,15 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "../Pagination/Pagination";
 import { toast } from "react-toastify";
 import AddSubTopic from "./AddSubTopic";
+import {
+  editSubjectData,
+  subjectList,
+  subtopicList,
+} from "../../Context/Action";
 
 function SubjectList() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [subjects, setSubjects] = useState([]);
   const [subtopics, setSubtopics] = useState([]);
   const itemsPerPage = 5;
@@ -27,8 +33,11 @@ function SubjectList() {
   const [subtopicShow, setSubtopicShow] = useState([]);
   const [error, setError] = useState(null);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
+  // const existData = useSelector((state) => state.userConfig.editSubjectData);
+
+  // console.log(existData);
 
   const [confirm, setConfirm] = useState(false);
   function handleNavigate() {
@@ -40,7 +49,8 @@ function SubjectList() {
   }
 
   function handleEditSubject(value) {
-    navigate("/editSubject", { state: value });
+    navigate("/editSubject");
+    dispatch(editSubjectData(value));
   }
 
   const deleteSubject = async (value) => {
@@ -80,12 +90,14 @@ function SubjectList() {
           },
         }
       );
-      // console.log(response.data.data.subject_data);
 
-      setSubjects(response.data.data.subject_data);
-      setSubjectShow(
-        response.data.data.subject_data.slice(0, PageEnd1)
-      );
+      const subjects = response.data.data.subject_data;
+      if (subjects) {
+        console.log(response.data.data.subject_data);
+        setSubjects(response.data.data.subject_data);
+        setSubjectShow(response.data.data.subject_data.slice(0, PageEnd1));
+        dispatch(subjectList(subjects));
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -129,11 +141,12 @@ function SubjectList() {
         }
       );
       console.log(response.data.data.sub_topic_data);
-
-      setSubtopics(response.data.data.sub_topic_data);
-      setSubtopicShow(
-        response.data.data.sub_topic_data.slice(0, PageEnd2)
-      );
+      const subTopic = response.data.data.sub_topic_data;
+      if (subTopic) {
+        setSubtopics(response.data.data.sub_topic_data);
+        setSubtopicShow(response.data.data.sub_topic_data.slice(0, PageEnd2));
+        dispatch(subtopicList(subTopic));
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -142,12 +155,12 @@ function SubjectList() {
   useEffect(() => {
     setSubjectShow(subjects.slice(PageStart1, PageEnd1));
     setSubtopicShow(subtopicShow.slice(PageStart2, PageEnd2));
-  }, [currentPageTable1,currentPageTable2]);
+  }, [currentPageTable1, currentPageTable2]);
 
   useEffect(() => {
     fetchSubjects();
     fetchSubtopics();
-  }, [confirm]);
+  }, []);
 
   return (
     <>

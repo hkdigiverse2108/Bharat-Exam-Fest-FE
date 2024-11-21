@@ -21,7 +21,7 @@ const UserList = () => {
   const [dataToDisplay, setDataToDisplay] = useState([]);
   const [error, setError] = useState(null);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
 
   // const deleteSubject = async (value) => {

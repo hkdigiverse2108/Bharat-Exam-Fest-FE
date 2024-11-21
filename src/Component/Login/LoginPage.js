@@ -25,7 +25,7 @@ function LoginPage() {
   const [input, setInput] = useState({
     uniqueId: "",
     password: "",
-    userType: "classes",
+    userType: "admin",
   });
   const { uniqueId, password } = input;
   function handleChange(e) {
@@ -34,8 +34,13 @@ function LoginPage() {
   }
   const [otpValue, setOtpValue] = useState({
     otp: "",
-    userType: "classes",
+    userType: "admin",
   });
+
+  useEffect(()=>{
+    console.log(input);
+    
+  },[input])
 
   const handleChangeOTP = (e, index) => {
     const { value } = e.target;

@@ -13,7 +13,7 @@ export default function Adduser() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
 
   const [input, setInput] = useState({

@@ -11,13 +11,16 @@ export default function AddSubject() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
-
+  const subtopicList = useSelector((state) => state.userConfig.subtopicList);
   const [selectedNames, setSelectedNames] = useState([]);
-  const handleSelectionChange = (newValues) => {
-    setSelectedNames(newValues);
-    setInput({ ...input, subTopicIds: newValues });
+
+  const handleSelectionChange = (event) => {
+    const { value } = event.target;
+    const uniqueValues = Array.from(new Set(value.map((item) => item._id)));
+    setSelectedNames(value);
+    setInput({ ...input, subTopicIds: uniqueValues });
   };
   const [input, setInput] = useState({
     name: "",
@@ -25,11 +28,43 @@ export default function AddSubject() {
     subTopicIds: null,
   });
 
+  const imgUpload = async (file) => {
+    try {
+      if (!file) {
+        toast.warning("No file selected");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("image", file); // Append the file to FormData
+
+      const config = {
+        method: "post",
+        url: "https://api-bef.hkdigiverse.com/upload",
+        headers: {
+          Authorization: accessToken,
+          // 'Content-Type': 'multipart/form-data', // Do not set Content-Type; axios will set it automatically
+        },
+        data: formData, // Use FormData as the data
+      };
+
+      const response = await axios.request(config); // Use await to wait for the response
+      console.log("Upload response:", response.data);
+      setInput({ ...input, image: response.data.data });
+      toast.success("Image uploaded successfully!");
+    } catch (err) {
+      console.error(err.message);
+      toast.error("Failed to upload image.");
+    }
+  };
+  const handleUpload = (value) => {
+    imgUpload(value);
+  };
   function handleChange(e) {
     const { name, value, files } = e.target;
 
     if (name === "image") {
-      setInput({ ...input, [name]: files[0].name });
+      handleUpload(files[0]);
     } else {
       setInput({ ...input, [name]: value });
     }
@@ -58,11 +93,11 @@ export default function AddSubject() {
           .request(config)
           .then((response) => {
             if (response.status === 200) {
-              console.log("success",response.data);
+              console.log("success", response.data);
               navigate("/subject");
               toast.success("Subject add");
             } else {
-              console.log("failed",response);
+              console.log("failed", response);
             }
           })
           .catch((error) => {
@@ -74,9 +109,9 @@ export default function AddSubject() {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(input);
-  // }, [input]);
+  useEffect(() => {
+    console.log(input);
+  }, [input]);
 
   return (
     <>
@@ -118,6 +153,7 @@ export default function AddSubject() {
             <input
               type="file"
               onChange={(e) => handleChange(e)}
+              accept="image/*"
               name="image"
               id="file-input"
               className="block w-full border border-gray-200 shadow-sm rounded-lg text-md focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 file:bg-gray-300  file:border-0 file:me-4 file:py-3 file:px-4 dark:file:bg-neutral-700 dark:file:text-neutral-400"
@@ -129,7 +165,12 @@ export default function AddSubject() {
             Add multiple subtopic
           </h3>
           <div className="max-w-lg">
-            <MultipleSelect onChange={handleSelectionChange} selectedValue={selectedNames}/>
+            <MultipleSelect
+              label="Subtopics"
+              value={selectedNames}
+              onChange={handleSelectionChange}
+              options={subtopicList}
+            />
           </div>
         </div>
         <div className="flex  items-center justify-center">

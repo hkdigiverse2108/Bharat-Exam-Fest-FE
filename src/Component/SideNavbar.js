@@ -9,13 +9,14 @@ function SideNavbar() {
   return (
     <>
       <aside className="absolute left-0 top-0 z-20 flex h-screen w-60 flex-col overflow-y-auto bg-inherite border-r duration-300 ease-linear bg-white lg:static lg:translate-x-0 -translate-x-full  lg:block xl:block 2xl:block">
-        <div className="flex items-center justify-center text-2xl font-semibold py-6">
-          <span className=" text-center  text-orange-600  whitespace-nowrap">
-            Dash
-          </span>
-          <span className=" text-center text-black whitespace-nowrap">
-            Stack
-          </span>
+        <div className="w-22 h-22">
+          <NavLink to="/">
+            <img
+              src="BEFLogo.png"
+              alt="Bharat Exam Fest"
+              className="w-full h-full "
+            />
+          </NavLink>
         </div>
 
         <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">

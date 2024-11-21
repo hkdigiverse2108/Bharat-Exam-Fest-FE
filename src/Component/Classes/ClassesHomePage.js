@@ -23,7 +23,7 @@ export default function ClassesHomePage() {
   const end = start + itemsPerPage;
 
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
   const [input, setInput] = useState({
     classname: "",
