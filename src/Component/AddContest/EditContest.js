@@ -14,6 +14,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addClassesData } from "../../Context/Action";
 import { format } from "date-fns";
+import ContestTypeDropDown from "../Ui/ContestTypeDropDow";
 
 export default function EditContest() {
   const dispatch = useDispatch();
@@ -112,17 +113,12 @@ export default function EditContest() {
   const [selectedValues, setSelectedValues] = useState([]);
 
   const handleCheckboxChange = (event) => {
-    const value = event.target.id;
-    console.log(value);
-    if (value) {
-      setSelectedValues((prev) => [...prev, value]);
+    const value = event.target.value;
+    if (selectedValues.includes(value)) {
+      setSelectedValues(selectedValues.filter((id) => id !== value));
     } else {
-      setSelectedValues((prev) => prev.filter((id) => id !== value));
+      setSelectedValues([...selectedValues, value]);
     }
-    setContestData((prevData) => ({
-      ...prevData,
-      classesId: value,
-    }));
   };
 
   const [startDate, setStartDate] = useState(contestData.startDate);
@@ -139,17 +135,6 @@ export default function EditContest() {
     return date.toLocaleDateString(locale, options);
   };
 
-  const getCombinedDate = (contestData) => {
-    try {
-      const startDateFormatted = formatDate(contestData.startDate);
-      const endDateFormatted = formatDate(contestData.endDate);
-      return `${startDateFormatted} - ${endDateFormatted}`;
-    } catch (error) {
-      console.error(error.message);
-      return null; // Return null or a default value in case of an error
-    }
-  };
-
   const handleDateRangeChange = (start, end, dateRang) => {
     setStartDate(start);
     setEndDate(end);
@@ -160,10 +145,22 @@ export default function EditContest() {
       endDate: end,
     }));
   };
-  useEffect(() => {
-    console.log("date",dateRang);
-    
-  },[dateRang]);
+
+  const getCombinedDate = (value) => {
+    try {
+      if (!value || !value.startDate || !value.endDate) {
+        console.error("Invalid date values");
+      }
+
+      const startDateFormatted = formatDate(new Date(value.startDate));
+      const endDateFormatted = formatDate(new Date(value.endDate));
+
+      return `${startDateFormatted} - ${endDateFormatted}`;
+    } catch (error) {
+      console.error("Error formatting dates:", error.message);
+      return null;
+    }
+  };
 
   const handleTimeRangeChange = (timerange) => {
     setTimeRange(timerange);
@@ -172,28 +169,6 @@ export default function EditContest() {
       totalTime: timerange,
     }));
   };
-  useEffect(() => {
-    if (contestFromRedux) {
-      setContestData({
-        name: contestFromRedux.name,
-        type: contestFromRedux.type,
-        startDate: contestFromRedux.startDate,
-        endDate: contestFromRedux.endDate,
-        totalSpots: contestFromRedux.totalSpots,
-        fees: contestFromRedux.fees,
-        winningAmountPerFee: contestFromRedux.winningAmountPerFee,
-        winnerPercentage: contestFromRedux.winnerPercentage,
-        ranks: contestFromRedux.ranks.map((rank) => ({ place: rank.place })),
-        totalQuestions: contestFromRedux.totalQuestions,
-        totalTime: contestFromRedux.totalTime,
-        totalMarks: contestFromRedux.totalMarks,
-        classesId: contestFromRedux.classesId,
-      });
-      setSelectedValues(contestFromRedux.classesId);
-      const combinedDate = getCombinedDate(contestFromRedux);
-      setDateRange(combinedDate);
-    }
-  }, [contestFromRedux]);
 
   const AddNewContest = async () => {
     try {
@@ -251,8 +226,32 @@ export default function EditContest() {
 
   useEffect(() => {
     fetchClassData();
+    console.log("data", contestFromRedux);
+  }, [contestFromRedux]);
+
+  useEffect(() => {
+    if (contestFromRedux) {
+      setContestData({
+        name: contestFromRedux.name,
+        type: contestFromRedux.type,
+        startDate: contestFromRedux.startDate,
+        endDate: contestFromRedux.endDate,
+        totalSpots: contestFromRedux.totalSpots,
+        fees: contestFromRedux.fees,
+        winningAmountPerFee: contestFromRedux.winningAmountPerFee,
+        winnerPercentage: contestFromRedux.winnerPercentage,
+        ranks: contestFromRedux.ranks.map((rank) => ({ place: rank.place })),
+        totalQuestions: contestFromRedux.totalQuestions,
+        totalTime: contestFromRedux.totalTime,
+        totalMarks: contestFromRedux.totalMarks,
+        classesId: contestFromRedux.classesId,
+      });
+      setSelectedValues([contestFromRedux.classesId]);
+      const combinedDate = getCombinedDate(contestFromRedux);
+      setDateRange(combinedDate);
+    }
     console.log(contestData);
-  }, []);
+  }, [contestFromRedux]);
 
   return (
     <>
@@ -279,8 +278,8 @@ export default function EditContest() {
                   >
                     <input
                       type="checkbox"
-                      value={option._id}
-                      checked={selectedValues.includes(option.id)}
+                      value={option.id} // Use option.id, which corresponds to _id
+                      checked={selectedValues.includes(option.id)} // Check if the current id is in selectedValues
                       onChange={handleCheckboxChange}
                       id={option.id}
                     />
@@ -321,13 +320,17 @@ export default function EditContest() {
                   >
                     Contest Type
                   </label>
-                  <input
+                  {/* <input
                     type="text"
                     id="type"
                     name="type"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter contest type"
                     maxLength="19"
+                    value={contestData.type}
+                    onChange={handleChange}
+                  /> */}
+                  <ContestTypeDropDown
                     value={contestData.type}
                     onChange={handleChange}
                   />
@@ -461,8 +464,8 @@ export default function EditContest() {
                         1st/2nd/3rd Place
                       </label>
                       <DropDown
-                        value={rank.place} // Pass the current place value
-                        onChange={(e) => handleRankChange(index, e)} // Pass the change handler
+                        value={rank.place}
+                        onChange={(e) => handleRankChange(index, e)}
                       />
                     </li>
                     <li className="space-y-1">
@@ -482,24 +485,6 @@ export default function EditContest() {
                     </li>
                   </React.Fragment>
                 ))}
-                {/* {contestData.ranks.map((rank, index) => (
-                  <React.Fragment key={index}>
-                    <li key={index} className="space-y-1">
-                      <label
-                        htmlFor={`place-${index + 1}`}
-                        className="capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        1st/2nd/3rd Place
-                      </label>
-                      <DropDown
-                        value={rank.place}
-                        onChange={(e) => handleRankChange(index + 1, e)}
-                        name="place"
-                        id={`place-${index + 1}`}
-                      />
-                    </li>
-                  </React.Fragment>
-                ))} */}
               </ul>
               <button
                 onClick={handleAddRank}

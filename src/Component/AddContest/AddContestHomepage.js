@@ -216,7 +216,7 @@ export default function AddContestHomepage() {
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
-                    <li className="py-1 px-2 text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-500">
+                    <li className="py-1 px-2 max-w-[10rem] text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-500">
                       Active{" "}
                     </li>
                   </td>

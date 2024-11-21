@@ -26,7 +26,7 @@ export default function KYCHomePage() {
           },
         }
       );
-      console.log("kyc_data", response.data.data.kyc_data);
+      // console.log("kyc_data", response.data.data.kyc_data);
 
       setKycData(response.data.data.kyc_data);
       // setDataToDisplay(response.data.data.kyc_data.slice(0, itemsPerPage));
