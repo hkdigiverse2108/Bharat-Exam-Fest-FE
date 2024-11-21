@@ -30,7 +30,7 @@ const Logger = (store) => (next) => (action) => {
       console.group(action.type);
       console.info("dispatching", action);
       console.log("store data", authState);
-      localStorage.setItem("auth", JSON.stringify(authState));
+      localStorage.setItem("classes", JSON.stringify(authState));
       console.groupEnd();
 
       // Update lastLoggedState to current state

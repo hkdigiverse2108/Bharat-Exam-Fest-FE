@@ -3,8 +3,13 @@ import { NavLink, useLocation } from "react-router-dom";
 import { RiMenuLine } from "react-icons/ri";
 import "react-toastify/dist/ReactToastify.css";
 import DropdownUser from "./DropdownUser";
+import { useSelector } from "react-redux";
 
 function Navbar() {
+  const userData = useSelector(
+    (state) => state.userConfig.classesData[0]
+
+  );
   const location = useLocation();
   const { pathname } = location;
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -14,19 +19,12 @@ function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 h-20 px-4 py-4  flex w-full bg-white border-b border-gray-300 drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+      <header className="sticky top-0 z-20 h-26 px-4 py-4  flex w-full bg-white border-b border-gray-300 drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
         <div className="flex flex-grow items-center justify-between">
           <div className="flex items-center justify-start gap-x-20">
-            <div className="flex items-center gap-2 sm:gap-4">
-              <NavLink className="block flex-shrink-0 " to="/">
-                <div className="flex items-center justify-center text-3xl font-semibold px-6">
-                  <span className=" text-center  text-orange-600  whitespace-nowrap">
-                    Dash
-                  </span>
-                  <span className=" text-center text-black whitespace-nowrap">
-                    Stack
-                  </span>
-                </div>
+            <div className="w-22 h-22">
+              <NavLink  to="/">
+                <img src="BEFLogo.png" alt="Bharat Exam Fest" className="w-full h-full "/>
               </NavLink>
             </div>
             {/* navigationtab */}
@@ -62,7 +60,7 @@ function Navbar() {
           </div>
           <div className="flex items-center justify-around gap-2.5">
             <div className=" items-center">
-              <DropdownUser />
+              <DropdownUser authData={userData}/>
             </div>
             <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
               <button

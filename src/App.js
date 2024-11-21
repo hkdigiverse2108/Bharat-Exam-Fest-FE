@@ -43,6 +43,7 @@ function App() {
             <Route path="/subjectDetails" element={<SubjectDetails />} />
             <Route path="/addQuestion" element={<AddQuestion />} />
             <Route path="/editQuestion" element={<EditQuestion />} />
+            <Route path="/profileUpdate" element={<ProfilePage />} />
             <Route exact path="/resetpassword" element={<PasswordUpdate />} />
           </Routes>
         </DefaultLayout>

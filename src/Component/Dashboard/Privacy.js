@@ -1,7 +1,45 @@
 import React from "react";
 import { FaFilePdf } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+
 
 export default function Privacy() {
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].token
+  );
+  // const addNewQuestion = async () => {
+  //   try {
+  //     if () {
+  //       toast.warning("Please fill up empty fields.");
+  //     }
+  //     let data = JSON.stringify(addQuestion);
+  //     console.log(addQuestion);
+
+  //     let config = {
+  //       method: "post",
+  //       maxBodyLength: Infinity,
+  //       url: "https://api-bef.hkdigiverse.com/question/add",
+  //       headers: {
+  //         Authorization: accessToken,
+  //         "Content-Type": "application/json",
+  //       },
+  //       data: data,
+  //     };
+
+  //     const response = await axios.request(config);
+
+  //     if (response.status === 200) {
+  //       // toast.success("Question added successfully");
+  //       toast.success(response.data);
+  //       navigate("/subjectDetails");
+  //     } else {
+  //       toast.error("Failed to add question");
+  //     }
+  //   } catch (err) {
+  //     console.error(err.message);
+  //     toast.error("An error occurred while adding the question.");
+  //   }
+  // };
   return (
     <>
       <div className="p-4 ">

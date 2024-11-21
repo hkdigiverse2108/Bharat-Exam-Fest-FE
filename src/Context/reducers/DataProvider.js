@@ -1,4 +1,5 @@
 const initialData = {
+  classesData: [],
   Subject: [],
   CurrentSubject: [],
   Questions: [],
@@ -8,6 +9,18 @@ const initialData = {
 
 const DataProvider = (state = initialData, action) => {
   switch (action.type) {
+    case "LOGIN_ADMIN":
+      return {
+        ...state,
+        classesData: [action.payload],
+      };
+
+    case "CLASSES":
+      return {
+        ...state,
+        classesData: [action.payload],
+      };
+      
     case "SUBJECT":
       return {
         ...state,

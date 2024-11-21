@@ -7,7 +7,7 @@ import LogoutConfimation from "./LogoutConfimation";
 import { logOut } from "../../Context/Action/Auth";
 import { logOutAdmin } from "../../Context/Action";
 
-const DropdownUser = () => {
+const DropdownUser = ({ authData }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -42,17 +42,30 @@ const DropdownUser = () => {
           to="#"
         >
           <span className="h-12 w-12 rounded-full">
-            <img
-              src="https://images.unsplash.com/photo-1610397095767-84a5b4736cbd?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80"
-              alt="User"
-              className="w-full h-full  rounded-full object-cover"
-            />
+          <img
+                src="BEFLogo.png"
+                alt={authData.name}
+                className="w-full h-full  rounded-full object-cover"
+              />
+            {/* {authData.image ? (
+              <img
+                src={authData.image}
+                alt={authData.name}
+                className="w-full h-full  rounded-full object-cover"
+              />
+            ) : (
+              <img
+                src="BEFLogo.png"
+                alt={authData.name}
+                className="w-full h-full  rounded-full object-cover"
+              />
+            )} */}
           </span>
           <span className="hidden text-left lg:block cursor-pointer">
             <span className="block text-sm   font-medium text-black dark:text-white">
-              Het Mangukiya
+              {"Welcome user"}
             </span>
-            <span className="block text-xs">Admin</span>
+            <span className="block text-xs">{authData.name}</span>
           </span>
 
           <svg
@@ -78,6 +91,20 @@ const DropdownUser = () => {
             className={`absolute right-0 top-14 flex w-62.5 flex-col rounded-md border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark`}
           >
             <ul className="flex flex-col dark:text-white gap-y-2 text-left font-medium capitalize">
+              <li onClick={Navigation}>
+                <NavLink to="/profileUpdate">
+                  <button
+                    type="button"
+                    className={`${
+                      pathname === "/resetpassword"
+                        ? "text-white bg-gray-600"
+                        : "text-black"
+                    }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600`}
+                  >
+                    Profile Update
+                  </button>
+                </NavLink>
+              </li>
               <li onClick={Navigation}>
                 <NavLink to="/resetpassword">
                   <button

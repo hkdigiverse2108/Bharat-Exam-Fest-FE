@@ -132,9 +132,11 @@ function EditQuestion() {
       return newState;
     });
   };
+  
   useEffect(() => {
     console.log("EDIT", editQuestion);
   }, [editQuestion]);
+
   const isEmpty = () => {
     if (
       !editQuestion.subjectId ||

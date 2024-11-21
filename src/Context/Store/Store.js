@@ -14,8 +14,8 @@ const composedEnhancers = compose(middlewareEnhancer, monitorReducerEnhancer);
 
 const loadDataFromStorage = () => {
   try {
-    if (localStorage.getItem("auth")) {
-      return JSON.parse(localStorage.getItem("auth"));
+    if (localStorage.getItem("classes")) {
+      return JSON.parse(localStorage.getItem("classes"));
     } else {
       return undefined;
     }

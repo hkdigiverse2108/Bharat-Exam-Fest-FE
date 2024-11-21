@@ -11,9 +11,10 @@ function SubjectPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
+  const [totalQuestion, setTotalQuestion] = useState([]);
   const [error, setError] = useState(null);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
 
   function handleSubject(value) {
@@ -23,7 +24,7 @@ function SubjectPage() {
 
   const fetchSubjects = async () => {
     try {
-      const response = await axios.get(
+      const response1 = await axios.get(
         `https://api-bef.hkdigiverse.com/question/subject-wise-question-count`,
         {
           headers: {
@@ -32,8 +33,8 @@ function SubjectPage() {
           },
         }
       );
-      const res = await axios.get(
-        `https://api-bef.hkdigiverse.com/classes/all?page=1&limit=10`,
+      const response2 = await axios.get(
+        `https://api-bef.hkdigiverse.com/subject/all?page=1&limit=10`,
         {
           headers: {
             Authorization: accessToken,
@@ -41,9 +42,15 @@ function SubjectPage() {
           },
         }
       );
-      console.log(res.data.data);
-      dispatch(SubjectData(response.data.data));
-      setData(response.data.data);
+      if (response1 && response2) {
+        console.log(response2.data.data.subject_data);
+        dispatch(SubjectData(response2.data.data.subject_data));
+        setTotalQuestion(response1.data.data);
+        setData(response2.data.data.subject_data);
+      } else {
+        console.error(response1.data.message);
+        console.error(response2.data.message);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -65,15 +72,14 @@ function SubjectPage() {
             >
               <div className="flex flex-row items-center justify-between">
                 <p className="font-semibold text-left text-lg uppercase text-orange-500">
-                  {value.subjectName}
+                  {value.name}
                 </p>
                 <div className="pr-4">
-                  <svg
-                    className="bg-purple-200 w-16 h-16 text-purple-500 rounded-full px-1 py-3 text-xl dark:fill-white"
-                    viewBox="0 0 22 22"
-                  >
-                    <HiOutlineUserGroup />
-                  </svg>
+                  <img
+                    src={value.image}
+                    className=" block w-24 h-20 px-5 py-2 shadow-sm rounded-full bg-white placeholder-gray-400 text-gray-700 text-base p-2  focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
+                    alt={value.name}
+                  />
                 </div>
               </div>
               <div className="text-left">
@@ -81,7 +87,7 @@ function SubjectPage() {
                   total questions{" "}
                 </p>
                 <p className="text-2xl text-gray-800 font-medium ">
-                  {value.count}
+                  { totalQuestion.count || 0}
                 </p>
               </div>
             </div>

@@ -1,4 +1,4 @@
-const userInfo = JSON.parse(localStorage.getItem("Auth"));
+const userInfo = JSON.parse(localStorage.getItem("classes"));
 console.log("authentication",userInfo);
 
 const authState = userInfo 
@@ -23,7 +23,7 @@ const Authentication = (state = authState, action) => {
     case "REGISTER_SUCCES":
       return {
         ...state,
-        isLoggedIn: false,
+        
       };
 
     case "REGISTER_FAIL":

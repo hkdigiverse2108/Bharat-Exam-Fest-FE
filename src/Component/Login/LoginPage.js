@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { VscEyeClosed } from "react-icons/vsc";
 import { RxEyeOpen } from "react-icons/rx";
 import { loginSuccess } from "../../Context/Action/Auth";
@@ -8,10 +8,14 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OtpVerify from "../OtpVerify/OtpVerify";
 import axios from "axios";
+import { loginAdmin } from "../../Context/Action";
 
 function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  // const accessToken =
+  //   useSelector((state) => state.authConfig.userInfo[0].token) || [];
+
   // patterns
   const emailpatton = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const lowerCaseLetters = /[a-z]/g;
@@ -20,6 +24,8 @@ function LoginPage() {
   const spcl = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
 
   const [confirm, setConfirm] = useState(false);
+  const [data, setData] = useState([]);
+
   const [input, setInput] = useState({
     uniqueId: "",
     password: "",
@@ -55,6 +61,25 @@ function LoginPage() {
 
   const [show, setShow] = useState(false);
 
+  // const fetchClassData = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       "https://api-bef.hkdigiverse.com/classes/all?page=1&limit=10",
+  //       {
+  //         headers: {
+  //           Authorization: accessToken,
+  //           Accept: "application/json",
+  //         },
+  //       }
+  //     );
+  //     console.log("classes_data", response.data.data.classes_data);
+  //     setData(response.data.data.classes_data);
+  //     dispatch(loginSuccess(response.data));
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+
   async function handleLogin() {
     try {
       let userData = JSON.stringify(input);
@@ -74,6 +99,7 @@ function LoginPage() {
       const { status, data, message, error } = response.data;
 
       if (response.status === 200) {
+        dispatch(loginAdmin(response.data.data));
         handleNavigate();
       } else if (response.status === 400) {
         toast.error(response.data.message);
@@ -110,6 +136,7 @@ function LoginPage() {
           console.log(response.data);
           toast.success("OTP verified and Login successfully");
           dispatch(loginSuccess(response.data));
+          // fetchClassData();
           navigate("/");
           handleNavigate();
           return true;
@@ -159,6 +186,8 @@ function LoginPage() {
       console.error(error);
     }
   }
+
+  // useEffect(() => {}, []);
 
   return (
     <>
