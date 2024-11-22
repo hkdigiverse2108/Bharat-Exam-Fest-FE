@@ -36,7 +36,7 @@ const DataProvider = (state = initialData, action) => {
     case "CURRENT":
       return {
         ...state,
-        CurrentSubject: [action.payload],
+        CurrentSubject: action.payload,
       };
 
     case "LOGIN_TYPE":

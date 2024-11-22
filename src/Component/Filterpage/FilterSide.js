@@ -52,16 +52,16 @@ function filterDataide({ filterData, onChange, apply, onClose, lastModify }) {
               >
                 <li className="flex items-center justify-between">
                   <label
-                    htmlFor="easy"
-                    className="ml-2 text-md font-medium text-gray-700 dark:text-gray-100"
+                    htmlFor="concept"
+                    className="ml-2 text-md capitalize font-medium text-gray-700 dark:text-gray-100"
                   >
-                    Easy
+                    concept
                   </label>
                   <input
-                    id="easy"
+                    id="concept"
                     type="checkbox"
-                    name="easy"
-                    checked={filterData.easy}
+                    name="concept"
+                    checked={filterData.concept}
                     onChange={onChange}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
                   />
@@ -69,16 +69,16 @@ function filterDataide({ filterData, onChange, apply, onClose, lastModify }) {
 
                 <li className="flex items-center justify-between">
                   <label
-                    htmlFor="medium"
-                    className="ml-2 text-md font-medium text-gray-700 dark:text-gray-100"
+                    htmlFor="aptitude"
+                    className="ml-2 capitalize text-md font-medium text-gray-700 dark:text-gray-100"
                   >
-                    Medium
+                    aptitude
                   </label>
                   <input
-                    id="medium"
+                    id="aptitude"
                     type="checkbox"
-                    name="medium"
-                    checked={filterData.medium}
+                    name="aptitude"
+                    checked={filterData.aptitude}
                     onChange={onChange}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
                   />
@@ -86,16 +86,16 @@ function filterDataide({ filterData, onChange, apply, onClose, lastModify }) {
 
                 <li className="flex items-center justify-between">
                   <label
-                    htmlFor="tough"
-                    className="ml-2 text-md font-medium text-gray-700 dark:text-gray-100"
+                    htmlFor="random"
+                    className="ml-2 capitalize text-md font-medium text-gray-700 dark:text-gray-100"
                   >
-                    Tough
+                    random
                   </label>
                   <input
-                    id="tough"
+                    id="random"
                     type="checkbox"
-                    name="tough"
-                    checked={filterData.tough}
+                    name="random"
+                    checked={filterData.random}
                     onChange={onChange}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded-md text-primary-600 dark:bg-gray-600 dark:border-gray-500"
                   />

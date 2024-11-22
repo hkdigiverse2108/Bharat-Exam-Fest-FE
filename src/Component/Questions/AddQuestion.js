@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import MultiSelection from "../Ui/MultiSelection";
 import { MdStar } from "react-icons/md";
 import { VscSaveAs } from "react-icons/vsc";
@@ -13,13 +13,14 @@ import "react-toastify/dist/ReactToastify.css";
 
 function AddQuestion() {
   const navigate = useNavigate();
-  const classId = useSelector((state) => state.authConfig.userInfo[0]._id);
+  const classId = useSelector((state) => state.authConfig.userInfo[0].data._id);
+  
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
-  const subject = useSelector((state) => state.userConfig.CurrentSubject[0]);
+  const subject = useSelector((state) => state.userConfig.CurrentSubject);
 
-  const [type, setType] = useState("Concept");
+  const [type, setType] = useState("concept");
   const [questionType, setQuestionType] = useState("normal");
   const [subtopics, setSubtopics] = useState([]);
   const [subjectname, setSubjectname] = useState([]);
@@ -30,6 +31,7 @@ function AddQuestion() {
     english: { A: false, B: false, C: false, D: false },
     hindi: { A: false, B: false, C: false, D: false },
   });
+ 
   const optionsArray1 = Object.keys(options.english).map((key) => ({
     label: `Option ${key}`,
     value: key,
@@ -83,9 +85,9 @@ function AddQuestion() {
     }));
   };
 
-  // useEffect(() => {
-  //   console.log("QUESTION",addQuestion);
-  // }, [addQuestion]);
+  useEffect(() => {
+    console.log("QUESTION",addQuestion);
+  }, [addQuestion]);
 
   // Handle subject change
   const handleSubjectChange = (event) => {

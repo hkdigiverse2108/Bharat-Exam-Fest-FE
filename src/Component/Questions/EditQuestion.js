@@ -13,7 +13,7 @@ import RadioButtons from "../Ui/RadioButtons";
 
 function EditQuestion() {
   const navigate = useNavigate();
-  const classId = useSelector((state) => state.authConfig.userInfo[0]._id);
+  const classId = useSelector((state) => state.authConfig.userInfo[0].data._id);
   const subject = useSelector((state) => state.userConfig.CurrentQue[0]);
   const [editQuestion, setEditQuestion] = useState({
     questionId: subject._id,
@@ -45,7 +45,7 @@ function EditQuestion() {
   const [subjectname, setSubjectname] = useState([]);
 
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
   const [options, setOptions] = useState({
     english: { A: false, B: false, C: false, D: false },

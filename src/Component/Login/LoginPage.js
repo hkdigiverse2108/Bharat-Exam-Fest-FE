@@ -61,25 +61,6 @@ function LoginPage() {
 
   const [show, setShow] = useState(false);
 
-  // const fetchClassData = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "https://api-bef.hkdigiverse.com/classes/all?page=1&limit=10",
-  //       {
-  //         headers: {
-  //           Authorization: accessToken,
-  //           Accept: "application/json",
-  //         },
-  //       }
-  //     );
-  //     console.log("classes_data", response.data.data.classes_data);
-  //     setData(response.data.data.classes_data);
-  //     dispatch(loginSuccess(response.data));
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
   async function handleLogin() {
     try {
       let userData = JSON.stringify(input);
@@ -108,7 +89,7 @@ function LoginPage() {
         console.log("Login failed: " + error.message);
       }
     } catch (err) {
-      console.error("Error during login:", err);
+      toast.error(err.response.data.message);
     }
   }
 
@@ -196,12 +177,13 @@ function LoginPage() {
           <span className="text-black text-3xl py-4 capitalize select-none">
             welcome Question panel
           </span>
+
           <div className="flex flex-col space-y-2 w-full h-full">
             <div>
               <input
                 className="text-black text-md px-4 py-6  border-2 border-gray-200 h-10 w-full rounded-lg focus:outline-none focus:ring-purple-600 focus:border-purple-600 invalid:border-pink-500 invalid:text-pink-600 peer
                   focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-                type="uniqueId"
+                type="email"
                 name="uniqueId"
                 value={uniqueId || ""}
                 onChange={(e) => handleChange(e)}

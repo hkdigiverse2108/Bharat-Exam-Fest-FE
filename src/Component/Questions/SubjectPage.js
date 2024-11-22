@@ -6,6 +6,8 @@ import { CurrentData, SubjectData } from "../../Context/Action/index";
 
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchSubjects } from "../../Hooks/getSubjectApi";
+import { fetchQuestionsBySubject } from "../../Hooks/getQuestionsApi";
 
 function SubjectPage() {
   const navigate = useNavigate();
@@ -22,43 +24,36 @@ function SubjectPage() {
     navigate("/subjectDetails");
   }
 
-  const fetchSubjects = async () => {
-    try {
-      const response1 = await axios.get(
-        `https://api-bef.hkdigiverse.com/question/subject-wise-question-count`,
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      const response2 = await axios.get(
-        `https://api-bef.hkdigiverse.com/subject/all?page=1&limit=10`,
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      if (response1 && response2) {
-        console.log(response2.data.data.subject_data);
-        dispatch(SubjectData(response2.data.data.subject_data));
-        setTotalQuestion(response1.data.data);
-        setData(response2.data.data.subject_data);
-      } else {
-        console.error(response1.data.message);
-        console.error(response2.data.message);
-      }
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
   useEffect(() => {
-    fetchSubjects();
-  }, []);
+    const getSubjects = async () => {
+      try {
+        const data = await fetchSubjects(accessToken);
+        setData(data.subjects);
+        dispatch(SubjectData(data.subjects));
+
+        setTotalQuestion(data.totalQuestions);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    getSubjects();
+  }, [accessToken]);
+
+  // useEffect(() => {
+  //   const getQuestions = async () => {
+  //     try {
+  //       const data = await fetchQuestionsBySubject(accessToken, );
+  //       console.log(data);
+
+  //       // setQustions(data.questions);
+  //     } catch (err) {
+  //       setError(err.message);
+  //     }
+  //   };
+
+  //   getQuestions();
+  // }, [accessToken]);
 
   return (
     <>
@@ -87,7 +82,7 @@ function SubjectPage() {
                   total questions{" "}
                 </p>
                 <p className="text-2xl text-gray-800 font-medium ">
-                  { totalQuestion.count || 0}
+                  {totalQuestion.count }
                 </p>
               </div>
             </div>
