@@ -9,9 +9,8 @@ import axios from "axios";
 export default function AddIntroduction({ setConfirm }) {
   const navigate = useNavigate();
 
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const [addNewData, setAddNewData] = useState({
     title: "",
     link: "",

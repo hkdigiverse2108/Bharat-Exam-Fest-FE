@@ -18,9 +18,8 @@ export default function PrivacyPolicyPage() {
   const [editorText, setEditorText] = useState({
     privacyPolicy: "",
   });
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
 
   function handleGetPlainText(value) {
     setFormattedText(value);

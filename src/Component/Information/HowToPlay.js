@@ -13,9 +13,8 @@ export default function HowToPlay() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const [toggle, setToggle] = useState(false);
   function handleNavigate() {
     navigate("/addIntroduction");

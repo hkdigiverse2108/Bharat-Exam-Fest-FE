@@ -32,9 +32,8 @@ function SubjectList() {
   const [subjectShow, setSubjectShow] = useState([]);
   const [subtopicShow, setSubtopicShow] = useState([]);
   const [error, setError] = useState(null);
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   // const existData = useSelector((state) => state.userConfig.editSubjectData);
 
   // console.log(existData);

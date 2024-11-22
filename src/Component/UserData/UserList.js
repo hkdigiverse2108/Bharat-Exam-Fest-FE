@@ -20,9 +20,8 @@ const UserList = () => {
   const Totalpage = Math.ceil(users.length / ITEMS_PER_PAGE);
   const [dataToDisplay, setDataToDisplay] = useState([]);
   const [error, setError] = useState(null);
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
 
   // const deleteSubject = async (value) => {
   //   try {

@@ -29,7 +29,7 @@ export default function DropDown({ value, onChange }) {
           <Select
             labelId="ranks"
             id="ranks"
-            value={value} // Use the value prop passed from the parent
+            value={value} 
             onChange={onChange} 
           >
             <MenuItem value="1st">1st</MenuItem>

@@ -9,7 +9,6 @@ import axios from "axios";
 import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ConfirmationPage from "./ConfirmationPage";
-import useGetAllContestData from "../../Hooks/useGetAllContestData";
 import { contestTypeData, editContestTypeData } from "../../Context/Action";
 import EditContestType from "./EditContestType";
 
@@ -23,7 +22,7 @@ export default function ContestHome() {
   const [contestDataShow, setContestDataShow] = useState([]);
   const [error, setError] = useState(null);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
   // const DataList = useSelector((state) => state.userConfig.contestType);
 
@@ -52,7 +51,7 @@ export default function ContestHome() {
         console.log("contest_type_data", response.data.data.contest_type_data);
         const responseData = response.data.data.contest_type_data;
         setContest(responseData);
-        setContestDataShow(responseData.slice(0, end));
+        setContestDataShow(responseData.slice(0, itemsPerPage));
         dispatch(contestTypeData(responseData));
       } else {
         console.error(response.data.message);
@@ -83,7 +82,6 @@ export default function ContestHome() {
   function handleChange(e) {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
-    
   }
 
   const isEmpty = () => {
@@ -128,7 +126,6 @@ export default function ContestHome() {
       console.error("Error add contest:", err.message);
     }
   };
-
 
   const deleteContestType = async () => {
     try {

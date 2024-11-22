@@ -12,9 +12,8 @@ export default function Adduser() {
   const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
 
   const [input, setInput] = useState({
     name: "",

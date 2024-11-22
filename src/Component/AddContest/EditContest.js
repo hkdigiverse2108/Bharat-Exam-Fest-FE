@@ -34,9 +34,8 @@ export default function EditContest() {
   const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const contestFromRedux = useSelector(
     (state) => state.userConfig.editContestData
   );

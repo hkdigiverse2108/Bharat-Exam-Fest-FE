@@ -8,6 +8,7 @@ import Pagination from "../Pagination/Pagination";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { deleteClassData, fetchClassData } from "../../Hooks/getAllClassApi";
 
 export default function ClassesHomePage() {
   // const navigate = useNavigate();
@@ -22,9 +23,8 @@ export default function ClassesHomePage() {
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
 
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const [input, setInput] = useState({
     classname: "",
     referralcode: "",
@@ -34,68 +34,46 @@ export default function ClassesHomePage() {
     setConfirm(!confirm);
   }
 
-  const handleSuccess = (message) => {
-    console.log("API call was successful:", message);
-    handleNavigate();
-  };
+  // const handleSuccess = (message) => {
+  //   console.log("API call was successful:", message);
+  //   handleNavigate();
+  // };
 
- 
-  const fetchClassData = async () => {
+  const getClassData = async () => {
     try {
-      const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/classes/all?page=1&limit=10",
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      console.log("classes_data",response.data.data.classes_data);
-
-      setData(response.data.data.classes_data);
-      setDataToDisplay(response.data.data.classes_data.slice(0, itemsPerPage));
+      const classesData = await fetchClassData(accessToken);
+      console.log("Fetched classes data:", classesData);
+      setData(classesData);
+      setDataToDisplay(classesData.slice(0, itemsPerPage));
     } catch (err) {
       setError(err.message);
     }
   };
 
-  const deleteSubject = async (value) => {
+  const handleDelete = async (id) => {
     try {
-      let config = {
-        method: "delete",
-        maxBodyLength: Infinity,
-        url: `https://api-bef.hkdigiverse.com//contest/delete/${value}`,
-        headers: {
-          Authorization: accessToken,
-          "Content-Type": "application/json",
-        },
-      };
-
-      axios
-        .request(config)
-        .then((response) => {
-          console.log(response.data);
-
-          toast.success("Subject delete");
-          fetchClassData();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      await deleteClassData(id, accessToken);
+      console.log(`Deleted class with id: ${id}`);
+      
+      await getClassData();
     } catch (err) {
       console.error(err.message);
     }
   };
 
+  useEffect(() => {
+    getClassData(); 
+  }, [accessToken]);
+
+ 
 
   useEffect(() => {
-    setDataToDisplay(data.slice(start, end));
+    setDataToDisplay(data.slice(0, itemsPerPage));
   }, [currentPage]);
 
-  useEffect(() => {
-    fetchClassData();
-  }, []);
+  // useEffect(() => {
+  //   fetchClassData();
+  // }, []);
 
   return (
     <>
@@ -200,7 +178,7 @@ export default function ClassesHomePage() {
                   </td>
                   <td className="p-4 border-b border-blue-gray-50">
                     <button
-                      onClick={() => deleteSubject(value._id)}
+                      onClick={() => handleDelete(value._id)}
                       className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg  align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
                       type="button"
                     >
@@ -223,7 +201,7 @@ export default function ClassesHomePage() {
         />
       </section>
       <div className={`${confirm === true ? "block" : "hidden"}`}>
-        <AddClasses confirm={confirm} onClose={handleSuccess} />
+        <AddClasses confirm={confirm} onClose={handleNavigate} />
       </div>
     </>
   );

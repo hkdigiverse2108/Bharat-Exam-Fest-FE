@@ -19,9 +19,8 @@ export default function ClassesCredential() {
   const [currentPage, setCurrentPage] = useState(1);
   const Totalpage = Math.ceil(data.length / ITEMS_PER_PAGE);
   const [error, setError] = useState(null);
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const [confirm, setConfirm] = useState(false);
   function handleAddUser(value) {
     navigate("/addUser", { state: value });

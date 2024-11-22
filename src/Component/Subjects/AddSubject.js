@@ -10,9 +10,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 export default function AddSubject() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const subtopicList = useSelector((state) => state.userConfig.subtopicList);
   const [selectedNames, setSelectedNames] = useState([]);
 
@@ -69,6 +68,8 @@ export default function AddSubject() {
       setInput({ ...input, [name]: value });
     }
   }
+
+  
 
   const addNewSubject = async () => {
     try {

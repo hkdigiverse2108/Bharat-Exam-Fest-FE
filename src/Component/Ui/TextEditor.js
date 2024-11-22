@@ -207,6 +207,13 @@ const TextEditor = ({ content, onTextChange = () => {} }) => {
     }
   }, [text]);
 
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.innerHTML = text; // Set the initial HTML content
+      setIsPlaceholderVisible(editorRef.current.innerHTML === "");
+    }
+  }, [text]);
+
   return (
     <div className=" w-full overflow-none">
       <div className="flex flex-wrap items-center gap-3 border border-orange-400 p-2 rounded">

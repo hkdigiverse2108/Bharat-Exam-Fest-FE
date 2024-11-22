@@ -18,9 +18,8 @@ function Legality() {
   const [editorText, setEditorText] = useState({
     illegality: "",
   });
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
 
   function handleGetPlainText(value) {
     setFormattedText(value);

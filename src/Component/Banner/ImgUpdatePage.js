@@ -12,9 +12,8 @@ export default function ImgUpdatePage({ confirm, onClose }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const bannerData = useSelector((state) => state.userConfig.imageData);
   const [imgEdit, setImgEdit] = useState({
     bannerId: "",

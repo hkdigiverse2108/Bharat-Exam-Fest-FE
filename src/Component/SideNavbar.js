@@ -9,12 +9,12 @@ function SideNavbar() {
   return (
     <>
       <aside className="absolute left-0 top-0 z-20 flex h-screen w-60 flex-col overflow-y-auto bg-inherite border-r duration-300 ease-linear bg-white lg:static lg:translate-x-0 -translate-x-full  lg:block xl:block 2xl:block">
-        <div className="w-22 h-22">
+        <div className="flex items-center justify-center mx-auto w-28 h-28 ">
           <NavLink to="/">
             <img
               src="BEFLogo.png"
               alt="Bharat Exam Fest"
-              className="w-full h-full "
+              className="w-auto h-auto  rounded-md"
             />
           </NavLink>
         </div>

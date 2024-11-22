@@ -15,9 +15,8 @@ import { bannerDataList } from "../../Context/Action/index";
 export default function HomeBanner() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const [bannerData, setBannerData] = useState([]);
   const [confirm, setConfirm] = useState(false);
 

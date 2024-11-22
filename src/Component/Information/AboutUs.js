@@ -18,9 +18,8 @@ function AboutUs() {
   const [editorText, setEditorText] = useState({
     aboutUs: "",
   });
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
 
   function handleGetPlainText(value) {
     setFormattedText(value);

@@ -19,37 +19,29 @@ export default function TermAndcondition() {
   });
   const [errorMessage, setErrorMessage] = useState("");
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0].data.token
   );
   // const Data = useSelector((state) => state.userConfig.tearmAndCondition);
   // console.log(Data);
   const fetchTermsConditionAPI = async () => {
     const url = `https://api-bef.hkdigiverse.com/terms-condition`;
-
     try {
-      const response = await fetch(url, {
-        method: "GET",
+      const response = await axios.get(url, {
         headers: {
-          Accept: "*/*",
           Authorization: accessToken,
+          Accept: "*/*",
         },
       });
 
-      const decodedData = await response.json();
-      // console.log(response);
+      // const decodedData = await response.json();
+      console.log(response.data.data);
 
       if (response.status === 200) {
-        const parsedData = decodedData;
-        if (parsedData.status === 200) {
-          setTermsConditionResponse(parsedData.data);
-
-          setEditorContent(parsedData.data.termsCondition);
-          dispatch(setTearmAndConditionData(parsedData.data));
-        } else {
-          console.error(parsedData.message);
-        }
+        setTermsConditionResponse(response.data.data);
+        setEditorContent(response.data.data.termsCondition);
+        dispatch(setTearmAndConditionData(response.data.data));
       } else if (response.status === 404) {
-        const errorMsg = decodedData.message || "Data not found";
+        const errorMsg = response.data.message || "Data not found";
         setErrorMessage(errorMsg);
         console.error(errorMsg);
       } else {
@@ -59,8 +51,8 @@ export default function TermAndcondition() {
       }
     } catch (error) {
       console.error("Error fetching terms and conditions:", error);
-      setErrorMessage("An error occurred while fetching data.");
-      console.error("An error occurred while fetching data.");
+      // setErrorMessage("An error occurred while fetching data.");
+      // console.error("An error occurred while fetching data.");
     }
   };
 

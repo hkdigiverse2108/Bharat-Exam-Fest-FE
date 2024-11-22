@@ -1,11 +1,12 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { VscSaveAs, VscEye, VscEyeClosed } from "react-icons/vsc";
 
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { fetchClassData, addClassData } from "../../Hooks/getAllClassApi";
 
 export default function AddClasses({ confirm, setConfirm, onClose }) {
   const [toggle, setToggle] = useState(false);
@@ -13,9 +14,8 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
 
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
 
   const [input, setInput] = useState({
     name: "",
@@ -23,66 +23,152 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
     image: "",
     email: "",
     password: "",
+    ownerName: "",
+    contact: {
+      mobile: "",
+    },
   });
+
+  const isEmpty = (value) => {
+    const { classesId, name, ownerName, email, referralCode, image, contact } =
+      value;
+    return (
+      !classesId ||
+      !name ||
+      !ownerName ||
+      !email ||
+      !referralCode ||
+      !image ||
+      !contact.mobile
+    );
+  };
+
+  const imgUpload = async (file) => {
+    try {
+      if (!file) {
+        toast.warning("No file selected");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("image", file); // Append the file to FormData
+
+      const config = {
+        method: "post",
+        url: "https://api-bef.hkdigiverse.com/upload",
+        headers: {
+          Authorization: accessToken,
+        },
+        data: formData,
+      };
+
+      const response = await axios.request(config);
+      console.log("Upload response:", response.data);
+      setInput({ ...input, image: response.data.data });
+      toast.success("Image uploaded successfully!");
+    } catch (err) {
+      console.error(err.message);
+      toast.error("Failed to upload image.");
+    }
+  };
+  const handleUpload = (value) => {
+    imgUpload(value);
+  };
 
   function handleChange(e) {
     const { name, value, files } = e.target;
 
     if (name === "image") {
-      setInput({ ...input, [name]: files[0].name });
+      handleUpload(files[0]);
+    } else if (name.startsWith("contact.")) {
+      const contactField = name.split(".")[1];
+      setInput((prevData) => ({
+        ...prevData,
+        contact: {
+          ...prevData.contact,
+          [contactField]: value,
+        },
+      }));
     } else {
       setInput({ ...input, [name]: value });
     }
   }
 
-  const addNewClass = async ({ onClose }) => {
+  const getClassData = async () => {
     try {
-      if (
-        !input.name ||
-        !input.email ||
-        !input.password ||
-        !input.referralCode
-      ) {
-        toast.warning("Fill up empty space");
-      } else {
-        let data = JSON.stringify(input);
-        console.log(input);
-
-        let config = {
-          method: "post",
-          maxBodyLength: Infinity,
-          url: "https://api-bef.hkdigiverse.com/classes/add",
-          headers: {
-            Authorization: accessToken,
-            "Content-Type": "application/json",
-          },
-          data: data,
-        };
-
-        axios
-          .request(config)
-          .then((response) => {
-            if (response.status === 200) {
-              console.log("success", response.data);
-              toast.success(response.message);
-              onClose();
-            } else {
-              console.log("failed", response);
-              toast.error(response.message);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }
+      const classesData = await fetchClassData(accessToken);
+      return classesData;
     } catch (err) {
-      console.error(err.message);
+      setError(err.message);
     }
   };
 
-  // useEffect(() => {
-  //   console.log(input);
-  // }, [input]);
+  const handleAdd = async ({ onClose }) => {
+    try {
+      if (isEmpty(input)) {
+        toast.warning("Fill up empty space");
+      } else {
+        const response = await addClassData(input, accessToken);
+
+        if (response.status === 200) {
+          console.log("success", response.data);
+          toast.success("Class added successfully!");
+          onClose();
+          getClassData();
+        } else {
+          console.log("failed", response);
+          toast.error("Failed to add class");
+        }
+      }
+    } catch (err) {
+      console.error(err.message);
+      toast.error(err.message);
+    }
+  };
+
+  // const addNewClass = async ({ onClose }) => {
+  //   try {
+  //     if (isEmpty()) {
+  //       toast.warning("Fill up empty space");
+  //     } else {
+  //       let data = JSON.stringify(input);
+  //       console.log(input);
+
+  //       let config = {
+  //         method: "post",
+  //         maxBodyLength: Infinity,
+  //         url: "https://api-bef.hkdigiverse.com/classes/add",
+  //         headers: {
+  //           Authorization: accessToken,
+  //           "Content-Type": "application/json",
+  //         },
+  //         data: data,
+  //       };
+
+  //       axios
+  //         .request(config)
+  //         .then((response) => {
+  //           if (response.status === 200) {
+  //             console.log("success", response.data);
+  //             toast.success(response.message);
+  //             onClose();
+  //           } else {
+  //             console.log("failed", response);
+  //             toast.error(response.message);
+  //           }
+  //         })
+  //         .catch((error) => {
+  //           console.error(error);
+  //         });
+  //     }
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
+
+  useEffect(() => {
+    console.log(input);
+  }, [input]);
 
   return (
     <>
@@ -102,10 +188,44 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
           </span>
 
           <div className="inline-block mx-auto w-full bg-white rounded-lg space-y-4 p-4  text-left overflow-hidden shadow-xl transform transition-all sm:align-middle max-w-xl md:max-w-3xl">
-            <p className="text-3xl text-left font-medium text-gray-900">
+            <p className="text-3xl text-center font-medium text-gray-900">
               Add Classes
             </p>
-
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 w-full">
+                <label
+                  htmlFor="ownerName"
+                  className="text-gray-700 font-semibold dark:text-gray-200"
+                >
+                  Ownder Name
+                </label>
+                <input
+                  className="w-full block px-5 py-2 border rounded-lg shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#808836] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
+                  type="text"
+                  name="ownerName"
+                  id="ownerName"
+                  onChange={handleChange}
+                  placeholder="Enter Ownder Name"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="grid grid-cols-1 w-full">
+                <label
+                  htmlFor="contact"
+                  className="text-gray-700 font-semibold dark:text-gray-200"
+                >
+                  Contact
+                </label>
+                <input
+                  className="w-full block px-5 py-2 border rounded-lg shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#808836] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
+                  type="text"
+                  id="contact"
+                  onChange={handleChange}
+                  name="contact.mobile"
+                  placeholder="Enter Contact"
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="grid grid-cols-1 w-full">
                 <label
@@ -118,7 +238,7 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
                   className="w-full block px-5 py-2 border rounded-lg shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#808836] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
                   type="text"
                   id="email"
-                  onChange={(e) => handleChange(e)}
+                  onChange={handleChange}
                   name="email"
                   placeholder="Enter classes name"
                 />
@@ -135,7 +255,7 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
                     className="w-full block px-5 py-2 border rounded-lg shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#808836] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
                     type={show ? "text" : "password"}
                     id="password"
-                    onChange={(e) => handleChange(e)}
+                    onChange={handleChange}
                     name="password"
                     placeholder="Enter classes name"
                   />
@@ -168,7 +288,7 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
                   className="w-full block px-5 py-2 border rounded-lg shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#808836] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
                   type="text"
                   id="class"
-                  onChange={(e) => handleChange(e)}
+                  onChange={handleChange}
                   name="name"
                   placeholder="Enter classes name"
                 />
@@ -184,7 +304,7 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
                   className="w-full block px-5 py-2 border rounded-lg shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#808836] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
                   type="text"
                   id="code"
-                  onChange={(e) => handleChange(e)}
+                  onChange={handleChange}
                   name="referralCode"
                   placeholder="Enter referral code"
                 />
@@ -197,23 +317,11 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
                 </p>
                 <input
                   type="file"
-                  id="file"
-                  className="sr-only"
-                  onChange={(e) => handleChange(e)}
+                  onChange={handleChange}
+                  accept="image/*"
                   name="image"
+                  className="block w-full border border-gray-400 shadow-sm rounded-lg text-md focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 file:bg-gray-300  file:border-0  file:me-4 file:py-3 file:px-4 dark:file:bg-neutral-700 dark:file:text-neutral-400"
                 />
-                <label
-                  htmlFor="file"
-                  className="relative flex items-center justify-start  gap-x-4 text-center cursor-pointer"
-                >
-                  <span className="rounded-md border border-[#318973] py-2 px-8 text-base capitalize text-slate-700">
-                    choose file
-                  </span>
-
-                  <span className="text-md capitalize text-[#318973]">
-                    no file chosen
-                  </span>
-                </label>
               </div>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -229,7 +337,7 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
                     type="file"
                     id="file"
                     className="sr-only"
-                    onChange={(e) => handleChange(e)}
+                    onChange={handleChange}
                     name="tearm"
                   />
                   <label
@@ -258,7 +366,7 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
                     type="file"
                     id="file"
                     className="sr-only"
-                    onChange={(e) => handleChange(e)}
+                    onChange={handleChange}
                     name="privacy"
                   />
                   <label
@@ -279,7 +387,7 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
             <div className="flex items-center justify-center">
               <button
                 className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-600 hover:bg-opacity-90"
-                onClick={addNewClass}
+                onClick={handleAdd}
               >
                 <svg
                   className="font-bold text-white w-5 h-5"

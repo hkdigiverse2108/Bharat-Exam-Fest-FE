@@ -10,9 +10,8 @@ import { editBanner, updateImageData } from "../../Context/Action";
 
 function AddImagePage({ confirm, onClose }) {
   const dispatch = useDispatch();
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const [imgEdit, setImgEdit] = useState({
     image: "",
     type: "result",

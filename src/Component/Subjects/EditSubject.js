@@ -9,9 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function EditSubject() {
   const navigate = useNavigate();
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const existData = useSelector((state) => state.userConfig.editSubjectData);
   const existSubtopicList = useSelector(
     (state) => state.userConfig.subtopicList

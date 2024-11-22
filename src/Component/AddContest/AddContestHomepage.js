@@ -4,17 +4,14 @@ import { FaPlus } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../Pagination/Pagination";
-import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
-import useGetAllContestData from "../../Hooks/useGetAllContestData";
 import { editContestData } from "../../Context/Action";
-import OtpVerify from "../OtpVerify/OtpVerify";
+import { fetchContestData } from "../../Hooks/contestApi";
 
 export default function AddContestHomepage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  useGetAllContestData();
 
   const [confirm, setConfirm] = useState(false);
   const [data, setData] = useState([]);
@@ -22,11 +19,12 @@ export default function AddContestHomepage() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const ITEMS_PER_PAGE = 5;
-  const Totalpage = Math.ceil(data.length / ITEMS_PER_PAGE);
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+  const itemsPerPage = 5;
+  const Totalpage = Math.ceil(data.length / itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
   const DataList = useSelector((state) => state.userConfig.contestData);
 
   const [contestData, setContestData] = useState({
@@ -49,43 +47,12 @@ export default function AddContestHomepage() {
     classesId: "",
   });
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setContestData({ ...contestData, [name]: value });
-  }
-
-  function handleNavigate() {
-    setConfirm(!confirm);
-  }
-
   function handleAddContest() {
     navigate("/createContest");
   }
-
   const handleData = (value) => {
     dispatch(editContestData(value));
     navigate("/editContest");
-  };
-
-  const fetchContestData = async () => {
-    try {
-      const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/contest/all?page=1&limit=10",
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-      console.log("contest_data", response.data.data.contest_data);
-      setData(response.data.data.contest_data);
-      setDataToDisplay(
-        response.data.data.contest_data.slice(0, ITEMS_PER_PAGE)
-      );
-    } catch (err) {
-      setError(err.message);
-    }
   };
 
   const SimpleDate = ({ dateString }) => {
@@ -100,14 +67,27 @@ export default function AddContestHomepage() {
   };
 
   useEffect(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
     setDataToDisplay(data.slice(start, end));
   }, [currentPage]);
 
   useEffect(() => {
-    fetchContestData();
-  }, []);
+    const getContestData = async () => {
+      try {
+        const data = await fetchContestData(accessToken);
+        if (data) {
+          setContestData(data); // Set the questions directly
+          setDataToDisplay(data.slice(0, itemsPerPage));
+        } else {
+          // Set the questions directly
+        }
+        console.log("res", data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    getContestData();
+  }, [accessToken]);
 
   return (
     <>
@@ -255,11 +235,7 @@ export default function AddContestHomepage() {
           page={setCurrentPage}
           current={currentPage}
         />
-        {/* <OtpVerify /> */}
       </section>
-
-      {/* <Calander/> */}
-      {/* <TimeSelector/> */}
     </>
   );
 }

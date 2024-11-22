@@ -15,9 +15,8 @@ export default function EditUser() {
   const [toggle, setToggle] = useState(false);
   const data = location.state;
 
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+ const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token)
 
   const [input, setInput] = useState({
     name: "",
