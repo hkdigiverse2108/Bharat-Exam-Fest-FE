@@ -12,8 +12,9 @@ export default function ImgUpdatePage({ confirm, onClose }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
- const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token)
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token
+  );
   const bannerData = useSelector((state) => state.userConfig.imageData);
   const [imgEdit, setImgEdit] = useState({
     bannerId: "",
@@ -28,29 +29,57 @@ export default function ImgUpdatePage({ confirm, onClose }) {
     }
     return false;
   };
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setImgEdit((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const { name, value, files } = e.target;
+    if (files) {
+      handleUpload(files[0]);
+    } else {
+      setImgEdit((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
+  const handleUpload = (value) => {
+    imgUpload(value);
+  };
   const handleNavigate = (e) => {
     dispatch(updateImageData());
     onClose();
   };
 
-  const handleFileChange = (e) => {
-    const { files } = e.target;
-    // console.log(URL.createObjectURL(files[0]));
+  const imgUpload = async (file) => {
+    try {
+      if (!file) {
+        toast.warning("No file selected");
+        return;
+      }
 
-    if (files) {
-      setImgEdit((prev) => ({
-        ...prev,
-        image:
-          "https://images.pexels.com/photos/757889/pexels-photo-757889.jpeg?auto=compress&cs=tinysrgb&w=600",
+      const formData = new FormData();
+      formData.append("image", file); // Append the file to FormData
+
+      const config = {
+        method: "post",
+        url: "https://api-bef.hkdigiverse.com/upload",
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+        data: formData,
+      };
+
+      const response = await axios.request(config);
+      console.log("Upload response:", response.data);
+      setImgEdit((prevData) => ({
+        ...prevData,
+        image: response.data.data,
       }));
+      toast.success("Image uploaded successfully!");
+    } catch (err) {
+      console.error(err.message);
+      toast.error("Failed to upload image.");
     }
   };
 
@@ -159,7 +188,7 @@ export default function ImgUpdatePage({ confirm, onClose }) {
                     name="file"
                     id="file"
                     className="sr-only"
-                    onChange={handleFileChange}
+                    onChange={handleInputChange}
                   />
                   <label
                     htmlFor="file"

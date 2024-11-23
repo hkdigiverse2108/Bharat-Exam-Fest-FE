@@ -10,76 +10,107 @@ import { editBanner, updateImageData } from "../../Context/Action";
 
 function AddImagePage({ confirm, onClose }) {
   const dispatch = useDispatch();
- const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token)
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token
+  );
   const [imgEdit, setImgEdit] = useState({
+    bannerId: "",
     image: "",
-    type: "result",
+    type: "",
     link: "",
   });
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setImgEdit((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleFileChange = (e) => {
-    const { files } = e.target;
-    // console.log(URL.createObjectURL(files[0]));
-
+    const { name, value, files } = e.target;
     if (files) {
-      setImgEdit((prev) => ({
-        ...prev,
-        image:
-          "https://images.pexels.com/photos/757889/pexels-photo-757889.jpeg?auto=compress&cs=tinysrgb&w=600",
+      handleUpload(files[0]);
+    } else {
+      setImgEdit((prevData) => ({
+        ...prevData,
+        [name]: value,
       }));
     }
   };
+
   const isEmpty = () => {
     if (imgEdit.bannerId === "" || imgEdit.image === "") {
       return true;
     }
     return false;
   };
-  // const AddBanner = async () => {
-  //   try {
-  //     if (isEmpty()) {
-  //       toast.warning("Please fill up empty fields.");
-  //     }
-  //     let data = JSON.stringify(imgEdit);
-  //     console.log(imgEdit);
 
-  //     let config = {
-  //       method: "post",
-  //       maxBodyLength: Infinity,
-  //       url: `https://api-bef.hkdigiverse.com/banner/add`,
-  //       headers: {
-  //         Authorization: accessToken,
-  //         "Content-Type": "application/json",
-  //       },
-  //       data: data,
-  //     };
+  const imgUpload = async (file) => {
+    try {
+      if (!file) {
+        toast.warning("No file selected");
+        return;
+      }
 
-  //     const response = await axios.request(config);
-  //     console.log(response.data);
+      const formData = new FormData();
+      formData.append("image", file); // Append the file to FormData
 
-  //     if (response.status === 200) {
-  //       toast.success(response.data.data.message);
-  //       dispatch(editBanner(imgEdit), updateImageData(null));
-  //       onClose();
-  //     } else if (response.status === 500) {
-  //       toast.error(response.data.data.message);
-  //     } else {
-  //       toast.error(response.message);
-  //     }
-  //   } catch (err) {
-  //     console.error(err.message);
-  //     console.error("An error occurred while adding the question.");
-  //   }
-  // };
+      const config = {
+        method: "post",
+        url: "https://api-bef.hkdigiverse.com/upload",
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+        data: formData,
+      };
+
+      const response = await axios.request(config);
+      console.log("Upload response:", response.data);
+      setImgEdit((prevData) => ({
+        ...prevData,
+        image: response.data.data,
+      }));
+      toast.success("Image uploaded successfully!");
+    } catch (err) {
+      console.error(err.message);
+      toast.error("Failed to upload image.");
+    }
+  };
+  const handleUpload = (value) => {
+    imgUpload(value);
+  };
+
+  const AddBanner = async () => {
+    try {
+      if (isEmpty()) {
+        toast.warning("Please fill up empty fields.");
+      }
+      let data = JSON.stringify(imgEdit);
+      console.log(imgEdit);
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: `https://api-bef.hkdigiverse.com/banner/add`,
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
+
+      const response = await axios.request(config);
+      console.log(response.data);
+
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        dispatch(editBanner(imgEdit), updateImageData(null));
+        onClose();
+      } else if (response.status === 500) {
+        toast.error(response.data.data.message);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (err) {
+      console.error(err.message);
+      console.error("An error occurred while adding the question.");
+    }
+  };
 
   const handleNavigate = (e) => {
     onClose();
@@ -107,72 +138,83 @@ function AddImagePage({ confirm, onClose }) {
             <h3 className="mt-5 text-left text-3xl font-semibold text-gray-900">
               Add Image
             </h3>
-            <div className="space-y-3 border border-slate-300 rounded-lg p-4">
+            <div className="space-y-3 border border-[#808836] rounded-lg p-4">
+              <img
+                src={imgEdit.image}
+                width="300px"
+                className="border-b  block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
+                alt="Generated"
+              />
+
               <div className="grid grid-cols-1 space-y-2">
                 <label
                   htmlFor="editimg"
-                  className="text-xl font-medium text-gray-700 tracking-wide"
+                  className="capitalize text-base font-medium text-gray-800 dark:text-white"
                 >
-                  Add Image
+                  Navigation Link
                 </label>
                 <input
-                  className="text-base p-2 border-b border-gray-400 focus:outline-none focus:border-indigo-500"
-                  type=""
+                  className="border-b w-full block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
+                  type="text"
                   id="editimg"
+                  name="image"
                   placeholder="Image"
+                  value={imgEdit.image}
+                  onChange={handleInputChange}
                 />
               </div>
-              <div className="p-4 w-full h-fit border border-slate-300 bg-white shadow-sm rounded-xl">
-                <div className=" space-y-4">
-                  <p
-                    className="flex  text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                    htmlFor="file_input"
-                  >
-                    Banner Image
+              <div className="p-4 w-full h-fit border border-[#65B741] bg-white shadow-sm rounded-xl">
+                <div className="space-y-2 overflow-hidden">
+                  <p className="text-start capitalize text-base font-medium text-gray-700 dark:text-white">
+                    Edit Banner Image
                   </p>
                   <input
                     type="file"
                     name="file"
                     id="file"
                     className="sr-only"
+                    onChange={handleInputChange}
                   />
                   <label
                     htmlFor="file"
                     className="relative flex items-center justify-start gap-x-4 text-center cursor-pointer"
                   >
-                    <span className="inline-flex rounded border border-[#e0e0e0] py-2 px-8 text-base capitalize font-medium text-[#07074D]">
+                    <span className="rounded-md border border-[#5F8670] py-2 px-8 text-base capitalize text-slate-700">
                       choose file
                     </span>
-
-                    <span className="mb-2 block text-md  capitalize font-semibold text-[#07074D]">
-                      no file chosen
+                    <span className="text-md text-ellipsis text-[#5F8670]">
+                      {imgEdit.image === "string"
+                        ? "no file chosen"
+                        : imgEdit.image}
                     </span>
                   </label>
                 </div>
               </div>
-
-              <p className="text-base text-gray-500">
+              <p className="text-base text-gray-600">
                 <span>File type: jpg/jpeg/png</span>
               </p>
               <div className="grid grid-cols-1 space-y-2">
                 <label
                   htmlFor="editimg"
-                  className="text-xl font-medium text-gray-700 tracking-wide"
+                  className="capitalize text-base font-medium text-gray-800 dark:text-white"
                 >
                   Navigational Link
                 </label>
                 <input
-                  className="text-base p-2 border-b border-gray-400 focus:outline-none focus:border-indigo-500"
-                  type=""
+                  className="border-b w-full block px-5 py-2 shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#34bfb1] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
+                  type="text"
                   id="editimg"
+                  name="image"
                   placeholder="Image"
+                  value={imgEdit.image}
+                  onChange={handleInputChange}
                 />
               </div>
             </div>
             <div className="flex  items-center justify-center">
               <button
                 type="submit"
-                // onClick={AddBanner}
+                onClick={AddBanner}
                 className=" bg-orange-500 text-gray-100 px-20 py-2  rounded-full tracking-wide
                 font-semibold  focus:outline-none focus:shadow-outline hover:bg-orange-600 cursor-pointer transition ease-in duration-300"
               >

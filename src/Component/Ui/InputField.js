@@ -2,10 +2,16 @@ import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
+import { TextField, Select } from "@mui/material";
 import { useState } from "react";
 
-export default function DropDown({ value, onChange }) {
+export default function InputField({
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  name,
+}) {
   const [rank, setRank] = useState("");
 
   const handleChange = (event) => {
@@ -21,22 +27,20 @@ export default function DropDown({ value, onChange }) {
             paddingTop: 1,
             paddingBottom: 1,
           },
-          '& fieldset': { borderRadius: 2 }
+          "& fieldset": { borderRadius: 2 },
         }}
       >
-        <FormControl fullWidth>
-          {/* <InputLabel id="ranks">Rank</InputLabel> */}
-          <Select
-            labelId="ranks"
-            id="ranks"
-            value={value} 
-            onChange={onChange} 
-          >
-            <MenuItem value="1st">1st</MenuItem>
-            <MenuItem value="2nd">2nd</MenuItem>
-            <MenuItem value="3rd">3rd</MenuItem>
-          </Select>
-        </FormControl>
+        <TextField
+          id={name} // Use the name as the id for accessibility
+          label={placeholder} // Use placeholder as the label
+          size="small"
+          variant="outlined"
+          type={type}
+          value={value}
+          onChange={onChange}
+          name={name}
+          fullWidth 
+        />
       </Box>
     </>
   );

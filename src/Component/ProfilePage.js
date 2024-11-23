@@ -12,6 +12,41 @@ import MultipleSelection from "./Ui/MultiSelection";
 
 export default function ProfilePage() {
   const [show, setShow] = useState(false);
+  // const imgUpload = async (file) => {
+  //   try {
+  //     if (!file) {
+  //       toast.warning("No file selected");
+  //       return;
+  //     }
+
+  //     const formData = new FormData();
+  //     formData.append("image", file); // Append the file to FormData
+
+  //     const config = {
+  //       method: "post",
+  //       url: "https://api-bef.hkdigiverse.com/upload",
+  //       headers: {
+  //         Authorization: accessToken,
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //       data: formData,
+  //     };
+
+  //     const response = await axios.request(config);
+  //     console.log("Upload response:", response.data);
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       image: response.data.data,
+  //     }));
+  //     toast.success("Image uploaded successfully!");
+  //   } catch (err) {
+  //     console.error(err.message);
+  //     toast.error("Failed to upload image.");
+  //   }
+  // };
+  // const handleUpload = (value) => {
+  //   imgUpload(value);
+  // };
 
   return (
     <>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
-import { TextField } from '@mui/material';
+import { TextField } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -42,7 +42,7 @@ export default function TimeSelector({
 
   const handleSave = () => {
     setConfirm(); // Call the confirm function
-    onTimeRangeChange( totalDuration );
+    onTimeRangeChange(totalDuration);
   };
 
   return (
@@ -77,12 +77,16 @@ export default function TimeSelector({
                       value={startTime}
                       onChange={handleStartTimeChange}
                       disablePast
-                      renderInput={(params) => (
-                        <input {...params} className="border rounded p-2" />
-                      )}
-                      // textField={(params) => (
-                      //   <TextField {...params} variant="outlined" />
+                      // renderInput={(params) => (
+                      //   <input {...params} className="border rounded p-2" />
                       // )}
+                      TextFieldComponent={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          className="border rounded p-2"
+                        />
+                      )}
                     />
                   </LocalizationProvider>
                 </div>
@@ -93,12 +97,16 @@ export default function TimeSelector({
                       value={endTime}
                       onChange={handleEndTimeChange}
                       disablePast
-                      renderInput={(params) => (
-                        <input {...params} className="border rounded p-2" />
-                      )}
-                      // textField={(params) => (
-                      //   <TextField {...params} variant="outlined" />
+                      // renderInput={(params) => (
+                      //   <input {...params} className="border rounded p-2" />
                       // )}
+                      TextFieldComponent={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          className="border rounded p-2"
+                        />
+                      )}
                     />
                   </LocalizationProvider>
                 </div>

@@ -1,12 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { LuPencilLine } from "react-icons/lu";
 import Pagination from "../Pagination/Pagination";
+import { bannerDataList, updateImageData } from "../../Context/Action/index"; // Adjust the import based on your file structure
+import { ToastContainer, toast, cssTransition } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export default function ResultBanner() {
+export default function ResultBanner({ result }) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [confirm, setConfirm] = useState(false);
+  const [toggleUpdate, setToggleUpdate] = useState(false);
+  const [toggleAdd, setToggleAdd] = useState(false);
+  const [dataToDisplay, setDataToDisplay] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
+  const TotalPages = Math.ceil(result.length / ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    setDataToDisplay(result.slice(start, end));
+  }, [currentPage, result]);
+
+  const handleToggleUpdate = () => {
+    setToggleUpdate(!toggleUpdate);
+  };
+
+  const handleToggleAdd = () => {
+    setToggleAdd(!toggleAdd);
+  };
   function handleNavigate() {
     setConfirm(!confirm);
   }
+
+  const handleDataUpdate = (value) => {
+    dispatch(updateImageData(value));
+    handleToggleUpdate();
+  };
+
   return (
     <>
       <div className="mx-auto space-y-6 ">
@@ -44,40 +77,52 @@ export default function ResultBanner() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="p-4 w-[50px]">
-                    <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                      01
-                    </p>
-                  </td>
-                  <td className="p-4 overflow-hidden text-wrap  max-w-xs">
-                    <img
-                      src="i1.png"
-                      alt="Foo eating a sandwich."
-                      className="w-42 mx-auto h-30"
-                    />
-                  </td>
-
-                  <td className="p-4 w-[40px] text-center">
-                    <button
-                      className="relative h-10 w-10 select-none rounded-lg text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
-                      type="button"
-                      onClick={() => handleNavigate()}
-                    >
-                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                        <svg viewBox="0 0 16 16" className="w-6 h-6">
-                          <LuPencilLine />
-                        </svg>
-                      </span>
-                    </button>
-                  </td>
-                </tr>
+                {dataToDisplay.map((value, index) => (
+                  <tr key={value._id}>
+                    <td className="p-4 w-[50px]">
+                      <p className="block antialiased font-sans text-sm leading-normal font-normal">
+                        {index + 1 + (currentPage - 1) * ITEMS_PER_PAGE}
+                      </p>
+                    </td>
+                    <td className="p-4 overflow-hidden text-wrap max-w -xs">
+                      <img
+                        src={value.image}
+                        alt={`Banner ${index + 1}`}
+                        className="w-42 mx-auto h-30"
+                      />
+                    </td>
+                    <td className="p-4 w-[40px] text-center">
+                      <button
+                        className="relative h-10 w-10 select-none rounded-lg text-md align-middle font-sans font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        type="button"
+                        onClick={() => handleDataUpdate(value)}
+                      >
+                        <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                          <LuPencilLine className="w-6 h-6" />
+                        </span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-            <Pagination />
+            <Pagination
+              total={TotalPages}
+              page={setCurrentPage}
+              current={currentPage}
+            />
           </div>
         </div>
       </div>
+      <ToastContainer
+        draggable={false}
+        autoClose={2000}
+        position={"top-center"}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={false}
+        theme="dark"
+      />
     </>
   );
 }

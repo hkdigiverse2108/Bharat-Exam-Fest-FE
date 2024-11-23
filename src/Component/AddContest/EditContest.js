@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { FaSave } from "react-icons/fa";
-import DropDown from "../Ui/DropDown";
 import Calander from "../Ui/Calander";
 import TimeSelector from "../Ui/TimeSelector";
 import { ToastContainer, toast, cssTransition } from "react-toastify";
@@ -13,8 +12,9 @@ import { useDispatch } from "react-redux";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addClassesData } from "../../Context/Action";
-import { format } from "date-fns";
 import ContestTypeDropDown from "../Ui/ContestTypeDropDow";
+import InputField from "../Ui/InputField";
+import { editContest, fetchClassData } from "../../Hooks/contestService";
 
 export default function EditContest() {
   const dispatch = useDispatch();
@@ -34,8 +34,9 @@ export default function EditContest() {
   const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
- const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token)
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token
+  );
   const contestFromRedux = useSelector(
     (state) => state.userConfig.editContestData
   );
@@ -51,7 +52,9 @@ export default function EditContest() {
     winnerPercentage: 0,
     ranks: [
       {
-        place: "",
+        startPlace: "",
+        endPlace: "",
+        price: 0,
       },
     ],
     totalQuestions: 0,
@@ -61,25 +64,42 @@ export default function EditContest() {
   });
 
   const isEmpty = () => {
-    if (
-      contestData.name === "" &&
-      contestData.type === "" &&
-      contestData.startDate === "" &&
-      contestData.endDate === "" &&
-      contestData.totalSpots === 0 &&
-      contestData.fees === 0 &&
-      contestData.winningAmountPerFee === 0 &&
-      contestData.winnerPercentage === 0 &&
-      contestData.totalQuestions === 0 &&
-      contestData.totalTime === "" &&
-      contestData.totalMarks === 0 &&
-      contestData.classesId === "" &&
-      contestData.ranks.every((rank) => rank.place === "")
-    ) {
-      return true;
-    }
+    const {
+      name,
+      type,
+      startDate,
+      endDate,
+      totalSpots,
+      fees,
+      winningAmountPerFee,
+      winnerPercentage,
+      totalQuestions,
+      totalTime,
+      totalMarks,
+      classesId,
+      ranks,
+    } = contestData;
 
-    return false;
+    const isRanksEmpty = ranks.every(
+      (rank) =>
+        rank.startPlace === "" && rank.endPlace === 0 && rank.price === 0
+    );
+
+    return (
+      name === "" &&
+      type === "" &&
+      startDate === "" &&
+      endDate === "" &&
+      totalSpots === 0 &&
+      fees === 0 &&
+      winningAmountPerFee === 0 &&
+      winnerPercentage === 0 &&
+      totalQuestions === 0 &&
+      totalTime === "" &&
+      totalMarks === 0 &&
+      classesId === "" &&
+      isRanksEmpty
+    );
   };
 
   const handleChange = (e) => {
@@ -90,19 +110,17 @@ export default function EditContest() {
     }));
   };
 
-  const handleRankChange = (index, event) => {
+  const handleRankChange = (index, field, value) => {
     const updatedRanks = [...contestData.ranks];
-    updatedRanks[index].place = event.target.value;
-    setContestData({ ...contestData, ranks: updatedRanks });
+    updatedRanks[index][field] = value;
+    setContestData((prevData) => ({ ...prevData, ranks: updatedRanks }));
   };
 
   const handleAddRank = () => {
-    if (contestData.ranks.length < 3) {
-      setContestData((prevData) => ({
-        ...prevData,
-        ranks: [...prevData.ranks, { place: "" }],
-      }));
-    }
+    setContestData((prevData) => ({
+      ...prevData,
+      ranks: [...prevData.ranks, { startPlace: "", price: 0 }],
+    }));
   };
 
   const className = data.map((classItem) => ({
@@ -169,59 +187,40 @@ export default function EditContest() {
     }));
   };
 
-  const AddNewContest = async () => {
+  const handleEditContest = async () => {
     try {
       if (isEmpty()) {
         toast.warning("Fill up empty space");
       } else {
-        let data = JSON.stringify(contestData);
-        console.log(contestData);
-
-        let config = {
-          method: "post",
-          maxBodyLength: Infinity,
-          url: "https://api-bef.hkdigiverse.com/contest/add",
-          headers: {
-            Authorization: accessToken,
-            "Content-Type": "application/json",
-          },
-          data: data,
-        };
-
-        axios
-          .request(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-            navigate("/addContest");
-            toast.success("Contest added successfully");
-            dispatch(addClassesData(data));
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-  const fetchClassData = async () => {
-    try {
-      const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/classes/all?page=1&limit=10",
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
+        const response = await editContest(contestData, accessToken);
+        if (response.status === 200) {
+          toast.success("Contest edited successfully");
+          dispatch(addClassesData(response.data)); // Adjust based on your response structure
+          // Optionally, you can fetch class data again to refresh the list
+          loadClassData();
+        } else {
+          console.error("Failed to edit contest: " + response);
         }
-      );
-      // console.log("classes_data", response.data.data.classes_data);
-      setData(response.data.data.classes_data);
-    } catch (err) {
-      setError(err.message);
+      }
+    } catch (error) {
+      console.error(error);
+      console.error("An error occurred: " + error.message);
     }
   };
+
+  const loadClassData = async () => {
+    try {
+      const classes = await fetchClassData(accessToken);
+      setData(classes);
+    } catch (error) {
+      console.error(error);
+      console.error("An error occurred: " + error.message);
+    }
+  };
+
+  useEffect(() => {
+    loadClassData();
+  }, [accessToken]);
 
   useEffect(() => {
     fetchClassData();
@@ -239,7 +238,11 @@ export default function EditContest() {
         fees: contestFromRedux.fees,
         winningAmountPerFee: contestFromRedux.winningAmountPerFee,
         winnerPercentage: contestFromRedux.winnerPercentage,
-        ranks: contestFromRedux.ranks.map((rank) => ({ place: rank.place })),
+        ranks: contestFromRedux.ranks.map((rank) => ({
+          startPlace: rank.startPlace || "", // Map place to startPlace
+          endPlace: rank.endPlace || "", // Initialize endPlace
+          price: rank.price || 0, // Initialize price
+        })),
         totalQuestions: contestFromRedux.totalQuestions,
         totalTime: contestFromRedux.totalTime,
         totalMarks: contestFromRedux.totalMarks,
@@ -319,16 +322,7 @@ export default function EditContest() {
                   >
                     Contest Type
                   </label>
-                  {/* <input
-                    type="text"
-                    id="type"
-                    name="type"
-                    className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                    placeholder="Enter contest type"
-                    maxLength="19"
-                    value={contestData.type}
-                    onChange={handleChange}
-                  /> */}
+
                   <ContestTypeDropDown
                     value={contestData.type}
                     onChange={handleChange}
@@ -346,6 +340,7 @@ export default function EditContest() {
                     id="dateRange"
                     name="dateRange"
                     value={dateRang}
+                    onChange={(e) => setDateRange(e.target.value)}
                     onClick={() => setDate(!date)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending time"
@@ -363,6 +358,7 @@ export default function EditContest() {
                     id="timeRange"
                     name="timeRange"
                     value={contestData.totalTime}
+                    onChange={(e) => setTimeRange(e.target.value)}
                     onClick={() => setTime(!time)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending date"
@@ -456,30 +452,27 @@ export default function EditContest() {
                 {contestData.ranks.map((rank, index) => (
                   <React.Fragment key={index}>
                     <li className="space-y-1">
-                      <label
-                        htmlFor={`place-${index}`}
-                        className="capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        1st/2nd/3rd Place
-                      </label>
-                      <DropDown
-                        value={rank.place}
-                        onChange={(e) => handleRankChange(index, e)}
+                      <InputField
+                        value={rank.startPlace}
+                        onChange={(e) =>
+                          handleRankChange(index, "startPlace", e.target.value)
+                        }
+                        placeholder="Rank"
                       />
                     </li>
+
                     <li className="space-y-1">
-                      <label
-                        htmlFor="prize"
-                        className="capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        Prize
-                      </label>
-                      <input
-                        type="text"
-                        id="prize"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Prize"
-                        maxLength="19"
+                      <InputField
+                        value={rank.price}
+                        onChange={(e) =>
+                          handleRankChange(
+                            index,
+                            "price",
+                            Number(e.target.value)
+                          )
+                        }
+                        placeholder="Prize"
+                        type="number"
                       />
                     </li>
                   </React.Fragment>
@@ -487,12 +480,7 @@ export default function EditContest() {
               </ul>
               <button
                 onClick={handleAddRank}
-                disabled={contestData.ranks.length >= 3}
-                className={`h-10 inline-flex items-center space-x-2 text-nowrap rounded-lg px-2 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90 ${
-                  contestData.ranks.length >= 3
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }`}
+                className="h-10 inline-flex items-center space-x-2 text-nowrap rounded-lg px-2 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90"
               >
                 <svg
                   className="font-bold text-white w-4 h-4"
@@ -507,7 +495,7 @@ export default function EditContest() {
         </div>
         <div className="flex items-center justify-center border-t border-gray-400 py-2">
           <button
-            onClick={AddNewContest}
+            onClick={handleEditContest}
             className="inline-flex items-center space-x-2 rounded-lg px-10 py-2 text-lg text-center uppercase text-white bg-orange-500 hover:bg-opacity-90"
           >
             <FaSave className="mr-2" />

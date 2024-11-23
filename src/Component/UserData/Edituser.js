@@ -156,7 +156,7 @@ export default function EditUser() {
                     </p>
                   </div>
                   <div className="h-full">
-                    <MultipleSelection />
+                    {/* <MultipleSelection /> */}
                   </div>
                 </div>
               </div>

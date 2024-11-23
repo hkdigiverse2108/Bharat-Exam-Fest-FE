@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { FaSave } from "react-icons/fa";
-import DropDown from "../Ui/DropDown";
+import InputField from "../Ui/InputField";
 import Calander from "../Ui/Calander";
 import TimeSelector from "../Ui/TimeSelector";
 import { ToastContainer, toast, cssTransition } from "react-toastify";
@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addClassesData } from "../../Context/Action";
+import { addNewContest, fetchClassData } from "../../Hooks/contestService";
 
 export default function CreateContest() {
   const dispatch = useDispatch();
@@ -32,8 +33,9 @@ export default function CreateContest() {
   const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
- const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token)
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token
+  );
 
   const [contestData, setContestData] = useState({
     name: "",
@@ -46,7 +48,9 @@ export default function CreateContest() {
     winnerPercentage: 0,
     ranks: [
       {
-        place: "",
+        startPlace: "",
+        endPlace: "",
+        price: 0,
       },
     ],
     totalQuestions: 0,
@@ -56,25 +60,41 @@ export default function CreateContest() {
   });
 
   const isEmpty = () => {
-    if (
-      contestData.name === "" &&
-      contestData.type === "" &&
-      contestData.startDate === "" &&
-      contestData.endDate === "" &&
-      contestData.totalSpots === 0 &&
-      contestData.fees === 0 &&
-      contestData.winningAmountPerFee === 0 &&
-      contestData.winnerPercentage === 0 &&
-      contestData.totalQuestions === 0 &&
-      contestData.totalTime === "" &&
-      contestData.totalMarks === 0 &&
-      contestData.classesId === "" &&
-      contestData.ranks.every((rank) => rank.place === "")
-    ) {
-      return true;
-    }
+    const {
+      name,
+      type,
+      startDate,
+      endDate,
+      totalSpots,
+      fees,
+      winningAmountPerFee,
+      winnerPercentage,
+      totalQuestions,
+      totalTime,
+      totalMarks,
+      classesId,
+      ranks,
+    } = contestData;
 
-    return false;
+    const isRanksEmpty = ranks.every(
+      (rank) => rank.startPlace === "" && rank.price === 0
+    );
+
+    return (
+      name === "" &&
+      type === "" &&
+      startDate === "" &&
+      endDate === "" &&
+      totalSpots === 0 &&
+      fees === 0 &&
+      winningAmountPerFee === 0 &&
+      winnerPercentage === 0 &&
+      totalQuestions === 0 &&
+      totalTime === "" &&
+      totalMarks === 0 &&
+      classesId === "" &&
+      isRanksEmpty
+    );
   };
 
   const handleChange = (e) => {
@@ -85,19 +105,17 @@ export default function CreateContest() {
     }));
   };
 
-  const handleRankChange = (index, event) => {
+  const handleRankChange = (index, field, value) => {
     const updatedRanks = [...contestData.ranks];
-    updatedRanks[index].place = event.target.value;
-    setContestData({ ...contestData, ranks: updatedRanks });
+    updatedRanks[index][field] = value; // Update the specific field
+    setContestData((prevData) => ({ ...prevData, ranks: updatedRanks })); // Update the state
   };
 
   const handleAddRank = () => {
-    if (contestData.ranks.length < 3) {
-      setContestData((prevData) => ({
-        ...prevData,
-        ranks: [...prevData.ranks, { place: "" }],
-      }));
-    }
+    setContestData((prevData) => ({
+      ...prevData,
+      ranks: [...prevData.ranks, { startPlace: "", price: 0 }],
+    }));
   };
 
   const className = data.map((classItem) => ({
@@ -147,69 +165,46 @@ export default function CreateContest() {
   };
 
   // useEffect(() => {
-  //   console.log(startDate);
-  //   console.log(endDate);
-  // }, [endDate, startDate]);
+  //   // console.log(startDate);
+  //   // console.log(endDate);
+  //   // console.log(contestData);
+  // }, []);
 
-  const AddNewContest = async () => {
+  const handleAddContest = async () => {
     try {
       if (isEmpty()) {
         toast.warning("Fill up empty space");
       } else {
-        let userData = JSON.stringify(contestData);
-
-        let config = {
-          method: "post",
-          maxBodyLength: Infinity,
-          url: "https://api-bef.hkdigiverse.com/contest/add",
-          headers: {
-            Authorization: accessToken,
-            "Content-Type": "application/json",
-          },
-          data: userData,
-        };
-        const response = await axios.request(config);
-
-        const { status, data, message, error } = response.data;
-
-        console.log("Backend response", message);
-
-        if (status === 200) {
-          console.log("Backend response", data);
-          toast.success(message);
-          navigate("/addContest");
-          dispatch(addClassesData(data));
+        const response = await addNewContest(contestData, accessToken);
+        if (response.status === 200) {
+          toast.success("Contest added successfully");
+          loadClassData();
+          dispatch(addClassesData(response.data)); // Adjust based on your response structure
         } else {
-          console.warn("contest add failed:", error);
-          // toast.error("contest failed: " + error);
+          toast.error("Failed to add contest: " + response.message);
         }
       }
-    } catch (err) {
-      console.error("Error add contest:", err.message);
+    } catch (error) {
+      console.error(error);
+      console.error("An error occurred: " + error.message);
     }
   };
 
-  const fetchClassData = async () => {
+  const loadClassData = async () => {
     try {
-      const response = await axios.get(
-        "https://api-bef.hkdigiverse.com/classes/all?page=1&limit=10",
-        {
-          headers: {
-            Authorization: accessToken,
-            Accept: "application/json",
-          },
-        }
-      );
-
-      setData(response.data.data.classes_data);
-    } catch (err) {
-      setError(err.message);
+      const classes = await fetchClassData(accessToken);
+      setData(classes);
+    } catch (error) {
+      console.error(error);
+      console.error("An error occurred: " + error.message);
     }
   };
 
   useEffect(() => {
-    fetchClassData();
-  }, []);
+    loadClassData();
+    
+  }, [accessToken]);
+
 
   return (
     <>
@@ -266,9 +261,8 @@ export default function CreateContest() {
                     name="name"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter contest name"
-                    maxLength="19"
                     value={contestData.name}
-                    onChange={handleChange}
+                    onChange={handleChange} // Ensure this is present
                   />
                 </li>
                 <li className="space-y-1">
@@ -284,7 +278,6 @@ export default function CreateContest() {
                     name="type"
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter contest type"
-                    maxLength="19"
                     value={contestData.type}
                     onChange={handleChange}
                   />
@@ -301,6 +294,7 @@ export default function CreateContest() {
                     id="dateRange"
                     name="dateRange"
                     value={dateRang}
+                    onChange={(e) => setDateRange(e.target.value)} 
                     onClick={() => setDate(!date)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending date"
@@ -318,10 +312,10 @@ export default function CreateContest() {
                     id="timeRange"
                     name="timeRange"
                     value={timeRang}
+                    onChange={(e) => setTimeRange(e.target.value)}
                     onClick={() => setTime(!time)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending time"
-                    maxLength="19"
                   />
                 </li>
               </ul>
@@ -411,30 +405,34 @@ export default function CreateContest() {
                 {contestData.ranks.map((rank, index) => (
                   <React.Fragment key={index}>
                     <li className="space-y-1">
-                      <label
-                        htmlFor={`place-${index}`}
-                        className="capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        1st/2nd/3rd Place
-                      </label>
-                      <DropDown
-                        value={rank.place} // Pass the current place value
-                        onChange={(e) => handleRankChange(index, e)} // Pass the change handler
+                      <InputField
+                        value={rank.startPlace} // Pass the current startPlace value
+                        onChange={
+                          (e) =>
+                            handleRankChange(
+                              index,
+                              "startPlace",
+                              e.target.value
+                            ) // Pass the change handler
+                        }
+                        placeholder="Rank"
+                        name={`startPlace-${index}`} // Optional: Unique name for accessibility
                       />
                     </li>
                     <li className="space-y-1">
-                      <label
-                        htmlFor="prize"
-                        className="capitalize text-base font-medium text-gray-700 dark:text-white"
-                      >
-                        Prize
-                      </label>
-                      <input
-                        type="text"
-                        id="prize"
-                        className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                        placeholder="Enter Prize"
-                        maxLength="19"
+                      <InputField
+                        value={rank.price} // Pass the current price value
+                        onChange={
+                          (e) =>
+                            handleRankChange(
+                              index,
+                              "price",
+                              Number(e.target.value)
+                            ) // Pass the change handler
+                        }
+                        placeholder="Prize"
+                        type="number" // Assuming price is a number
+                        name={`price-${index}`} // Optional: Unique name for accessibility
                       />
                     </li>
                   </React.Fragment>
@@ -442,12 +440,7 @@ export default function CreateContest() {
               </ul>
               <button
                 onClick={handleAddRank}
-                disabled={contestData.ranks.length >= 3}
-                className={`h-10 inline-flex items-center space-x-2 text-nowrap rounded-lg px-2 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90 ${
-                  contestData.ranks.length >= 3
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }`}
+                className="h-10 inline-flex items-center space-x-2 text-nowrap rounded-lg px-2 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90 "
               >
                 <svg
                   className="font-bold text-white w-4 h-4"
@@ -462,7 +455,7 @@ export default function CreateContest() {
         </div>
         <div className="flex items-center justify-center border-t border-gray-400 py-2">
           <button
-            onClick={AddNewContest}
+            onClick={handleAddContest}
             className="inline-flex items-center space-x-2 rounded-lg px-10 py-2 text-lg text-center uppercase text-white bg-orange-500 hover:bg-opacity-90"
           >
             <FaSave className="mr-2" />

@@ -268,8 +268,8 @@ const UserList = () => {
                     </td>
                     <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap  max-w-xs">
                       <img
-                        src="i1.png"
-                        alt="Foo eating a sandwich."
+                        src={user.profileImage}
+                        alt={user.firstName}
                         className="w-42 mx-auto h-30"
                       />
                     </td>

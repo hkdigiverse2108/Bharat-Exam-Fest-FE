@@ -9,6 +9,7 @@ import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 import { VscSaveAs } from "react-icons/vsc";
+import RichTextExample from "../Ui/RichTextExample";
 
 export default function TermAndcondition() {
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ export default function TermAndcondition() {
       });
 
       // const decodedData = await response.json();
-      console.log(response.data.data);
+      // console.log(response.data.data);
 
       if (response.status === 200) {
         setTermsConditionResponse(response.data.data);
@@ -89,8 +90,7 @@ export default function TermAndcondition() {
           // console.log("Backend response", response);
           // dispatch(loginSuccess(data));
           toast.success(response.data.message);
-          // navigate("/");
-          // handleNavigate();
+          fetchTermsConditionAPI();
         } else if (response.status === 400) {
           console.log(response.data.message);
         } else {
@@ -141,7 +141,7 @@ export default function TermAndcondition() {
               </button>
             </div>
           </div>
-          <div className="relative p-4 overflow-hidden text-slate-700 bg-white rounded-t-xl bg-clip-border">
+          {/* <div className="relative p-4 overflow-hidden text-slate-700 bg-white rounded-t-xl bg-clip-border">
             <div className="flex flex-row items-center justify-between">
               <button
                 //   onClick={() => handleNavigate()}
@@ -157,22 +157,20 @@ export default function TermAndcondition() {
                 <p className="">Text</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <Suspense fallback={<Loading />}>
-          <TextEditor
+          {/* <TextEditor
+            content={editorContent}
+            onTextChange={handleGetPlainText}
+          /> */}
+          <RichTextExample
             content={editorContent}
             onTextChange={handleGetPlainText}
           />
         </Suspense>
-        <div className="container mx-auto p-4">
-          <h2 className="text-2xl mb-4">Displayed Text</h2>
-          <div
-            className="border p-4 rounded text-black"
-            dangerouslySetInnerHTML={{ __html: formattedText }}
-          ></div>
-        </div>
+      
       </div>
       <ToastContainer
         draggable={false}

@@ -9,17 +9,19 @@ import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 import { VscSaveAs } from "react-icons/vsc";
+import RichTextExample from "../Ui/RichTextExample";
 
 function Legality() {
-  const [privacyPolicy, setPrivacyPolicyResponse] = useState(null);
+  const [legalityResponse, setLegalityResponse] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [formattedText, setFormattedText] = useState("");
   const [editorContent, setEditorContent] = useState(null);
   const [editorText, setEditorText] = useState({
     illegality: "",
   });
- const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token)
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token
+  );
 
   function handleGetPlainText(value) {
     setFormattedText(value);
@@ -35,29 +37,20 @@ function Legality() {
     const url = `https://api-bef.hkdigiverse.com/illegality`;
 
     try {
-      const response = await fetch(url, {
-        method: "GET",
+      const response = await axios.get(url, {
         headers: {
-          Accept: "*/*",
           Authorization: accessToken,
+          Accept: "*/*",
         },
       });
 
-      const decodedData = await response.json();
-      // console.log(response);
+      // console.log(response.data.data);
 
       if (response.status === 200) {
-        const parsedData = decodedData;
-        if (parsedData.status === 200) {
-          setPrivacyPolicyResponse(parsedData.data);
-          setEditorContent(parsedData.data.privacyPolicy);
-
-          // toast.success(parsedData.message);
-        } else {
-          console.error(parsedData.message);
-        }
+        setLegalityResponse(response.data.data);
+        setEditorContent(response.data.data.illegality);
       } else if (response.status === 404) {
-        const errorMsg = decodedData.message || "Data not found";
+        const errorMsg = response.data.message || "Data not found";
         setErrorMessage(errorMsg);
         console.error(errorMsg);
       } else {
@@ -68,7 +61,7 @@ function Legality() {
     } catch (error) {
       console.error("Error fetching terms and conditions:", error);
       setErrorMessage("An error occurred while fetching data.");
-      console.error("An error occurred while fetching data.");
+      // console.error("An error occurred while fetching data.");
     }
   };
   const addOrEditLegality = async () => {
@@ -104,8 +97,7 @@ function Legality() {
           // console.log("Backend response", response);
           // dispatch(loginSuccess(data));
           toast.success(response.data.message);
-          // navigate("/");
-          // handleNavigate();
+          fetchLegalityAPI();
         } else if (response.status === 400) {
           console.log(response.data.message);
         } else {
@@ -146,7 +138,7 @@ function Legality() {
               </button>
             </div>
           </div>
-          <div className="relative p-4 overflow-hidden text-slate-700 bg-white rounded-t-xl bg-clip-border">
+          {/* <div className="relative p-4 overflow-hidden text-slate-700 bg-white rounded-t-xl bg-clip-border">
             <div className="flex flex-row items-center justify-between">
               <button
                 //   onClick={() => handleNavigate()}
@@ -162,21 +154,21 @@ function Legality() {
                 <p className="">Text</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <Suspense fallback={<Loading />}>
-          <TextEditor
+          <RichTextExample
             content={editorContent}
             onTextChange={handleGetPlainText}
           />
         </Suspense>
-        <div className="container mx-auto p-4">
+        {/* <div className="container mx-auto p-4">
           <h2 className="text-2xl mb-4">Displayed Text</h2>
           <div
             className="border p-4 rounded text-black"
             dangerouslySetInnerHTML={{ __html: formattedText }}
           ></div>
-        </div>
+        </div> */}
       </div>
       <ToastContainer
         draggable={false}

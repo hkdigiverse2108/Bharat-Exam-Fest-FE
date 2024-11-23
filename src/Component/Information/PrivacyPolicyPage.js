@@ -9,6 +9,7 @@ import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 import { VscSaveAs } from "react-icons/vsc";
+import RichTextExample from "../Ui/RichTextExample";
 
 export default function PrivacyPolicyPage() {
   const [privacyPolicy, setPrivacyPolicyResponse] = useState(null);
@@ -18,8 +19,9 @@ export default function PrivacyPolicyPage() {
   const [editorText, setEditorText] = useState({
     privacyPolicy: "",
   });
- const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token)
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token
+  );
 
   function handleGetPlainText(value) {
     setFormattedText(value);
@@ -35,29 +37,20 @@ export default function PrivacyPolicyPage() {
     const url = `https://api-bef.hkdigiverse.com/privacy-policy`;
 
     try {
-      const response = await fetch(url, {
-        method: "GET",
+      const response = await axios.get(url, {
         headers: {
-          Accept: "*/*",
           Authorization: accessToken,
+          Accept: "*/*",
         },
       });
 
-      const decodedData = await response.json();
-      // console.log(response);
+      // console.log(response.data.data);
 
       if (response.status === 200) {
-        const parsedData = decodedData;
-        if (parsedData.status === 200) {
-          setPrivacyPolicyResponse(parsedData.data);
-          setEditorContent(parsedData.data.privacyPolicy);
-
-          // toast.success(parsedData.message);
-        } else {
-          console.error(parsedData.message);
-        }
+        setPrivacyPolicyResponse(response.data.data);
+        setEditorContent(response.data.data.privacyPolicy);
       } else if (response.status === 404) {
-        const errorMsg = decodedData.message || "Data not found";
+        const errorMsg = response.data.message || "Data not found";
         setErrorMessage(errorMsg);
         console.error(errorMsg);
       } else {
@@ -104,8 +97,7 @@ export default function PrivacyPolicyPage() {
           // console.log("Backend response", response);
           // dispatch(loginSuccess(data));
           toast.success(response.data.message);
-          // navigate("/");
-          // handleNavigate();
+          fetchPrivacyPolicyAPI();
         } else if (response.status === 400) {
           console.log(response.data.message);
         } else {
@@ -145,7 +137,8 @@ export default function PrivacyPolicyPage() {
               </button>
             </div>
           </div>
-          <div className="relative p-4 overflow-hidden text-slate-700 bg-white rounded-t-xl bg-clip-border">
+
+          {/* <div className="relative p-4 overflow-hidden text-slate-700 bg-white rounded-t-xl bg-clip-border">
             <div className="flex flex-row items-center justify-between">
               <button
                 //   onClick={() => handleNavigate()}
@@ -161,14 +154,15 @@ export default function PrivacyPolicyPage() {
                 <p className="">Text</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
-        <Suspense fallback={<Loading />}>
+        {/* <Suspense fallback={<Loading />}>
           <TextEditor
             content={editorContent}
             onTextChange={handleGetPlainText}
           />
-        </Suspense>
+        </Suspense> */}
+        <RichTextExample content={editorContent} onTextChange={handleGetPlainText} />
         <div className="container mx-auto p-4">
           <h2 className="text-2xl mb-4">Displayed Text</h2>
           <div

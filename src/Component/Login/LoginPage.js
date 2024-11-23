@@ -37,10 +37,10 @@ function LoginPage() {
     userType: "admin",
   });
 
-  useEffect(()=>{
-    console.log(input);
+  // useEffect(()=>{
+  //   console.log(input);
     
-  },[input])
+  // },[input])
 
   const handleChangeOTP = (e, index) => {
     const { value } = e.target;

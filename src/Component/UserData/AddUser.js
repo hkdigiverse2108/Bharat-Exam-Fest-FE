@@ -48,8 +48,8 @@ export default function Adduser() {
           .request(config)
           .then((response) => {
             console.log(JSON.stringify(response.data));
-            navigate("/subject");
-            toast.success("Subject added");
+            navigate("/userDetails");
+            // toast.success("Subject added");
           })
           .catch((error) => {
             console.error(error);
@@ -148,7 +148,7 @@ export default function Adduser() {
                   </p>
                 </div>
                 <div className="h-full">
-                  <MultipleSelection />
+                  {/* <MultipleSelection /> */}
                 </div>
               </div>
             </div>

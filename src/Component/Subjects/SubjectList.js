@@ -36,8 +36,6 @@ function SubjectList() {
     (state) => state.authConfig.userInfo[0].data.token)
   // const existData = useSelector((state) => state.userConfig.editSubjectData);
 
-  // console.log(existData);
-
   const [confirm, setConfirm] = useState(false);
   function handleNavigate() {
     setConfirm(!confirm);
@@ -92,7 +90,7 @@ function SubjectList() {
 
       const subjects = response.data.data.subject_data;
       if (subjects) {
-        console.log(response.data.data.subject_data);
+        // console.log(response.data.data.subject_data);
         setSubjects(response.data.data.subject_data);
         setSubjectShow(response.data.data.subject_data.slice(0, PageEnd1));
         dispatch(subjectList(subjects));
@@ -117,6 +115,7 @@ function SubjectList() {
       axios
         .request(config)
         .then((response) => {
+        // console.log(response.data.data.subject_data);
           navigate("/subject");
           toast.success("Subject delete");
           fetchSubtopics();
@@ -139,9 +138,9 @@ function SubjectList() {
           },
         }
       );
-      console.log(response.data.data.sub_topic_data);
       const subTopic = response.data.data.sub_topic_data;
       if (subTopic) {
+        // console.log(response.data.data.sub_topic_data);
         setSubtopics(response.data.data.sub_topic_data);
         setSubtopicShow(response.data.data.sub_topic_data.slice(0, PageEnd2));
         dispatch(subtopicList(subTopic));
