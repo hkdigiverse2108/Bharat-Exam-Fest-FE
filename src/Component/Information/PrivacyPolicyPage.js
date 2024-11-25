@@ -156,13 +156,13 @@ export default function PrivacyPolicyPage() {
             </div>
           </div> */}
         </div>
-        {/* <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />}>
           <TextEditor
-            content={editorContent}
-            onTextChange={handleGetPlainText}
+          content={editorContent}
+          onTextChange={handleGetPlainText}
           />
-        </Suspense> */}
-        <RichTextExample content={editorContent} onTextChange={handleGetPlainText} />
+        </Suspense>
+        {/* <RichTextExample content={editorContent} onTextChange={handleGetPlainText} /> */}
         <div className="container mx-auto p-4">
           <h2 className="text-2xl mb-4">Displayed Text</h2>
           <div
