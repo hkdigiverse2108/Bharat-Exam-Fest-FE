@@ -102,3 +102,8 @@ export const editSubjectData = (data) => ({
   type: "SUBJECT_EDIT",
   payload: data,
 });
+
+export const setPrivacyPolicyData = (policy) => ({
+  type: "SET_PRIVACY_POLICY",
+  payload: policy,
+});

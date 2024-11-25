@@ -4,73 +4,82 @@ import TextEditor from "../Ui/TextEditor";
 import Loading from "../Loader/Loading";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setTearmAndConditionData } from "../../Context/Action/index";
+import {
+  setPrivacyPolicyData,
+  setTearmAndConditionData,
+} from "../../Context/Action/index";
 import { ToastContainer, toast, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 import { VscSaveAs } from "react-icons/vsc";
 import RichTextExample from "../Ui/RichTextExample";
+import { fetchPrivacyPolicyAPI } from "../../Hooks/InformationApi";
 
 export default function PrivacyPolicyPage() {
-  const [privacyPolicy, setPrivacyPolicyResponse] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [formattedText, setFormattedText] = useState("");
-  const [editorContent, setEditorContent] = useState(null);
-  const [editorText, setEditorText] = useState({
-    privacyPolicy: "",
-  });
+  const dispatch = useDispatch();
+  const { privacyPolicy } = useSelector(
+    (state) => state.userConfig.privacyPolicy
+  );
+  // const [privacyPolicy, setPrivacyPolicy] = useState(null);
+  // const [errorMessage, setErrorMessage] = useState("");
+  const [editorContent, setEditorContent] = useState("");
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].data.token
   );
 
-  function handleGetPlainText(value) {
-    setFormattedText(value);
-    setEditorText({
-      privacyPolicy: value,
-    });
-  }
-  // useEffect(() => {
-  //   console.log("editor", formattedText);
-  // }, [formattedText]);
-
-  const fetchPrivacyPolicyAPI = async () => {
-    const url = `https://api-bef.hkdigiverse.com/privacy-policy`;
-
-    try {
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: accessToken,
-          Accept: "*/*",
-        },
-      });
-
-      // console.log(response.data.data);
-
-      if (response.status === 200) {
-        setPrivacyPolicyResponse(response.data.data);
-        setEditorContent(response.data.data.privacyPolicy);
-      } else if (response.status === 404) {
-        const errorMsg = response.data.message || "Data not found";
-        setErrorMessage(errorMsg);
-        console.error(errorMsg);
-      } else {
-        const errorMsg = `Failed to load data. Status code: ${response.status}`;
-        setErrorMessage(errorMsg);
-        console.error(errorMsg);
-      }
-    } catch (error) {
-      console.error("Error fetching terms and conditions:", error);
-      setErrorMessage("An error occurred while fetching data.");
-      console.error("An error occurred while fetching data.");
-    }
+  const handleEditorChange = (newContent) => {
+    // Handle editor content change here, for example, saving it or updating a parent state
+    console.log("Editor content changed:", newContent);
+  
+    setEditorContent(newContent);
   };
+
+  // const fetchPrivacyPolicyAPI = async () => {
+  //   const url = `https://api-bef.hkdigiverse.com/privacy-policy`;
+
+  //   try {
+  //     const response = await axios.get(url, {
+  //       headers: {
+  //         Authorization: accessToken,
+  //         Accept: "*/*",
+  //       },
+  //     });
+
+  //     // console.log(response.data.data);
+
+  //     if (response.status === 200) {
+  //       setPrivacyPolicyResponse(response.data.data);
+  //       setEditorContent(response.data.data.privacyPolicy);
+  //     } else if (response.status === 404) {
+  //       const errorMsg = response.data.message || "Data not found";
+  //       setErrorMessage(errorMsg);
+  //       console.error(errorMsg);
+  //     } else {
+  //       const errorMsg = `Failed to load data. Status code: ${response.status}`;
+  //       setErrorMessage(errorMsg);
+  //       console.error(errorMsg);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching terms and conditions:", error);
+  //     setErrorMessage("An error occurred while fetching data.");
+  //     console.error("An error occurred while fetching data.");
+  //   }
+  // };
+
   const addOrEditPrivacyPolicyAPI = async () => {
     try {
-      if (!editorText.privacyPolicy) {
+      if (!editorContent) {
         toast.warning("Fill up empty space");
       } else {
-        let data = JSON.stringify(editorText);
-        console.log(editorText);
+        // Ensure editorContent is a proper object or string
+        let data = editorContent;
+
+        // If editorContent is not a string, make sure it's a valid object
+        if (typeof data !== "string") {
+          data = JSON.stringify(data);
+        }
+
+        console.log("Sending data:", data); // Log the data to see what you're sending
 
         let config = {
           method: "post",
@@ -80,39 +89,52 @@ export default function PrivacyPolicyPage() {
             Authorization: accessToken,
             "Content-Type": "application/json",
           },
-          data: data,
+          data: data, // This will send the data as JSON
         };
+
         const response = await axios.request(config);
 
-        axios
-          .request(config)
-          .then((response) => {
-            console.log(response.data);
-            // toast.success("Subtopic add");
-          })
-          .catch((error) => {
-            console.error(error);
-          });
         if (response.status === 200) {
-          // console.log("Backend response", response);
-          // dispatch(loginSuccess(data));
           toast.success(response.data.message);
-          fetchPrivacyPolicyAPI();
         } else if (response.status === 400) {
           console.log(response.data.message);
         } else {
-          // console.warn("Login failed:", error);
-          console.log("Login failed: " + response.data.message);
+          console.log("Request failed: " + response.data.message);
         }
       }
     } catch (err) {
-      console.error(err.message);
+      console.error("Error during API request:", err);
+      toast.error("An error occurred while saving the privacy policy.");
     }
   };
 
+  const getPrivacyPolicy = async () => {
+    try {
+      const data = await fetchPrivacyPolicyAPI(accessToken);
+      // Assuming data.privacyPolicy contains the content you want to pass to the editor
+      setEditorContent(data.privacyPolicy);
+    } catch (error) {
+      console.error("An error occurred while fetching data.");
+    }
+  };
+  // useEffect(() => {
+  //   const getPrivacyPolicy = async () => {
+  //     try {
+  //       const data = await fetchPrivacyPolicyAPI(accessToken);
+  //       // dispatch(setPrivacyPolicyData(data.privacyPolicy));
+  //       setEditorContent(data.privacyPolicy);
+  //     } catch (error) {
+  //       console.error("An error occurred while fetching data.");
+  //     }
+  //   };
+
+  //   getPrivacyPolicy();
+  // }, [accessToken, dispatch, privacyPolicy]);
+
   useEffect(() => {
-    fetchPrivacyPolicyAPI();
-  }, []);
+    getPrivacyPolicy();
+  }, [accessToken]);
+
   return (
     <>
       <div className="bg-white overflow-hidden shadow rounded-2xl border">
@@ -156,20 +178,7 @@ export default function PrivacyPolicyPage() {
             </div>
           </div> */}
         </div>
-        <Suspense fallback={<Loading />}>
-          <TextEditor
-          content={editorContent}
-          onTextChange={handleGetPlainText}
-          />
-        </Suspense>
-        {/* <RichTextExample content={editorContent} onTextChange={handleGetPlainText} /> */}
-        <div className="container mx-auto p-4">
-          <h2 className="text-2xl mb-4">Displayed Text</h2>
-          <div
-            className="border p-4 rounded text-black"
-            dangerouslySetInnerHTML={{ __html: formattedText }}
-          ></div>
-        </div>
+        <RichTextExample content={editorContent} onTextChange={handleEditorChange} />
       </div>
       <ToastContainer
         draggable={false}

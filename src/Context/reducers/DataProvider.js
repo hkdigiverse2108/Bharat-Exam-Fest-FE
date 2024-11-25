@@ -1,6 +1,7 @@
 import { editContestTypeData } from "../Action";
 
 const initialData = {
+  privacyPolicy: null,
   bannerDataList: [],
   imageData: [],
   tearmAndCondition: null,
@@ -18,6 +19,12 @@ const initialData = {
 
 const DataProvider = (state = initialData, action) => {
   switch (action.type) {
+    case "SET_PRIVACY_POLICY":
+      return {
+          ...state,
+          privacyPolicy: action.payload,
+          errorMessage: '',
+      };
     case "BANNER":
       return {
         ...state,

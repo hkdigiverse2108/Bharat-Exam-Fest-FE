@@ -77,15 +77,6 @@ export default function TermAndcondition() {
         };
         const response = await axios.request(config);
 
-        axios
-          .request(config)
-          .then((response) => {
-            console.log(response.data);
-            // toast.success("Subtopic add");
-          })
-          .catch((error) => {
-            console.error(error);
-          });
         if (response.status === 200) {
           // console.log("Backend response", response);
           // dispatch(loginSuccess(data));
@@ -170,7 +161,6 @@ export default function TermAndcondition() {
             onTextChange={handleGetPlainText}
           />
         </Suspense>
-      
       </div>
       <ToastContainer
         draggable={false}
