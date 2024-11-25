@@ -7,12 +7,10 @@ import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import Store from "./Context/Store/Store";
 
-Store.subscribe(() => console.log(Store.getState()));
-const root = ReactDOM.createRoot(document.getElementById("root"));
+// Store.subscribe(() => console.log(Store.getState()));
 const Root = () => {
-  const value = useMemo(() => {
-    return Store;
-  }, []);
+  // Memoize the store instance to avoid unnecessary re-renders
+  const value = useMemo(() => Store, []);
 
   return (
     <Provider store={value}>
@@ -20,6 +18,9 @@ const Root = () => {
     </Provider>
   );
 };
+
+// Create the root element and render the application
+const root = ReactDOM.createRoot(document.getElementById("root")); // Ensure there's an element with id="root" in your index.html
 root.render(
   <React.StrictMode>
     <BrowserRouter>

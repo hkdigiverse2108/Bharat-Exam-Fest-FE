@@ -6,10 +6,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import { updateData } from "../../Context/Action/index";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
-import MultipleSelection from "./Ui/MultiSelection";
+import MultipleSelection from "../Ui/MultiSelection";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { updateProfile } from "../Hooks/updateProfileApi";
+import { updateProfile } from "../../Hooks/updateProfileApi";
 
 export default function ProfilePage() {
   const [toggle, setToggle] = useState(false);

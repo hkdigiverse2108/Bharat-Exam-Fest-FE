@@ -14,15 +14,16 @@ const handleResponse = (response) => {
 };
 
 const handleError = (error) => {
-    if (axios.isAxiosError(error)) {
-      const errorMessage = error.response?.data?.message || "An unexpected error occurred";
-      toast.error(errorMessage);
-      console.error("API Error:", error);
-    } else {
-      toast.error("An unknown error occurred");
-      console.error("Unexpected Error:", error);
-    }
-  };
+  if (axios.isAxiosError(error)) {
+    const errorMessage =
+      error.response?.data?.message || "An unexpected error occurred";
+    toast.error(errorMessage);
+    console.error("API Error:", error);
+  } else {
+    toast.error("An unknown error occurred");
+    console.error("Unexpected Error:", error);
+  }
+};
 
 export const updateProfile = async (accessToken, formData) => {
   try {

@@ -33,7 +33,7 @@ export default function SingleSelect({ label, value, onChange, options }) {
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          <MenuItem value={options.name} className="capitalize">
+          <MenuItem value={options} className="capitalize">
             {options.name}
           </MenuItem>
         </Select>

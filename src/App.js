@@ -8,7 +8,7 @@ import DashboardMain from "./Component/Dashboard/DashboardMain";
 import SubjectDetails from "./Component/Questions/SubjectDetails";
 import AddQuestion from "./Component/Questions/AddQuestion";
 import EditQuestion from "./Component/Questions/EditQuestion";
-import ProfilePage from "./Component/ProfilePage";
+import ProfilePage from "./Component/ProfilePage/ProfilePage";
 import Loading from "./Component/Loader/Loading";
 import PasswordUpdate from "./Component/NewPassword/PasswordUpdate";
 

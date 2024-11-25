@@ -42,12 +42,7 @@ const DropdownUser = ({ authData }) => {
           to="#"
         >
           <span className="h-12 w-12 rounded-full">
-          <img
-                src="BEFLogo.png"
-                alt={authData.name}
-                className="w-full h-full  rounded-full object-cover"
-              />
-            {/* {authData.image ? (
+            {authData.image ? (
               <img
                 src={authData.image}
                 alt={authData.name}
@@ -59,15 +54,14 @@ const DropdownUser = ({ authData }) => {
                 alt={authData.name}
                 className="w-full h-full  rounded-full object-cover"
               />
-            )} */}
+            )}
           </span>
           <span className="hidden text-left lg:block cursor-pointer">
             <span className="block text-sm   font-medium text-black dark:text-white">
-              {"Welcome user"}
+              {authData.ownerName || "Welcome user"}
             </span>
             <span className="block text-xs">{authData.name}</span>
           </span>
-
           <svg
             className="hidden fill-current cursor-pointer sm:block"
             width="12"
@@ -96,7 +90,7 @@ const DropdownUser = ({ authData }) => {
                   <button
                     type="button"
                     className={`${
-                      pathname === "/resetpassword"
+                      pathname === "/profileUpdate"
                         ? "text-white bg-gray-600"
                         : "text-black"
                     }  py-2 px-4 w-full text-left outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600`}

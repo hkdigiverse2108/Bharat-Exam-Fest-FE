@@ -25,8 +25,8 @@ function SubjectDetails() {
   const CurrentSubject = useSelector(
     (state) => state.userConfig.CurrentSubject
   );
+
   const questionList = useSelector((state) => state.userConfig.Questions);
-  // console.log(subject._id);
 
   const [confirm, setConfirm] = useState(false);
   const [toggle, setToggle] = useState(false);
@@ -231,24 +231,6 @@ function SubjectDetails() {
     }
   };
 
-  // useEffect(() => {
-  //   const getQuestions = async () => {
-  //     try {
-  //       const data = await fetchQuestionsBySubject(
-  //         accessToken,
-  //         CurrentSubject._id
-  //       );
-  //       console.log(data);
-
-  //       setQustions(data.questions);
-  //     } catch (err) {
-  //       setError(err.message);
-  //     }
-  //   };
-
-  //   getQuestions();
-  // }, [accessToken, CurrentSubject]);
-
   useEffect(() => {
     const sortQuestions = () => {
       // Defensive check to ensure questions is an array
@@ -290,33 +272,41 @@ function SubjectDetails() {
     }
   }, [questions]);
 
-  // useEffect(() => {
-  //   fetchData();
-  //   // setSubjectData(subject);
-  // }, []);
-
   useEffect(() => {
     const getQuestions = async () => {
-      if (!CurrentSubject || !CurrentSubject._id) return; // Check if subject is valid
-
       try {
-        const data = await fetchQuestionsBySubject(
-          accessToken,
-          CurrentSubject._id
-        );
-        if (data) {
-          setQustions(data); // Set the questions directly
-        } else {
-          // Set the questions directly
+        const data = await fetchQuestionsBySubject(accessToken, CurrentSubject?._id);
+        
+        // Check if data is valid
+        if (!data) {
+          console.log("No data received", data);
+          return;
         }
-        console.log("res", data);
+
+        const { Questions, subTopics } = data; // Destructure data
+
+        setQustions(Questions);
+        setSubtopics(subTopics);
+
+        // Filter subTopics based on CurrentSubject.subTopics
+        const filteredData = subTopics.filter((subject) =>
+          CurrentSubject.subTopics?.some((criteria) => subject._id === criteria._id)
+        );
+
+        // Safely set the selected subtopic if it exists
+        if (filteredData.length > 0) {
+          console.log(filteredData[0]);
+          setSelectedSubtopic(filteredData[0]);
+        } else {
+          console.log("No matching subtopics found");
+        }
       } catch (err) {
-        setError(err.message);
+        setError(`Error fetching questions: ${err.message}`);
       }
     };
 
     getQuestions();
-  }, [CurrentSubject, accessToken]);
+  }, [CurrentSubject?._id, CurrentSubject.subTopics, accessToken]);
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -354,23 +344,9 @@ function SubjectDetails() {
               </button>
             </div>
             <div className=" space-y-2 flex flex-col items-start w-full">
-              <div className="flex items-center w-full  gap-x-10">
-                <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white uppercase">
-                  {CurrentSubject.name}
-                </p>
-                <button
-                  onClick={() => handleSubject()}
-                  className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90  "
-                >
-                  <svg
-                    className="font-bold text-white w-4 h-4"
-                    viewBox="0 0 16 16"
-                  >
-                    <TfiPlus />
-                  </svg>
-                  <p className=" font-semibold">Add Subject Details</p>
-                </button>
-              </div>
+              <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white uppercase">
+                {CurrentSubject.name}
+              </p>
               <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-2 2xl:grid-cols-4 2xl:gap-6">
                 <FilterQuestion
                   label="Subject"
@@ -469,9 +445,9 @@ function SubjectDetails() {
             onClose={handleFilterData}
           />
         </div>
-        <div className={`${show === true ? "block" : "hidden"}`}>
+        {/* <div className={`${show === true ? "block" : "hidden"}`}>
           <ImgUpdatePage confirm={show} onClose={handleSubject} />
-        </div>
+        </div> */}
       </section>
       <ToastContainer
         draggable={false}
