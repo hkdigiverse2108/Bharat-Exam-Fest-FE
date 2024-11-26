@@ -10,11 +10,21 @@ const EnglishQueStatementBaseform = ({
   handleChange,
   handleCheck,
   optionsArray1,
-  handleStatementQuestionChange,
   handleAddStatement,
 }) => {
   return (
-    <div className="duration-300 space-y-2">
+    <div className="px-4 py-2 space-y-6">
+      {/* english */}
+      <div className="space-y-4">
+        <p className="text-2xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
+          english question section
+        </p>
+        <div className="space-y-2">
+          <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
+            write question
+          </p>
+        </div>
+      </div>
       {/* Input for the question */}
       <input
         className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
@@ -24,7 +34,7 @@ const EnglishQueStatementBaseform = ({
         onChange={handleChange}
         name="englishQuestion.question"
       />
-      
+
       {/* Button to add statement */}
       <div className="flex items-center justify-end w-full">
         <button
@@ -35,7 +45,7 @@ const EnglishQueStatementBaseform = ({
           <p className="font-semibold">Add Statement</p>
         </button>
       </div>
-      
+
       {/* Input for the statement */}
       <div className="space-y-2">
         <input
@@ -47,17 +57,20 @@ const EnglishQueStatementBaseform = ({
           onChange={(e) => setCurrentStatement(e.target.value)}
           name="englishQuestion.statementQuestion"
         />
-        
+
         {/* Display list of statements */}
         <div className="space-y-2">
-          {addQuestion.englishQuestion.statementQuestion.map((value, index) => (
-            <div
-              key={index}
-              className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
-            >
-              {value}
-            </div>
-          ))}
+          {addQuestion.englishQuestion?.statementQuestion?.length > 0 &&
+            addQuestion.englishQuestion.statementQuestion.map(
+              (value, index) => (
+                <div
+                  key={index}
+                  className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
+                >
+                  {value}
+                </div>
+              )
+            )}
         </div>
       </div>
 
@@ -117,7 +130,9 @@ const EnglishQueStatementBaseform = ({
                     id={`radio${option.label}`}
                     type="radio"
                     value={option.value}
-                    checked={addQuestion.englishQuestion.answer === option.value}
+                    checked={
+                      addQuestion.englishQuestion.answer === option.value
+                    }
                     onChange={(e) => handleCheck("englishQuestion", e)}
                     className="w-4 h-4 text-blue-600 border-gray-300 checked:bg -blue-600 checked:outline-none"
                   />
