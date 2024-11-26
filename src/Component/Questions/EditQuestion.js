@@ -28,20 +28,29 @@ function EditQuestion() {
       options: subject.englishQuestion.options,
       answer: subject.englishQuestion.answer,
       solution: subject.englishQuestion.solution,
+      statementQuestion: subject.englishQuestion.statementQuestion,
+      pairQuestion: subject.englishQuestion.pairQuestion || [""],
+      lastQuestion: subject.englishQuestion.lastQuestion,
     },
     hindiQuestion: {
       question: subject.hindiQuestion.question,
       options: subject.hindiQuestion.options,
       answer: subject.hindiQuestion.answer,
       solution: subject.hindiQuestion.solution,
+      statementQuestion: subject.hindiQuestion.statementQuestion,
+      pairQuestion: subject.hindiQuestion.pairQuestion || [""],
+      lastQuestion: subject.hindiQuestion.lastQuestion,
     },
   });
+
   const [type, setType] = useState(editQuestion.type);
   const [questionType, setQuestionType] = useState(editQuestion.questionType);
   const [subtopics, setSubtopics] = useState([]);
   const [subTopicName, setSubTopicName] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState(
+    editQuestion.subjectId
+  );
   const [subjectname, setSubjectname] = useState([]);
 
   const accessToken = useSelector(
@@ -51,16 +60,16 @@ function EditQuestion() {
     english: { A: false, B: false, C: false, D: false },
     hindi: { A: false, B: false, C: false, D: false },
   });
-  // const optionsArray1 = Object.keys(options.english).map((key) => ({
-  //   label: `Option ${key}`,
-  //   value: key,
-  //   checked: options.english[key],
-  // }));
-  // const optionsArray2 = Object.keys(options.hindi).map((key) => ({
-  //   label: `Option ${key}`,
-  //   value: key,
-  //   checked: options.hindi[key],
-  // }));
+  const optionsArray1 = Object.keys(options.english).map((key) => ({
+    label: `Option ${key}`,
+    value: key,
+    checked: options.english[key],
+  }));
+  const optionsArray2 = Object.keys(options.hindi).map((key) => ({
+    label: `Option ${key}`,
+    value: key,
+    checked: options.hindi[key],
+  }));
 
   const handleCheck = (language, event) => {
     const selectedValue = event.target.value;
@@ -99,20 +108,67 @@ function EditQuestion() {
     }));
   };
 
-  const [statement, setStatement] = useState([]);
-  const [inputValue, setInputValue] = useState("");
+  const [currentEngStatement, setCurrentEngStatement] = useState("");
+  const [currentHindiStatement, setCurrentHindiStatement] = useState("");
+  const [currentEngPair, setCurrentEngPair] = useState("");
+  const [currentHindiPair, setCurrentHindiPair] = useState("");
 
-  function handleAddValue(e) {
-    const { value } = e.target;
-    if (value !== "") {
-      setInputValue(value);
+  const addStatementQuestion = (language) => {
+    let currentStatement;
+    if (language === "english") {
+      currentStatement = currentEngStatement;
+    } else if (language === "hindi") {
+      currentStatement = currentHindiStatement;
     }
-  }
 
-  function AddStatement() {
-    setStatement([...statement, inputValue]);
-    setInputValue("");
-  }
+    if (currentStatement.trim() === "") {
+      toast.error("Please enter a statement.");
+      return; // Prevent adding empty statements
+    }
+
+    setEditQuestion((prev) => ({
+      ...prev,
+      [language + "Question"]: {
+        ...prev[language + "Question"],
+        statementQuestion: [
+          ...prev[language + "Question"].statementQuestion,
+          currentStatement,
+        ],
+      },
+    }));
+
+    // Reset the current statement field
+    if (language === "english") {
+      setCurrentEngStatement("");
+    } else {
+      setCurrentHindiStatement("");
+    }
+
+    toast.success("Statement added!");
+  };
+
+  const addPairQuestion = (language) => {
+    const { question, answer } = editQuestion[language + "Question"];
+
+    if (question.trim() === "" || answer.trim() === "") {
+      toast.error("Please enter both question and answer.");
+      return;
+    }
+
+    const newPair = {
+      question,
+      options,
+    };
+    setEditQuestion((prev) => ({
+      ...prev,
+      [language + "Question"]: {
+        ...prev[language + "Question"],
+        pairQuestion: [...prev[language + "Question"].pairQuestion, newPair],
+      },
+    }));
+
+    toast.success("Question and answer pair added!");
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -132,7 +188,7 @@ function EditQuestion() {
       return newState;
     });
   };
-  
+
   useEffect(() => {
     console.log("EDIT", editQuestion);
   }, [editQuestion]);
@@ -305,6 +361,18 @@ function EditQuestion() {
   };
 
   useEffect(() => {
+    if (subject.englishQuestion.options) {
+      const newOptions = { ...options };
+      Object.keys(newOptions.english).forEach((key) => {
+        // Check if the current option key exists in the questionData.options
+        newOptions.english[key] = subject.englishQuestion.answer === key;
+      });
+
+      setOptions(newOptions);
+    }
+  }, [options, subject.englishQuestion]);
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -447,7 +515,7 @@ function EditQuestion() {
                   <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
                     write question
                   </p>
-                  {type === "Pair" ? (
+                  {questionType === "pair" ? (
                     <div className="duration-300 space-y-2">
                       <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
                         React, also known as ReactJS, is a popular and powerful
@@ -461,61 +529,7 @@ function EditQuestion() {
                         features, benefits, and why it’s a great choice for
                         modern web development.
                       </div>
-                      <div className="flex items-center justify-end w-full">
-                        <button
-                          onClick={AddStatement}
-                          className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
-                        >
-                          <svg
-                            className="font-bold text-white w-4 h-4"
-                            viewBox="0 0 16 16"
-                          >
-                            <FaPlus />
-                          </svg>
-                          <p className=" font-semibold">Add Pair</p>
-                        </button>
-                      </div>
-                      <div className="">
-                        <input
-                          className=" border-2 pl-10 border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                          id="username"
-                          type="text"
-                          placeholder="Add"
-                          onChange={(e) => handleAddValue(e)}
-                        />
-                      </div>
-                      <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-3 ">
-                        {statement.map(function (item, index) {
-                          return (
-                            <div
-                              key={index}
-                              className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
-                            >
-                              {item}
-                            </div>
-                          );
-                        })}
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
-                      </div>
+
                       {/* options */}
                       <div className=" p-4 space-y-4">
                         <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
@@ -689,128 +703,84 @@ function EditQuestion() {
                         </div>
                       </div>
                     </div>
-                  ) : type === "Statement" ? (
+                  ) : questionType === "statement" ? (
                     <div className="duration-300 space-y-2">
-                      <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                        React, also known as ReactJS, is a popular and powerful
-                        JavaScript library used for building dynamic and
-                        interactive user interfaces, primarily for single-page
-                        applications (SPAs). It was developed and maintained by
-                        Facebook and has gained significant popularity due to
-                        its efficient rendering techniques, reusable components,
-                        and active community support. In this article, we will
-                        explore React Introduction, what React is, its key
-                        features, benefits, and why it’s a great choice for
-                        modern web development.
-                      </div>
-                      <div className="flex items-center justify-end w-full">
-                        <button
-                          onClick={AddStatement}
-                          className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
-                        >
-                          <svg
-                            className="font-bold text-white w-4 h-4"
-                            viewBox="0 0 16 16"
-                          >
-                            <FaPlus />
-                          </svg>
-                          <p className=" font-semibold">Add Statement</p>
-                        </button>
-                      </div>
                       <input
-                        className=" border-2 pl-10 border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
                         id="username"
                         type="text"
-                        placeholder="Add"
-                        onChange={(e) => handleAddValue(e)}
+                        placeholder="Enter question"
+                        value={editQuestion.englishQuestion.question}
+                        onChange={handleChange}
+                        name="englishQuestion.question"
+                      />
+                      <div className="flex items-center justify-end w-full">
+                        <button
+                          onClick={() => addStatementQuestion("english")}
+                          className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90"
+                        >
+                          <FaPlus className="font-bold text-white w-4 h-4" />
+                          <p className="font-semibold">Add Statement</p>
+                        </button>
+                      </div>
+                      {/* statement */}
+                      <input
+                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+                        id="username"
+                        type="text"
+                        placeholder="Enter Statement"
+                        value={currentEngStatement}
+                        onChange={(e) => setCurrentEngStatement(e.target.value)}
+                        name="englishQuestion.statementQuestion"
                       />
                       <div className="space-y-2">
-                        {statement.map(function (item, index) {
-                          return (
+                        {editQuestion.englishQuestion.statementQuestion.map(
+                          (value, index) => (
                             <div
                               key={index}
                               className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
                             >
-                              {item}
+                              {value}
                             </div>
-                          );
-                        })}
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
+                          )
+                        )}
                       </div>
+                      <input
+                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+                        id="username"
+                        type="text"
+                        placeholder="Enter suggestion"
+                        value={editQuestion.englishQuestion.lastQuestion}
+                        onChange={handleChange}
+                        name="englishQuestion.lastQuestion"
+                      />
                       {/* options */}
                       <div className=" p-4 space-y-4">
                         <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
                           options
                         </p>
-                        <div className="flex flex-row items-center  space-x-3">
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q1"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              a- option
-                              <MdStar className="text-orange-400  h-3 w-3 " />
-                            </label>
-                            <input
-                              type="text"
-                              name="q1"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q2"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              b- option
-                              <MdStar className="text-orange-400 h-3 w-3" />
-                            </label>
-                            <input
-                              type="text"
-                              name="q2"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q3"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              c- option
-                              <MdStar className="text-orange-400 h-3 w-3" />
-                            </label>
-                            <input
-                              type="text"
-                              name="q3"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q4"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              d- option
-                              <MdStar className="text-orange-400 h-3 w-3" />
-                            </label>
-                            <input
-                              type="text"
-                              name="q4"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
+                        <div className="flex flex-row items-center space-x-3">
+                          {["A", "B", "C", "D"].map((option) => (
+                            <div key={option} className="w-1/4">
+                              <label
+                                htmlFor={`englishQuestion.options.${option}`}
+                                className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                              >
+                                Option - {option}
+                                <MdStar className="text-orange-400 h-3 w-3" />
+                              </label>
+                              <input
+                                type="text"
+                                name={`englishQuestion.options.${option}`}
+                                // value={
+                                //   editQuestion.englishQuestion.options[option]
+                                // }
+                                onChange={handleChange}
+                                className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                placeholder={`Option ${option}`}
+                              />
+                            </div>
+                          ))}
                         </div>
                       </div>
                       {/* answer */}
@@ -819,80 +789,33 @@ function EditQuestion() {
                           answer
                         </p>
 
-                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
+                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
                           <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio1"
-                                  type="radio"
-                                  value="A"
-                                  checked={options.A}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio1"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option A
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio2"
-                                  type="radio"
-                                  value="B"
-                                  checked={options.B}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio2"
-                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option B
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio3"
-                                  type="radio"
-                                  value="C"
-                                  checked={options.C}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio3"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option C
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio4"
-                                  type="radio"
-                                  value="D"
-                                  checked={options.D}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio4"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option D
-                                </label>
-                              </div>
-                            </li>
+                            {optionsArray1.map((option, index) => (
+                              <li
+                                className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+                                key={index}
+                              >
+                                <div className="flex items-center ps-3">
+                                  <input
+                                    id={`radio${option.label}`}
+                                    type="radio"
+                                    value={option.value}
+                                    // checked={options.englishQuestion[option]}
+                                    onChange={(e) =>
+                                      handleCheck("englishQuestion", e)
+                                    }
+                                    className="w-4 h-4 text-blue-600 border-gray-300 checked:bg -blue-600 checked:outline-none"
+                                  />
+                                  <label
+                                    htmlFor={`radio${option.label}`}
+                                    className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                  >
+                                    Option {option.value}
+                                  </label>
+                                </div>
+                              </li>
+                            ))}
                           </ul>
                         </div>
                       </div>
@@ -1036,7 +959,7 @@ function EditQuestion() {
                   <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
                     write question
                   </p>
-                  {type === "Pair" ? (
+                  {questionType === "pair" ? (
                     <div className="duration-300 space-y-2">
                       <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
                         React, also known as ReactJS, is a popular and powerful
@@ -1050,61 +973,7 @@ function EditQuestion() {
                         features, benefits, and why it’s a great choice for
                         modern web development.
                       </div>
-                      <div className="flex items-center justify-end w-full">
-                        <button
-                          onClick={AddStatement}
-                          className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
-                        >
-                          <svg
-                            className="font-bold text-white w-4 h-4"
-                            viewBox="0 0 16 16"
-                          >
-                            <FaPlus />
-                          </svg>
-                          <p className=" font-semibold">Add Pair</p>
-                        </button>
-                      </div>
-                      <div className="">
-                        <input
-                          className=" border-2 pl-10 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                          id="username"
-                          type="text"
-                          placeholder="Add"
-                          onChange={(e) => handleAddValue(e)}
-                        />
-                      </div>
-                      <div className="w-full grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-3 ">
-                        {statement.map(function (item, index) {
-                          return (
-                            <div
-                              key={index}
-                              className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
-                            >
-                              {item}
-                            </div>
-                          );
-                        })}
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
-                      </div>
+
                       {/* options */}
                       <div className=" p-4 space-y-4">
                         <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
@@ -1279,58 +1148,57 @@ function EditQuestion() {
                         </div>
                       </div>
                     </div>
-                  ) : type === "Statement" ? (
+                  ) : questionType === "statement" ? (
                     <div className="duration-300 space-y-2">
-                      <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                        React, also known as ReactJS, is a popular and powerful
-                        JavaScript library used for building dynamic and
-                        interactive user interfaces, primarily for single-page
-                        applications (SPAs). It was developed and maintained by
-                        Facebook and has gained significant popularity due to
-                        its efficient rendering techniques, reusable components,
-                        and active community support. In this article, we will
-                        explore React Introduction, what React is, its key
-                        features, benefits, and why it’s a great choice for
-                        modern web development.
-                      </div>
-                      <div className="flex items-center justify-end w-full">
-                        <button
-                          onClick={AddStatement}
-                          className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
-                        >
-                          <svg
-                            className="font-bold text-white w-4 h-4"
-                            viewBox="0 0 16 16"
-                          >
-                            <FaPlus />
-                          </svg>
-                          <p className=" font-semibold">Add Statement</p>
-                        </button>
-                      </div>
                       <input
-                        className=" border-2 pl-10 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
                         id="username"
                         type="text"
-                        placeholder="Add"
-                        onChange={(e) => handleAddValue(e)}
+                        placeholder="Enter question"
+                        value={editQuestion.hindiQuestion.question}
+                        onChange={handleChange}
+                        name="englishQuestion.question"
+                      />
+                      <div className="flex items-center justify-end w-full">
+                        <button
+                          onClick={() => addStatementQuestion("hindi")}
+                          className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90"
+                        >
+                          <FaPlus className="font-bold text-white w-4 h-4" />
+                          <p className="font-semibold">Add Statement</p>
+                        </button>
+                      </div>
+                      {/* statement */}
+                      <input
+                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+                        id="username"
+                        type="text"
+                        placeholder="Enter Statement"
+                        value={currentEngStatement}
+                        onChange={(e) => setCurrentEngStatement(e.target.value)}
+                        name="hindiQuestion.statementQuestion"
                       />
                       <div className="space-y-2">
-                        {statement.map(function (item, index) {
-                          return (
+                        {editQuestion.hindiQuestion.statementQuestion.map(
+                          (value, index) => (
                             <div
                               key={index}
                               className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
                             >
-                              {item}
+                              {value}
                             </div>
-                          );
-                        })}
-                        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces.
-                        </div>
+                          )
+                        )}
                       </div>
+                      <input
+                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+                        id="username"
+                        type="text"
+                        placeholder="Enter suggestion"
+                        value={editQuestion.hindiQuestion.lastQuestion}
+                        onChange={handleChange}
+                        name="hindiQuestion.lastQuestion"
+                      />
                       {/* options */}
                       <div className=" p-4 space-y-4">
                         <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
@@ -1339,19 +1207,22 @@ function EditQuestion() {
                         <div className="flex flex-row items-center space-x-3">
                           {["A", "B", "C", "D"].map((option) => (
                             <div key={option} className="w-1/4">
-                              <label className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white">
-                                {option}- option
+                              <label
+                                htmlFor={`hindiQuestion.options.${option}`}
+                                className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
+                              >
+                                Option - {option}
                                 <MdStar className="text-orange-400 h-3 w-3" />
                               </label>
                               <input
                                 type="text"
-                                name={`englishQuestion.options.${option}`}
-                                value={
-                                  editQuestion.englishQuestion.options[option]
-                                }
+                                name={`hindiQuestion.options.${option}`}
+                                // value={
+                                //   editQuestion.hindiQuestion.options[option]
+                                // }
                                 onChange={handleChange}
                                 className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                placeholder={`Enter Option ${option}`}
+                                placeholder={`Option ${option}`}
                               />
                             </div>
                           ))}
@@ -1362,38 +1233,34 @@ function EditQuestion() {
                         <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
                           answer
                         </p>
-                        <div className="flex flex-row items-center  space-x-3">
-                          {["A", "B", "C", "D"].map((option) => (
-                            <div
-                              key={option}
-                              className="flex flex-row items-center justify-start gap-x-6 text-sm font-medium text-gray-900 rounded-t-lg dark:border-gray-600"
-                            >
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id={`radio${option}`}
-                                  type="radio"
-                                  value={option}
-                                  checked={options[option] === option}
-                                  onChange={(e) =>
-                                    setEditQuestion((prev) => ({
-                                      ...prev,
-                                      hindiQuestion: {
-                                        ...prev.hindiQuestion,
-                                        answer: e.target.value,
-                                      },
-                                    }))
-                                  }
-                                  className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor={`radio${option}`}
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option {option}
-                                </label>
-                              </div>
-                            </div>
-                          ))}
+                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
+                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
+                            {optionsArray1.map((option, index) => (
+                              <li
+                                className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+                                key={index}
+                              >
+                                <div className="flex items-center ps-3">
+                                  <input
+                                    id={`radio${option.label}`}
+                                    type="radio"
+                                    value={option.value}
+                                    // checked={options.hindiQuestion[option]}
+                                    onChange={(e) =>
+                                      handleCheck("hindiQuestion", e)
+                                    }
+                                    className="w-4 h-4 text-blue-600 border-gray-300 checked:bg -blue-600 checked:outline-none"
+                                  />
+                                  <label
+                                    htmlFor={`radio${option.label}`}
+                                    className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                  >
+                                    Option {option.value}
+                                  </label>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
                       {/* solution */}
@@ -1402,16 +1269,7 @@ function EditQuestion() {
                           solution
                         </p>
                         <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces, primarily for
-                          single-page applications (SPAs). It was developed and
-                          maintained by Facebook and has gained significant
-                          popularity due to its efficient rendering techniques,
-                          reusable components, and active community support. In
-                          this article, we will explore React Introduction, what
-                          React is, its key features, benefits, and why it’s a
-                          great choice for modern web development.
+                          {editQuestion.hindiQuestion.solution}
                         </div>
                       </div>
                     </div>

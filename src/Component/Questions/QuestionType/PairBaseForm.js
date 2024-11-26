@@ -26,20 +26,32 @@ const PairBaseForm = ({
       </div>
 
       {/* Input for Pair Question */}
-      <input
-        className="border-2 pl- border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-        id="pairQuestion"
-        type="text"
-        placeholder="Add Pair Question"
-        value={currentEngPair}
-        onChange={(e) => setCurrentEngPair(e.target.value)} // Update currentEngPair state
-        name="englishQuestion.question"
-      />
-
-      {/* Display Added Pair Questions */}
       <div className="space-y-2">
-        <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-          {addQuestion.englishQuestion.pairQuestion.map((pair, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input
+            className="border-2 pl-2 border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+            id="pairQuestion"
+            type="text"
+            placeholder="Enter Question"
+            value={currentEngPair}
+            onChange={(e) => setCurrentEngPair(e.target.value)} // Update currentEngPair state
+            name="englishQuestion.question"
+          />
+          <input
+            className="border-2 pl-2 border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+            id="pairQuestion"
+            type="text"
+            placeholder="Enter Answer"
+            // value={currentEngPair}
+            // onChange={(e) => setCurrentEngPair(e.target.value)} // Update currentEngPair state
+            name="englishQuestion.question"
+          />
+        </div>
+
+        {/* Display Added Pair Questions */}
+        <div className="space-y-2">
+          {/* <div className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"> */}
+          {addQuestion.englishQuestion?.pairQuestion?.map((pair, index) => (
             <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex border border-gray-500 rounded-lg p-4 bg-white">
                 <h4 className="font-semibold capitalize text-base text-primary tracking-normal">
@@ -59,9 +71,18 @@ const PairBaseForm = ({
               </div>
             </div>
           ))}
+          {/* </div> */}
         </div>
       </div>
-
+      <input
+        className="border-2 pl-2 border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+        id="pairQuestion"
+        type="text"
+        placeholder="Enter suggestion"
+        // value={currentEngPair}
+        // onChange={(e) => setCurrentEngPair(e.target.value)} // Update currentEngPair state
+        name="englishQuestion.question"
+      />
       {/* Options Section */}
       <div className="p-4 space-y-4">
         <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
