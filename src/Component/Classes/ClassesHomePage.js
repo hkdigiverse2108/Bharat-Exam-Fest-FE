@@ -54,7 +54,6 @@ export default function ClassesHomePage() {
     try {
       await deleteClassData(id, accessToken);
       console.log(`Deleted class with id: ${id}`);
-      
       await getClassData();
     } catch (err) {
       console.error(err.message);

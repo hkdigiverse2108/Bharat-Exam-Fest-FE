@@ -358,25 +358,24 @@
 // export default RichTextExample;
 
 import React, { useEffect, useRef, useState } from "react";
-import ReactQuill from "react-quill"; 
+import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 const RichTextExample = ({ content, onTextChange = () => {} }) => {
   const [theme] = useState("snow");
   const [enabled, setEnabled] = useState(true);
-  const [value, setValue] = useState(content); // Initialize with content
+  const [value, setValue] = useState(content); 
   const quillRef = useRef(null);
 
-  // Effect to handle updates from parent `content` prop.
   useEffect(() => {
     if (content && content !== value) {
-      setValue(content); // Update state when content prop changes
+      setValue(content);
     }
-  }, [content]); // Runs every time `content` prop changes
+  }, [content]);
 
   const onEditorChange = (value, delta, source, editor) => {
-    console.log("delta", delta);
-    console.log("output", value);
+    // console.log("delta", delta);
+    // console.log("output", value);
     setValue(editor.getContents()); // Update local state
     onTextChange(value); // Callback to parent
   };
@@ -384,10 +383,9 @@ const RichTextExample = ({ content, onTextChange = () => {} }) => {
   return (
     <div>
       <hr />
-      {/* Only show the editor if there is content */}
       {enabled && value && (
         <ReactQuill
-          ref={quillRef} // Pass the ref to ReactQuill
+          ref={quillRef} 
           theme={theme}
           value={value}
           onChange={onEditorChange}

@@ -14,12 +14,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import { addClassesData } from "../../Context/Action";
 import ContestTypeDropDown from "../Ui/ContestTypeDropDow";
 import InputField from "../Ui/InputField";
-import { editContest, fetchClassData } from "../../Hooks/contestService";
+import { editContest, fetchClassData, fetchContestData } from "../../Hooks/contestService";
 
 export default function EditContest() {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
-
+  const [contestTypeData, setContesTypeData] = useState([]);
   const [date, setDate] = useState(false);
   const [dateRang, setDateRange] = useState("");
   const [time, setTime] = useState(false);
@@ -34,7 +34,7 @@ export default function EditContest() {
   const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const accessToken = useSelector(
+  const tokenFromRedux = useSelector(
     (state) => state.authConfig.userInfo[0].data.token
   );
   const contestFromRedux = useSelector(
@@ -43,7 +43,7 @@ export default function EditContest() {
 
   const [contestData, setContestData] = useState({
     name: "",
-    type: "",
+    contestTypeId: "",
     startDate: "",
     endDate: "",
     totalSpots: 0,
@@ -66,7 +66,7 @@ export default function EditContest() {
   const isEmpty = () => {
     const {
       name,
-      type,
+      contestTypeId,
       startDate,
       endDate,
       totalSpots,
@@ -87,7 +87,7 @@ export default function EditContest() {
 
     return (
       name === "" &&
-      type === "" &&
+      contestTypeId === "" &&
       startDate === "" &&
       endDate === "" &&
       totalSpots === 0 &&
@@ -120,6 +120,16 @@ export default function EditContest() {
     setContestData((prevData) => ({
       ...prevData,
       ranks: [...prevData.ranks, { startPlace: "", price: 0 }],
+    }));
+  };
+
+  const [selectedContestType, setSelectedContestType] = useState("");
+  const handleContestType = (event) => {
+    const { _id } = event.target.value;
+    setSelectedContestType(event.target.value);
+    setContestData((prevData) => ({
+      ...prevData,
+      contestTypeId: _id,
     }));
   };
 
@@ -192,12 +202,13 @@ export default function EditContest() {
       if (isEmpty()) {
         toast.warning("Fill up empty space");
       } else {
-        const response = await editContest(contestData, accessToken);
+        const response = await editContest(contestData, tokenFromRedux);
         if (response.status === 200) {
           toast.success("Contest edited successfully");
-          dispatch(addClassesData(response.data)); // Adjust based on your response structure
+          dispatch(addClassesData(response.data)); 
           // Optionally, you can fetch class data again to refresh the list
           loadClassData();
+          navigate("/addContest")
         } else {
           console.error("Failed to edit contest: " + response);
         }
@@ -210,7 +221,7 @@ export default function EditContest() {
 
   const loadClassData = async () => {
     try {
-      const classes = await fetchClassData(accessToken);
+      const classes = await fetchClassData(tokenFromRedux);
       setData(classes);
     } catch (error) {
       console.error(error);
@@ -220,7 +231,7 @@ export default function EditContest() {
 
   useEffect(() => {
     loadClassData();
-  }, [accessToken]);
+  }, [tokenFromRedux]);
 
   useEffect(() => {
     fetchClassData();
@@ -228,10 +239,25 @@ export default function EditContest() {
   }, [contestFromRedux]);
 
   useEffect(() => {
+    const getContestData = async () => {
+      try {
+        const data = await fetchContestData(tokenFromRedux);
+        setContesTypeData(data);
+      } catch (err) {
+        console.error(
+          err || "An error occurred while fetching the contest data"
+        );
+      }
+    };
+
+    getContestData(); // Call the function to fetch data
+  }, [tokenFromRedux]);
+
+  useEffect(() => {
     if (contestFromRedux) {
       setContestData({
         name: contestFromRedux.name,
-        type: contestFromRedux.type,
+        contestTypeId: contestFromRedux.type,
         startDate: contestFromRedux.startDate,
         endDate: contestFromRedux.endDate,
         totalSpots: contestFromRedux.totalSpots,
@@ -249,6 +275,7 @@ export default function EditContest() {
         classesId: contestFromRedux.classesId,
       });
       setSelectedValues([contestFromRedux.classesId]);
+      // selectedContestType(contestFromRedux.contestTypeId);
       const combinedDate = getCombinedDate(contestFromRedux);
       setDateRange(combinedDate);
     }
@@ -324,8 +351,9 @@ export default function EditContest() {
                   </label>
 
                   <ContestTypeDropDown
-                    value={contestData.type}
-                    onChange={handleChange}
+                    contestTypeData={contestTypeData} // Pass the contest data here
+                    onChange={handleContestType} // Pass the change handler
+                    value={selectedContestType} // Bind the selected value to state
                   />
                 </li>
                 <li className="space-y-1">

@@ -13,12 +13,17 @@ import { useDispatch } from "react-redux";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addClassesData } from "../../Context/Action";
-import { addNewContest, fetchClassData } from "../../Hooks/contestService";
+import {
+  addNewContest,
+  fetchClassData,
+  fetchContestData,
+} from "../../Hooks/contestService";
+import ContestTypeDropDown from "../Ui/ContestTypeDropDow";
 
 export default function CreateContest() {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
-
+  const [contestTypeData, setContesTypeData] = useState([]);
   const [date, setDate] = useState(false);
   const [dateRang, setDateRange] = useState("");
   const [time, setTime] = useState(false);
@@ -39,7 +44,7 @@ export default function CreateContest() {
 
   const [contestData, setContestData] = useState({
     name: "",
-    type: "",
+    contestTypeId: "",
     startDate: "",
     endDate: "",
     totalSpots: 0,
@@ -49,7 +54,6 @@ export default function CreateContest() {
     ranks: [
       {
         startPlace: "",
-        endPlace: "",
         price: 0,
       },
     ],
@@ -62,7 +66,7 @@ export default function CreateContest() {
   const isEmpty = () => {
     const {
       name,
-      type,
+      contestTypeId,
       startDate,
       endDate,
       totalSpots,
@@ -82,7 +86,7 @@ export default function CreateContest() {
 
     return (
       name === "" &&
-      type === "" &&
+      contestTypeId === "" &&
       startDate === "" &&
       endDate === "" &&
       totalSpots === 0 &&
@@ -107,8 +111,8 @@ export default function CreateContest() {
 
   const handleRankChange = (index, field, value) => {
     const updatedRanks = [...contestData.ranks];
-    updatedRanks[index][field] = value; // Update the specific field
-    setContestData((prevData) => ({ ...prevData, ranks: updatedRanks })); // Update the state
+    updatedRanks[index][field] = value;
+    setContestData((prevData) => ({ ...prevData, ranks: updatedRanks }));
   };
 
   const handleAddRank = () => {
@@ -118,13 +122,22 @@ export default function CreateContest() {
     }));
   };
 
+  const [selectedContestType, setSelectedContestType] = useState("");
+  const handleContestType = (event) => {
+    const { _id } = event.target.value;
+    setSelectedContestType(event.target.value);
+    setContestData((prevData) => ({
+      ...prevData,
+      contestTypeId: _id,
+    }));
+  };
+
   const className = data.map((classItem) => ({
     id: classItem._id,
     label: classItem.name,
   }));
 
   const [selectedValues, setSelectedValues] = useState([]);
-
   const handleCheckboxChange = (event) => {
     const value = event.target.id;
 
@@ -143,7 +156,6 @@ export default function CreateContest() {
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-
   const handleDateRangeChange = (start, end, dateRang) => {
     setStartDate(start);
     setEndDate(end);
@@ -155,7 +167,6 @@ export default function CreateContest() {
       endDate: end,
     }));
   };
-
   const handleTimeRangeChange = (timerange) => {
     setTimeRange(timerange);
     setContestData((prevData) => ({
@@ -167,8 +178,8 @@ export default function CreateContest() {
   // useEffect(() => {
   //   // console.log(startDate);
   //   // console.log(endDate);
-  //   // console.log(contestData);
-  // }, []);
+  //   console.log(contestData);
+  // }, [contestData]);
 
   const handleAddContest = async () => {
     try {
@@ -179,8 +190,8 @@ export default function CreateContest() {
         if (response.status === 200) {
           toast.success("Contest added successfully");
           loadClassData();
-          dispatch(addClassesData(response.data)); // Adjust based on your response structure
-        } else {
+          dispatch(addClassesData(response.data));
+          navigate("/addContest");
           toast.error("Failed to add contest: " + response.message);
         }
       }
@@ -201,10 +212,23 @@ export default function CreateContest() {
   };
 
   useEffect(() => {
-    loadClassData();
-    
+    const getContestData = async () => {
+      try {
+        const data = await fetchContestData(accessToken);
+        setContesTypeData(data);
+      } catch (err) {
+        console.error(
+          err || "An error occurred while fetching the contest data"
+        );
+      }
+    };
+
+    getContestData(); // Call the function to fetch data
   }, [accessToken]);
 
+  useEffect(() => {
+    loadClassData();
+  }, []);
 
   return (
     <>
@@ -272,14 +296,11 @@ export default function CreateContest() {
                   >
                     Contest Type
                   </label>
-                  <input
-                    type="text"
-                    id="type"
-                    name="type"
-                    className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                    placeholder="Enter contest type"
-                    value={contestData.type}
-                    onChange={handleChange}
+
+                  <ContestTypeDropDown
+                    contestTypeData={contestTypeData} // Pass the contest data here
+                    onChange={handleContestType} // Pass the change handler
+                    value={selectedContestType} // Bind the selected value to state
                   />
                 </li>
                 <li className="space-y-1">
@@ -294,7 +315,7 @@ export default function CreateContest() {
                     id="dateRange"
                     name="dateRange"
                     value={dateRang}
-                    onChange={(e) => setDateRange(e.target.value)} 
+                    onChange={(e) => setDateRange(e.target.value)}
                     onClick={() => setDate(!date)}
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Choose starting/ending date"

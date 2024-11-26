@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
 import { editContestData } from "../../Context/Action";
 import { fetchContestData } from "../../Hooks/contestApi";
+import { deleteContestData } from "../../Hooks/contestService";
 
 export default function AddContestHomepage() {
   const dispatch = useDispatch();
@@ -23,8 +24,9 @@ export default function AddContestHomepage() {
   const Totalpage = Math.ceil(data.length / itemsPerPage);
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
- const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token)
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token
+  );
   const DataList = useSelector((state) => state.userConfig.contestData);
 
   const [contestData, setContestData] = useState({
@@ -66,26 +68,36 @@ export default function AddContestHomepage() {
     );
   };
 
+  const getContestData = async () => {
+    try {
+      const data = await fetchContestData(accessToken);
+      if (data) {
+        setContestData(data); // Set the questions directly
+        setDataToDisplay(data.slice(0, itemsPerPage));
+      } else {
+        // Set the questions directly
+      }
+      console.log("res", data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const responseData = await deleteContestData(id, accessToken);
+      console.log(responseData);
+      getContestData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     setDataToDisplay(data.slice(start, end));
   }, [currentPage]);
 
   useEffect(() => {
-    const getContestData = async () => {
-      try {
-        const data = await fetchContestData(accessToken);
-        if (data) {
-          setContestData(data); // Set the questions directly
-          setDataToDisplay(data.slice(0, itemsPerPage));
-        } else {
-          // Set the questions directly
-        }
-        console.log("res", data);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-
     getContestData();
   }, [accessToken]);
 
@@ -187,12 +199,12 @@ export default function AddContestHomepage() {
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                      {value.totalSpots}
+                      {value.totalSpots || 0}
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                      ₹ 100
+                      {value.fees || "₹ 0"}
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden">
@@ -216,6 +228,7 @@ export default function AddContestHomepage() {
                       <button
                         className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-md align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
                         type="button"
+                        onClick={() => handleDelete(value._id)}
                       >
                         <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
                           <svg viewBox="0 0 16 16" className="w-6 h-6">

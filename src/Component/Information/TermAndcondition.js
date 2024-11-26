@@ -10,105 +10,96 @@ import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 import { VscSaveAs } from "react-icons/vsc";
 import RichTextExample from "../Ui/RichTextExample";
+import {
+  addOrEditTearmAndCondition,
+  fetchTermsCondition,
+} from "../../Hooks/InformationApi";
 
 export default function TermAndcondition() {
   const dispatch = useDispatch();
-  const [termsConditionResponse, setTermsConditionResponse] = useState(null);
-  const [editorContent, setEditorContent] = useState(null);
-  const [editorText, setEditorText] = useState({
-    termsCondition: "",
-  });
-  const [errorMessage, setErrorMessage] = useState("");
+  // const { privacyPolicy } = useSelector(
+  //   (state) => state.userConfig.privacyPolicy
+  // );
+  const [editorContent, setEditorContent] = useState("");
+  const [existingTermsCondition, setExistingTermsCondition] = useState(null);
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].data.token
   );
-  // const Data = useSelector((state) => state.userConfig.tearmAndCondition);
-  // console.log(Data);
-  const fetchTermsConditionAPI = async () => {
-    const url = `https://api-bef.hkdigiverse.com/terms-condition`;
-    try {
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: accessToken,
-          Accept: "*/*",
-        },
-      });
 
-      // const decodedData = await response.json();
-      // console.log(response.data.data);
-
-      if (response.status === 200) {
-        setTermsConditionResponse(response.data.data);
-        setEditorContent(response.data.data.termsCondition);
-        dispatch(setTearmAndConditionData(response.data.data));
-      } else if (response.status === 404) {
-        const errorMsg = response.data.message || "Data not found";
-        setErrorMessage(errorMsg);
-        console.error(errorMsg);
-      } else {
-        const errorMsg = `Failed to load data. Status code: ${response.status}`;
-        setErrorMessage(errorMsg);
-        console.error(errorMsg);
-      }
-    } catch (error) {
-      console.error("Error fetching terms and conditions:", error);
-      // setErrorMessage("An error occurred while fetching data.");
-      // console.error("An error occurred while fetching data.");
-    }
+  const handleEditorChange = (newContent) => {
+    setEditorContent(newContent);
   };
-
-  const addOrEditTearmAndCondition = async () => {
-    try {
-      if (!editorText.termsCondition) {
-        toast.warning("Fill up empty space");
-      } else {
-        let data = JSON.stringify(editorText);
-        console.log(editorText);
-
-        let config = {
-          method: "post",
-          url: `https://api-bef.hkdigiverse.com/terms-condition/add/edit`,
-          maxBodyLength: Infinity,
-          headers: {
-            Authorization: accessToken,
-            "Content-Type": "application/json",
-          },
-          data: data,
-        };
-        const response = await axios.request(config);
-
-        if (response.status === 200) {
-          // console.log("Backend response", response);
-          // dispatch(loginSuccess(data));
-          toast.success(response.data.message);
-          fetchTermsConditionAPI();
-        } else if (response.status === 400) {
-          console.log(response.data.message);
-        } else {
-          // console.warn("Login failed:", error);
-          console.log("Login failed: " + response.data.message);
-        }
-      }
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-  const [formattedText, setFormattedText] = useState("");
-
-  function handleGetPlainText(value) {
-    setFormattedText(value);
-    setEditorText({
-      termsCondition: value,
-    });
-  }
-  // useEffect(() => {
-  //   console.log("editor", formattedText);
-  // }, [formattedText]);
 
   useEffect(() => {
-    fetchTermsConditionAPI();
-  }, []);
+    const getTermsCondition = async () => {
+      try {
+        const data = await fetchTermsCondition(accessToken);
+        setExistingTermsCondition(data);
+        setEditorContent(data.termsCondition || "");
+      } catch (err) {
+        console.error("Error fetching existing policy:", err);
+      }
+    };
+
+    getTermsCondition();
+  }, [accessToken]);
+
+  const handleSaveTearmAndCondition = async () => {
+    await addOrEditTearmAndCondition(editorContent, accessToken);
+  };
+
+  // const addOrEditTearmAndCondition = async () => {
+  //   try {
+  //     if (!editorText.termsCondition) {
+  //       toast.warning("Fill up empty space");
+  //     } else {
+  //       let data = JSON.stringify(editorText);
+  //       console.log(editorText);
+
+  //       let config = {
+  //         method: "post",
+  //         url: `https://api-bef.hkdigiverse.com/terms-condition/add/edit`,
+  //         maxBodyLength: Infinity,
+  //         headers: {
+  //           Authorization: accessToken,
+  //           "Content-Type": "application/json",
+  //         },
+  //         data: data,
+  //       };
+  //       const response = await axios.request(config);
+
+  //       if (response.status === 200) {
+  //         // console.log("Backend response", response);
+  //         // dispatch(loginSuccess(data));
+  //         toast.success(response.data.message);
+  //         fetchTermsConditionAPI();
+  //       } else if (response.status === 400) {
+  //         console.log(response.data.message);
+  //       } else {
+  //         // console.warn("Login failed:", error);
+  //         console.log("Login failed: " + response.data.message);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
+
+  // const [formattedText, setFormattedText] = useState("");
+
+  // function handleGetPlainText(value) {
+  //   setFormattedText(value);
+  //   setEditorText({
+  //     termsCondition: value,
+  //   });
+  // }
+  // // useEffect(() => {
+  // //   console.log("editor", formattedText);
+  // // }, [formattedText]);
+
+  // useEffect(() => {
+  //   fetchTermsConditionAPI();
+  // }, []);
   return (
     <>
       <div className="bg-white overflow-hidden shadow rounded-2xl border">
@@ -119,7 +110,7 @@ export default function TermAndcondition() {
             </h3>
             <div className="flex items-center justify-center">
               <button
-                onClick={addOrEditTearmAndCondition}
+                onClick={handleSaveTearmAndCondition}
                 className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90  "
               >
                 <svg
@@ -158,7 +149,7 @@ export default function TermAndcondition() {
           /> */}
           <RichTextExample
             content={editorContent}
-            onTextChange={handleGetPlainText}
+            onTextChange={handleEditorChange}
           />
         </Suspense>
       </div>
