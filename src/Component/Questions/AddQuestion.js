@@ -35,7 +35,7 @@ function AddQuestion() {
     classesId: classId,
     subtopicIds: [],
     type: "concept",
-    questionType: "",
+    questionType: questionType,
     englishQuestion: {
       question: "",
       answer: "",
@@ -59,19 +59,12 @@ function AddQuestion() {
   const [subtopics, setSubtopics] = useState([]);
   const [options, setOptions] = useState({
     englishQuestion: { A: false, B: false, C: false, D: false },
-    hindiQuestion: { A: false, B: false, C: false, D: false },
   });
 
   const optionsArray1 = Object.keys(options.englishQuestion).map((key) => ({
     label: `Option ${key}`,
     value: key,
     checked: options.englishQuestion[key],
-  }));
-
-  const optionsArray2 = Object.keys(options.hindiQuestion).map((key) => ({
-    label: `Option ${key}`,
-    value: key,
-    checked: options.hindiQuestion[key],
   }));
 
   const handleChange = (event) => {
@@ -287,7 +280,7 @@ function AddQuestion() {
   // Form Validation
   const isEmpty = () => {
     const { englishQuestion, hindiQuestion } = addQuestion;
-    return (
+    if (
       !addQuestion.subjectId ||
       !addQuestion.classesId ||
       addQuestion.subtopicIds.length === 0 ||
@@ -301,13 +294,15 @@ function AddQuestion() {
       !hindiQuestion.solution ||
       Object.values(englishQuestion.options).some((opt) => !opt) ||
       Object.values(hindiQuestion.options).some((opt) => !opt)
-    );
+    ) {
+      return true;
+    }
+    return false;
   };
 
   const addNewQuestion = async () => {
     if (isEmpty()) {
       toast.warning("Please fill up empty fields.");
-      return;
     }
     try {
       const response = await axios.post(
@@ -319,10 +314,9 @@ function AddQuestion() {
             "Content-Type": "application/json",
           },
         }
-      );
-
+      )
       if (response.status === 200) {
-        toast.success("Question added successfully!");
+        toast.success(response.data.message);
         navigate("/subjectDetails");
       } else {
         toast.error("Failed to add question");
@@ -354,7 +348,7 @@ function AddQuestion() {
   }, []);
 
   return (
-    <section className="bg-white dark:bg-gray-900 rounded-lg border-2 border-slate-300 font-sans">
+    <section className="bg-white dark:bg-gray-900 rounded-lg border-2 border-slate-300 font-sans duration-300 ease-in-out">
       <div className="py-8 px-4 space-y-2 lg:px-6">
         <div className="space-y-4">
           <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">

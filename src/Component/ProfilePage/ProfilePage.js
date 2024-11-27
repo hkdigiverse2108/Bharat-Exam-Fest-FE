@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 // import Axios from "axios";
 import { VscSaveAs } from "react-icons/vsc";
 import { ToastContainer, toast } from "react-toastify";
@@ -7,17 +7,18 @@ import "react-toastify/dist/ReactToastify.css";
 // import { updateData } from "../../Context/Action/index";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import MultipleSelection from "../Ui/MultiSelection";
-import { useSelector } from "react-redux";
 import axios from "axios";
 import { updateProfile } from "../../Hooks/updateProfileApi";
+import { loginAdmin } from "../../Context/Action";
 
 export default function ProfilePage() {
+  const dispatch = useDispatch();
+
   const [toggle, setToggle] = useState(false);
   const userData = useSelector((state) => state.userConfig.classesData[0]);
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].data.token
   );
-  console.log(userData);
 
   const [formData, setFormData] = useState({
     classesId: "",
@@ -59,10 +60,13 @@ export default function ProfilePage() {
       }));
       toast.success("Image uploaded successfully!");
     } catch (err) {
-      console.error(err.message);
-      toast.error("Failed to upload image.");
+      console.error(err);
+      const errorMessage =
+        err.response?.data?.message || "Failed to upload image.";
+      toast.error(errorMessage);
     }
   };
+
   const handleUpload = (value) => {
     imgUpload(value);
   };
@@ -93,40 +97,47 @@ export default function ProfilePage() {
     console.log(formData);
   }, [formData]);
 
-  const isEmpty = (value) => {
-    const { classesId, name, ownerName, email, referralCode, image, contact } =
-      value;
-    return (
-      !classesId ||
-      !name ||
-      !ownerName ||
-      !email ||
-      !referralCode ||
-      !image ||
-      !contact.mobile
-    );
+  const isEmpty = (data) => {
+    if (
+      !data.classesId ||
+      !data.name ||
+      !data.ownerName ||
+      !data.email ||
+      !data.referralCode ||
+      !data.image ||
+      !data.contact.mobile
+    ) {
+      return true;
+    }
+    return false;
   };
 
   const handleSubmit = async (e) => {
-    if (isEmpty()) {
+    if (isEmpty(formData)) {
       toast.warn("Fill up empty field");
     } else {
-      await updateProfile(accessToken, formData);
-       
+      const response = await updateProfile(accessToken, formData);
+
+      if (response.error) {
+        console.error(response.error);
+      } else {
+        dispatch(loginAdmin(response.classData));
+      }
     }
   };
+
   useEffect(() => {
-    if (userData) {
+    if (userData && userData._id) {
       setFormData({
-        classesId: userData._id || "",
-        ownerName: userData.ownerName || "",
+        classesId: userData._id,
+        name: userData.name,
+        ownerName: userData.ownerName,
+        email: userData.email,
+        referralCode: userData.referralCode,
+        image: userData.image,
         contact: {
-          mobile: userData.mobile || "",
+          mobile: userData.contact?.mobile || "",
         },
-        name: userData.name || "",
-        email: userData.email || "",
-        referralCode: userData.referralCode || "",
-        image: userData.image || "",
       });
     }
   }, [userData]);
@@ -136,7 +147,7 @@ export default function ProfilePage() {
       <section className=" p-6 space-y-6 border border-slate-300 bg-white rounded-xl h-full">
         <div className="space-y-3">
           <p className="text-3xl capitalize tracking-tight font-semibold text-left text-gray-900 dark:text-white">
-            profile data update
+            Profile data update
           </p>
           <p className="text-lg tracking-tight font-medium text-left text-gray-500 dark:text-white">
             Fill in the data for profile. It will take a couple of minutes.
@@ -146,8 +157,8 @@ export default function ProfilePage() {
         <div className="p-4 w-full h-fit border border-[#808836] bg-white shadow-sm rounded-xl space-y-4">
           <div className="flex h-20 w-20">
             <img
-              src={formData.image}
-              alt={formData.name}
+              src={formData?.image}
+              alt={formData?.name}
               className="w-full h-full  rounded-md object-cover"
             />
           </div>
@@ -171,7 +182,6 @@ export default function ProfilePage() {
         </div>
         <div className="space-y-2">
           <div className="grid md:grid-cols-2 gap-3 text-sm text-gray-700">
-            {/* Name */}
             <div>
               <label
                 className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
@@ -189,8 +199,6 @@ export default function ProfilePage() {
                 className="text-black text-md px-4 py-6 border-2 border-gray-200 h-10 w-full rounded-lg focus:outline-none focus:ring-purple-600 focus:border-purple-600"
               />
             </div>
-
-            {/* Email */}
             <div>
               <label
                 className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
@@ -210,7 +218,6 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-3 text-sm text-gray-700">
-            {/* owner name */}
             <div>
               <label
                 className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
@@ -228,7 +235,6 @@ export default function ProfilePage() {
                 className="text-black text-md px-4 py-6 border-2 border-gray-200 h-10 w-full rounded-lg focus:outline-none focus:ring-purple-600 focus:border-purple-600"
               />
             </div>
-            {/* Referral Code */}
             <div>
               <label
                 className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
@@ -248,7 +254,6 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-3 text-sm text-gray-700">
-            {/* Contact Mobile */}
             <div>
               <label
                 className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
@@ -269,16 +274,13 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* UploadData */}
         <div className="w-full flex items-end justify-center">
           <button
             onClick={handleSubmit}
-            className="inline-flex items-center space-x-2 rounded-lg px-10 py-3 text-md text-center capitalize text-white bg-orange-500 hover:bg-opacity-90  "
+            className="inline-flex items-center space-x-2 rounded-lg px-10 py-3 text-md text-center capitalize text-white bg-orange-500 hover:bg-opacity-90"
           >
-            <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
-              <VscSaveAs />
-            </svg>
-            <p className=" font-semibold">update profile</p>
+            <VscSaveAs />
+            <p className=" font-semibold">Update Profile</p>
           </button>
         </div>
       </section>

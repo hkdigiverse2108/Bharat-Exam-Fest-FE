@@ -7,8 +7,7 @@ export const fetchQuestionsBySubject = async (accessToken, subjectId) => {
       method: "get",
       maxBodyLength: Infinity,
       headers: {
-        Authorization:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzAyMTMwMDJjNmM4NmQyNWQ2NDE2MTYiLCJ0eXBlIjoiYWRtaW4iLCJzdGF0dXMiOiJMb2dpbiIsImdlbmVyYXRlZE9uIjoxNzMwOTc5NjkyODM4LCJpYXQiOjE3MzA5Nzk2OTJ9.d-fawn9RjS92x54z00UhZkL4v_NAHQeBrdHsWwiTwt0",
+        Authorization: accessToken,
         "Content-Type": "application/json",
       },
     };
@@ -41,15 +40,13 @@ export const fetchQuestionsBySubject = async (accessToken, subjectId) => {
   }
 };
 
-export const getQuestionData = async (questionId, config) => {
+export const getQuestionData = async (accessToken, questionId, config) => {
   try {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
       headers: {
-        Authorization:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzAyMTMwMDJjNmM4NmQyNWQ2NDE2MTYiLCJ0eXBlIjoiYWRtaW4iLCJzdGF0dXMiOiJMb2dpbiIsImdlbmVyYXRlZE9uIjoxNzMwOTc5NjkyODM4LCJpYXQiOjE3MzA5Nzk2OTJ9.d-fawn9RjS92x54z00UhZkL4v_NAHQeBrdHsWwiTwt0",
-        "Content-Type": "application/json",
+        Authorization: accessToken,
       },
     };
     const response = await axios.get(
@@ -58,7 +55,7 @@ export const getQuestionData = async (questionId, config) => {
     );
     if (response.status === 200) {
       return response.data;
-    }  else {
+    } else {
       throw new Error("Failed to fetch data from the first API");
     }
   } catch (error) {

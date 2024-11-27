@@ -22,9 +22,7 @@ function SubjectDetails() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
+  const { token } = useSelector((state) => state.authConfig.userInfo[0].data);
   const CurrentSubject = useSelector(
     (state) => state.userConfig.CurrentSubject
   );
@@ -74,21 +72,6 @@ function SubjectDetails() {
   function handleFilterData() {
     setToggle(!toggle);
   }
-
-  function handleSubject() {
-    setShow(!show);
-  }
-
-  const resetFilters = () => {
-    setFilters({
-      easy: false,
-      medium: false,
-      hard: false,
-      newestFirst: false,
-      olderFirst: false,
-      lastModified: false,
-    });
-  };
 
   const applyFilters = () => {
     const checkedValues = Object.entries(filters)
@@ -145,7 +128,7 @@ function SubjectDetails() {
 
   async function handleEditque(valueId) {
     try {
-      const data = await getQuestionData(valueId, accessToken);
+      const data = await getQuestionData(token,valueId );
       dispatch(CurrentQuestion(data.data));
       navigate("/editQuestion");
     } catch (err) {
@@ -160,55 +143,38 @@ function SubjectDetails() {
     setConfirm(!confirm);
   }
 
-  // const fetchData = async () => {
-  //   try {
-  //     //   method: "get",
-  //     //   maxBodyLength: Infinity,
-  //     //   url: `https://api-bef.hkdigiverse.com/question/all?page=1&limit=10&subjectFilter=672ef848c82dab90999a2b42`,
-  //     //   headers: {
-  //     //     Authorization: accessToken,
-  //     //     "Content-Type": "application/json",
-  //     //   },
-  //     // };
-  //     // const [response1, response2] = await Promise.all([
-  //     //   axios.get(urlSubtopics, config),
-  //     //   axios.get(urlQuestions, config),
-  //     // ]);
-  //     // console.log("subject._id",subject._id);
+  const getQuestions = async () => {
+    try {
+      const data = await fetchQuestionsBySubject(token, CurrentSubject?._id);
 
-  //     const response = await axios.get(
-  //       `https://api-bef.hkdigiverse.com/question/all?page=1&limit=10&subjectFilter=${CurrentSubject._id}`,
-  //       {
-  //         headers: {
-  //           Authorization: accessToken,
-  //           Accept: "application/json",
-  //         },
-  //         maxBodyLength: Infinity,
-  //       }
-  //     );
+      // Check if data is valid
+      if (!data) {
+        console.log("No data received", data);
+        return;
+      }
 
-  //     // const response = axios.request(config);
-  //     console.log(response.data.data);
+      const { Questions, subTopics } = data; // Destructure data
 
-  //     // if (response1.status === 200 && response2.status === 200) {
-  //     //   // console.log("subtopic:", response1.data.data.sub_topic_data);
-  //     //   setSubtopics(response1.data.data.sub_topic_data);
-  //     //   console.log(
-  //     //     "questionList:",
-  //     //     response2.data.data
-  //     //   );
-  //     //   dispatch(QuestionList(response2.data.data.question_data));
-  //     //   setQustions(response2.data.data.question_data);
+      setQustions(Questions);
+      setSubtopics(subTopics);
+      dispatch(CurrentQuestion());
+      // Filter subTopics based on CurrentSubject.subTopics
+      const filteredData = subTopics.filter((subject) =>
+        CurrentSubject.subTopics?.some(
+          (criteria) => subject._id === criteria._id
+        )
+      );
 
-  //     //   // toast.success("Data fetched successfully!");
-  //     // } else {
-  //     //   console.error("Failed to fetch data from one or both endpoints.");
-  //     // }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     // toast.error("An error occurred while fetching data.");
-  //   }
-  // };
+      // Safely set the selected subtopic if it exists
+      if (filteredData.length > 0) {
+        setSelectedSubtopic(filteredData[0]);
+      } else {
+        console.log("No matching subtopics found");
+      }
+    } catch (err) {
+      setError(`Error fetching questions: ${err.message}`);
+    }
+  };
 
   const deleteQuestion = async () => {
     try {
@@ -217,7 +183,7 @@ function SubjectDetails() {
         maxBodyLength: Infinity,
         url: `https://api-bef.hkdigiverse.com/question/delete/${itemToDelete}`,
         headers: {
-          Authorization: accessToken,
+          Authorization: token,
           "Content-Type": "application/json",
         },
       };
@@ -225,10 +191,10 @@ function SubjectDetails() {
       axios
         .request(config)
         .then((response) => {
-          console.log(response.data);
+          console.log("deleteQuestion", response);
           toast.success(response.data.message);
           handleDelete();
-          // fetchQuestionsBySubject();
+          getQuestions();
         })
         .catch((error) => {
           console.error(error);
@@ -280,44 +246,8 @@ function SubjectDetails() {
   }, [questions]);
 
   useEffect(() => {
-    const getQuestions = async () => {
-      try {
-        const data = await fetchQuestionsBySubject(
-          accessToken,
-          CurrentSubject?._id
-        );
-
-        // Check if data is valid
-        if (!data) {
-          console.log("No data received", data);
-          return;
-        }
-
-        const { Questions, subTopics } = data; // Destructure data
-
-        setQustions(Questions);
-        setSubtopics(subTopics);
-        dispatch(CurrentQuestion());
-        // Filter subTopics based on CurrentSubject.subTopics
-        const filteredData = subTopics.filter((subject) =>
-          CurrentSubject.subTopics?.some(
-            (criteria) => subject._id === criteria._id
-          )
-        );
-
-        // Safely set the selected subtopic if it exists
-        if (filteredData.length > 0) {
-          setSelectedSubtopic(filteredData[0]);
-        } else {
-          console.log("No matching subtopics found");
-        }
-      } catch (err) {
-        setError(`Error fetching questions: ${err.message}`);
-      }
-    };
-
     getQuestions();
-  }, [CurrentSubject?._id, CurrentSubject.subTopics, accessToken]);
+  }, [CurrentSubject?._id, CurrentSubject.subTopics, token]);
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -436,7 +366,7 @@ function SubjectDetails() {
                   ))}
               </ul>
             ) : (
-              "No questions"
+              "No questions found"
             )}
           </div>
         </div>
@@ -456,9 +386,6 @@ function SubjectDetails() {
             onClose={handleFilterData}
           />
         </div>
-        {/* <div className={`${show === true ? "block" : "hidden"}`}>
-          <ImgUpdatePage confirm={show} onClose={handleSubject} />
-        </div> */}
       </section>
       <ToastContainer
         draggable={false}

@@ -19,7 +19,7 @@ const EnglishQuestionPairForm = ({
   handleInputChange,
 }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 duration-300 ease-in-out">
       <p className="text-2xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
         english question section
       </p>

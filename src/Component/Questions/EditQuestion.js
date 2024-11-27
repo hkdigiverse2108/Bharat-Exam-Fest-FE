@@ -52,7 +52,7 @@ function EditQuestion() {
 
   // const memoizedQuestionType = useMemo(() => questionType, [questionType]);
 
-  const [type, setType] = useState("");
+  const [type, setType] = useState(subject.type);
   const [questionType, setQuestionType] = useState("");
   const [subTopicName, setSubTopicName] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState([]);
@@ -330,7 +330,7 @@ function EditQuestion() {
         const response = await axios.request(config);
 
         if (response.status === 200) {
-          toast.success(response.data);
+          toast.success(response.data.message);
           console.log("success", response.data);
           navigate("/subjectDetails");
         } else {
@@ -478,7 +478,7 @@ function EditQuestion() {
     // Check if responseData exists and auto-fill the state
     if (subject) {
       // Auto-fill the 'type' and 'questionType' from subject
-      setType(subject.type || "");
+      // setType(subject.type || "");
       setQuestionType(subject.questionType || "");
 
       // Assuming the 'subtopicIds' field contains the list of subtopic IDs
@@ -574,7 +574,7 @@ function EditQuestion() {
 
   return (
     <>
-      <section className="bg-white dark:bg-gray-900 rounded-lg border-2 border-slate-300 font-sans">
+      <section className="bg-white dark:bg-gray-900 rounded-lg border-2 border-slate-300 font-sans duration-300 ease-in-out">
         <div className="py-8 px-4 space-y-2 lg:px-6">
           <div className="space-y-4">
             <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
@@ -609,7 +609,7 @@ function EditQuestion() {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
                 Question Type
               </label>

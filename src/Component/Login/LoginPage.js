@@ -80,6 +80,7 @@ function LoginPage() {
       const { status, data, message, error } = response.data;
 
       if (response.status === 200) {
+        // toast.success(response.data.message);
         dispatch(loginAdmin(response.data.data));
         handleNavigate();
       } else if (response.status === 400) {

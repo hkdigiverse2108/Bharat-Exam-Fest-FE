@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchSubjects, fetchTotalCount } from "../../Hooks/getSubjectApi";
 
 function SubjectPage() {
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
+  const {token,_id} = useSelector(
+    (state) => state.authConfig.userInfo[0].data
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,14 +22,14 @@ function SubjectPage() {
 
   useEffect(() => {
     const getSubjects = async () => {
-      if (!accessToken) {
+      if (!token) {
         console.error("Access token is required");
         setError("Access token is required");
         return;
       }
 
       try {
-        const data = await fetchSubjects(accessToken);
+        const data = await fetchSubjects(token,_id);
         setData(data.subjects);
         setTotalQuestion(data.totalQuestions);
         console.log("Total Questions:", data.totalQuestions);
@@ -40,7 +40,7 @@ function SubjectPage() {
     };
 
     getSubjects();
-  }, [accessToken]);
+  }, [token]);
   return (
     <>
       <section>
@@ -74,7 +74,7 @@ function SubjectPage() {
                     total questions{" "}
                   </p>
                   <p className="text-2xl text-gray-800 font-medium ">
-                    {matchingQuestion[0]?.count}
+                    {matchingQuestion[0]?.count || 0}
                   </p>
                 </div>
               </div>

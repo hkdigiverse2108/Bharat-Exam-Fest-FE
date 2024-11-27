@@ -10,7 +10,7 @@ const NormalquestionBaseForm = ({
 }) => {
   return (
     <>
-      <div className="px-4 py-2 space-y-6">
+      <div className="px-4 py-2 space-y-6 duration-300 ease-in-out">
         {/* english */}
         <div className="space-y-4">
           <p className="text-2xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
@@ -65,32 +65,6 @@ const NormalquestionBaseForm = ({
           </p>
           <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
             <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-              {/* {optionsArray1.map((option) => (
-                <li
-                  key={option.value}
-                  className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-                >
-                  <div className="flex items-center ps-3">
-                    <input
-                      id={`radio${option.value}`}
-                      type="radio"
-                      name="englishQuestion.answer" // Use the appropriate name for your state structure
-                      value={option.value}
-                      checked={
-                        editQuestion.englishQuestion.answer === option.value
-                      } // Check if this option is selected
-                      onChange={(e) => handleCheck("englishQuestion", e)} // Call handleCheck for updating the answer
-                      className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                    />
-                    <label
-                      htmlFor={`radio${option.value}`}
-                      className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      {option.label}
-                    </label>
-                  </div>
-                </li>
-              ))} */}
               {optionsArray1.map((option) => (
                 <li
                   key={option.value}
@@ -128,6 +102,9 @@ const NormalquestionBaseForm = ({
             id="message"
             rows="4"
             name={editQuestion.englishQuestion.solution}
+            value={
+              editQuestion.englishQuestion.solution || ""
+            }
             onChange={(e) =>
               seteditQuestion((prev) => ({
                 ...prev,

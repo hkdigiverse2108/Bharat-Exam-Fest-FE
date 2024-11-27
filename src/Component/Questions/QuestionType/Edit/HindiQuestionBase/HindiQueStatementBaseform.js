@@ -13,7 +13,7 @@ const HindiQueStatementBaseform = ({
   handleAddStatement,
 }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 duration-300 ease-in-out">
       <p className="text-2xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
         hindi question section
       </p>
@@ -29,6 +29,7 @@ const HindiQueStatementBaseform = ({
           id="username"
           type="text"
           placeholder="Enter question"
+          value={editQuestion.hindiQuestion.question}
           onChange={handleChange}
           name="hindiQuestion.question"
         />
@@ -78,6 +79,7 @@ const HindiQueStatementBaseform = ({
           id="username"
           type="text"
           placeholder="Enter suggestion"
+          value={editQuestion.englishQuestion.lastQuestion || ""}
           onChange={handleChange}
           name="hindiQuestion.lastQuestion"
         />

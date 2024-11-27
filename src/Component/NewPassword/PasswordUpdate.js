@@ -56,18 +56,49 @@ export default function PasswordUpdate() {
           axios
             .request(config)
             .then((response) => {
-              if (response.status === 200) {
-                console.log("success", response.data);
-                console.log("msg", response.message);
-                toast.success("Your password has been successfully reset!");
-                navigate("/");
-              } else {
-                console.log("failed", response);
-                console.log("msg", response.message);
+              // Handle specific status codes
+              switch (response.status) {
+                case 200:
+                  console.log("Success", response.data);
+                  toast.success(response.data.message);
+                  navigate("/"); // Navigate to the homepage or any other route
+                  break;
+                case 400:
+                  console.log("Bad Request", response.data);
+                  toast.error(response.data.message);
+                  break;
+                case 401:
+                  console.log("Unauthorized", response.data);
+                  toast.error(response.data.message);
+                  break;
+                case 500:
+                  console.log("Server Error", response.data);
+                  toast.error(response.data.message);
+                  break;
+                default:
+                  console.log("Unexpected response status:", response.status);
+                  toast.error(
+                    "An unexpected error occurred. Please try again."
+                  );
+                  break;
               }
             })
             .catch((error) => {
-              console.error(error);
+              if (error.response) {
+                // The request was made and the server responded with a status code
+                console.error("Response error:", error.response);
+                toast.error("An error occurred while processing your request.");
+              } else if (error.request) {
+                // The request was made but no response was received
+                console.error("No response received:", error.request);
+                toast.error(
+                  "No response received from the server. Please check your network connection."
+                );
+              } else {
+                // Something happened in setting up the request
+                console.error("Error", error.message);
+                toast.error("An error occurred. Please try again later.");
+              }
             });
         }
       }
@@ -212,7 +243,7 @@ export default function PasswordUpdate() {
           </button>
         </div>
       </section>
-      
+
       <ToastContainer
         draggable={false}
         autoClose={2000}

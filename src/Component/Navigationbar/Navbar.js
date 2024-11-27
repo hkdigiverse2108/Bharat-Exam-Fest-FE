@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 function Navbar() {
   const userData = useSelector(
     (state) => state.userConfig.classesData[0]
-
   );
   const location = useLocation();
   const { pathname } = location;
@@ -64,7 +63,7 @@ function Navbar() {
             </div>
             <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
               <button
-                className=" text-md text-slate-600 p-2 mt-2 hover:bg-slate-6000 hover:text-white rounded-full lg:hidden xl:hidden 2xl:hidden"
+                className=" text-md text-slate-600 p-2 mt-2 hover:bg-slate-6000 hover:text-gray-700 rounded-full lg:hidden xl:hidden 2xl:hidden"
                 onClick={Navigation}
                 title="Menu"
               >

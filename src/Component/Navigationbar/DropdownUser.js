@@ -6,11 +6,13 @@ import "react-toastify/dist/ReactToastify.css";
 import LogoutConfimation from "./LogoutConfimation";
 import { logOut } from "../../Context/Action/Auth";
 import { logOutAdmin } from "../../Context/Action";
+import { useSelector } from "react-redux";
 
 const DropdownUser = ({ authData }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userData = useSelector((state) => state.userConfig.classesData[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [confirm, setConfirm] = useState(false);
 
@@ -25,10 +27,10 @@ const DropdownUser = ({ authData }) => {
 
   const handleLogout = () => {
     toast.success("Logout successfully");
+    localStorage.removeItem("classes");
     Navigation();
     handleToggle();
     setTimeout(() => {
-      dispatch(logOut(), logOutAdmin());
       navigate("/");
     }, [1000]);
   };

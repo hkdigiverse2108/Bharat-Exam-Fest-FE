@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
 
 const OtpVerify = ({
   confirm,
@@ -12,9 +9,22 @@ const OtpVerify = ({
   email,
   otpValue,
   handleChangeOTP,
-  handleOtpverify
+  handleOtpverify,
 }) => {
-  
+  const otpRefs = useRef([]); // Create refs for each OTP input field
+
+  // This function handles the cursor movement
+  const handleOtpChange = (e, index) => {
+    const value = e.target.value;
+
+    // Update the OTP value at the correct index
+    handleChangeOTP(e, index);
+
+    // If the input is not empty, move the focus to the next input
+    if (value && index < otpRefs.current.length - 1) {
+      otpRefs.current[index + 1].focus();
+    }
+  };
 
   return (
     <>
@@ -48,8 +58,9 @@ const OtpVerify = ({
                   name="otp"
                   className="w-12 h-12 text-center border border-gray-400 rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500"
                   maxLength="1"
-                  onChange={(e) => handleChangeOTP(e, index)}
+                  onChange={(e) => handleOtpChange(e, index)} // Use handleOtpChange to handle input change and focus shift
                   value={otpValue.otp[index] || ""}
+                  ref={(el) => (otpRefs.current[index] = el)} // Set ref for each input
                 />
               ))}
             </div>
@@ -75,7 +86,6 @@ const OtpVerify = ({
       <ToastContainer
         draggable={false}
         autoClose={2000}
-        position={"top-center"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

@@ -10,7 +10,7 @@ const NormalHindQueBaseForm = ({
 }) => {
   return (
     <>
-      <div className="px-4 py-2 space-y-6">
+      <div className="px-4 py-2 space-y-6 duration-300 ease-in-out">
         {/* english */}
         <div className="space-y-4">
           <p className="text-2xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
@@ -104,6 +104,9 @@ const NormalHindQueBaseForm = ({
             id="message"
             rows="4"
             name={editQuestion.hindiQuestion.solution}
+            value={
+              editQuestion.hindiQuestion.solution || ""
+            }
             onChange={(e) =>
               seteditQuestion((prev) => ({
                 ...prev,

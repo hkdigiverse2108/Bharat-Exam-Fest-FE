@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_URL = "https://api-bef.hkdigiverse.com";
 
-export const fetchSubjects = async (accessToken) => {
+export const fetchSubjects = async (accessToken,classesId) => {
   try {
     // First API Call
     const response1 = await axios.get(
@@ -11,19 +11,19 @@ export const fetchSubjects = async (accessToken) => {
         headers: {
           Accept: "application/json",
           Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzAyMTMwMDJjNmM4NmQyNWQ2NDE2MTYiLCJ0eXBlIjoiYWRtaW4iLCJzdGF0dXMiOiJMb2dpbiIsImdlbmVyYXRlZE9uIjoxNzMwOTc5NjkyODM4LCJpYXQiOjE3MzA5Nzk2OTJ9.d-fawn9RjS92x54z00UhZkL4v_NAHQeBrdHsWwiTwt0", // Use the accessToken parameter
+           accessToken
         },
       }
     );
 
     // Second API Call
     const response2 = await axios.get(
-      `https://api-bef.hkdigiverse.com/subject/all?page=1&limit=10`,
+      `https://api-bef.hkdigiverse.com/subject/all?page=1&limit=10&classesFilter=${classesId}`,
       {
         headers: {
           Accept: "application/json",
           Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzAyMTMwMDJjNmM4NmQyNWQ2NDE2MTYiLCJ0eXBlIjoiYWRtaW4iLCJzdGF0dXMiOiJMb2dpbiIsImdlbmVyYXRlZE9uIjoxNzMwOTc5NjkyODM4LCJpYXQiOjE3MzA5Nzk2OTJ9.d-fawn9RjS92x54z00UhZkL4v_NAHQeBrdHsWwiTwt0", // Use the accessToken parameter
+           accessToken
         },
       }
     );
