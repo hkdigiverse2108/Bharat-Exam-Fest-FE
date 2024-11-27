@@ -62,7 +62,7 @@ function App() {
             <Route path="/classes" element={<ClassesHomePage />} />
             <Route path="/contestType" element={<ContestHome />} />
             <Route path="/information" element={<InformationHome />} />
-            <Route path="/addIntroduction" element={<AddIntroduction />} />
+            <Route path="/addIntroduction" element={<AddIntroduction />} /> 
             <Route path="/subject" element={<SubjectList />} />
             <Route path="/addSubject" element={<AddSubject />} />
             <Route path="/editSubject" element={<EditSubject />} />

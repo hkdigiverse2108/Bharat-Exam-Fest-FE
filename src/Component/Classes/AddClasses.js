@@ -14,8 +14,9 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
 
   const navigate = useNavigate();
   const [error, setError] = useState(null);
- const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token)
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0].data.token
+  );
 
   const [input, setInput] = useState({
     name: "",
@@ -29,18 +30,19 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
     },
   });
 
-  const isEmpty = (value) => {
-    const { classesId, name, ownerName, email, referralCode, image, contact } =
-      value;
-    return (
-      !classesId ||
-      !name ||
-      !ownerName ||
-      !email ||
-      !referralCode ||
-      !image ||
-      !contact.mobile
-    );
+  const isEmpty = (obj) => {
+    // Loop through each property in the object
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        // Check if it's an object and call isEmpty recursively for nested objects
+        if (typeof obj[key] === "object" && obj[key] !== null) {
+          if (isEmpty(obj[key])) return true; // Nested object is empty
+        } else if (!obj[key]) {
+          return true; // Empty value (including empty string, null, undefined, etc.)
+        }
+      }
+    }
+    return false;
   };
 
   const imgUpload = async (file) => {
@@ -112,11 +114,13 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
 
         if (response.status === 200) {
           console.log("success", response.data);
-          toast.success("Class added successfully!");
+          toast.success(response.data.message);
           onClose();
           getClassData();
         } else {
           console.log("failed", response);
+          toast.warn(response.data.message)
+
           toast.error("Failed to add class");
         }
       }
@@ -197,7 +201,7 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
                   htmlFor="ownerName"
                   className="text-gray-700 font-semibold dark:text-gray-200"
                 >
-                  Ownder Name
+                  Owner Name
                 </label>
                 <input
                   className="w-full block px-5 py-2 border rounded-lg shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#808836] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
@@ -205,7 +209,7 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
                   name="ownerName"
                   id="ownerName"
                   onChange={handleChange}
-                  placeholder="Enter Ownder Name"
+                  placeholder="Enter Owner Name"
                   autoComplete="off"
                 />
               </div>
