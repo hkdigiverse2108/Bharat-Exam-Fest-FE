@@ -16,6 +16,7 @@ const MenuProps = {
 };
 
 export default function MultipleSelect({ label, value, onChange, options }) {
+  
   return (
     <>
       <FormControl className="container h-full">
@@ -31,9 +32,9 @@ export default function MultipleSelect({ label, value, onChange, options }) {
           size="small"
           MenuProps={MenuProps}
         >
-          {options.map((value) => (
-            <MenuItem key={value._id} value={value}>
-              {value.name}
+          {options.map((subtopic) => (
+            <MenuItem key={subtopic._id} value={subtopic}>
+              {subtopic.name}
             </MenuItem>
           ))}
         </Select>

@@ -3,8 +3,8 @@ import { FaPlus } from "react-icons/fa";
 import { MdStar } from "react-icons/md";
 
 const HindiQuestionPairForm = ({
-  addQuestion,
-  setAddQuestion,
+  editQuestion,
+  setEditQuestion,
   currentStatement,
   setCurrentStatement,
   currentHindiPair,
@@ -37,7 +37,7 @@ const HindiQuestionPairForm = ({
           type="text"
           placeholder="Add question"
           name="hindiQuestion.question"
-          value={addQuestion.hindiQuestion.question}
+          value={editQuestion.hindiQuestion.question}
           onChange={handleChange}
         />
 
@@ -84,8 +84,8 @@ const HindiQuestionPairForm = ({
 
         {/* Pair Questions */}
         <div className="space-y-2">
-          {addQuestion.hindiQuestion?.pairQuestion?.length > 0 &&
-            addQuestion.hindiQuestion?.pairQuestion.map((pair, index) => {
+          {editQuestion.hindiQuestion?.pairQuestion?.length > 0 &&
+            editQuestion.hindiQuestion?.pairQuestion.map((pair, index) => {
               const [question, answer] = pair.split(" - ");
               return (
                 <div
@@ -117,7 +117,7 @@ const HindiQuestionPairForm = ({
             Statement Question
           </label>
           <textarea
-            value={addQuestion.hindiQuestion.statementQuestion}
+            value={editQuestion.hindiQuestion.statementQuestion}
             onChange={(e) =>
               handleChange(
                 "hindiQuestion",
@@ -149,7 +149,7 @@ const HindiQuestionPairForm = ({
                 <textarea
                   rows="3"
                   name={`hindiQuestion.options.${option}`}
-                  value={addQuestion.hindiQuestion.options[option]}
+                  value={editQuestion.hindiQuestion.options[option]}
                   onChange={handleChange}
                   className="block w-full min-h-22 max-h-22 p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                   placeholder={`Option ${option}`}
@@ -178,7 +178,7 @@ const HindiQuestionPairForm = ({
                       name="hindiQuestion.answer" // Use the appropriate name for your state structure
                       value={option.value}
                       checked={
-                        addQuestion.hindiQuestion.answer === option.value
+                        editQuestion.hindiQuestion.answer === option.value
                       }
                       onChange={(e) => handleCheck("hindiQuestion", e)} // Call handleCheck for radio selection
                       className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
@@ -205,7 +205,7 @@ const HindiQuestionPairForm = ({
             name="hindiQuestion.solution" // Use a name that the handleChange function can understand
             className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full min-h-[100px] py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
             placeholder="Enter solution"
-            value={addQuestion.hindiQuestion.solution} // Bind the value to the state
+            value={editQuestion.hindiQuestion.solution} // Bind the value to the state
             onChange={handleChange} // Use handleChange for updating the value
           />
         </div>

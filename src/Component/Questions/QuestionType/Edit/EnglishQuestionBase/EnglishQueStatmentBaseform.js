@@ -3,8 +3,8 @@ import { FaPlus } from "react-icons/fa";
 import { MdStar } from "react-icons/md";
 
 const EnglishQueStatementBaseform = ({
-  addQuestion,
-  setAddQuestion,
+  editQuestion,
+  setEditQuestion,
   currentStatement,
   setCurrentStatement,
   handleChange,
@@ -60,8 +60,8 @@ const EnglishQueStatementBaseform = ({
 
         {/* Display list of statements */}
         <div className="space-y-2">
-          {addQuestion.englishQuestion?.statementQuestion?.length > 0 &&
-            addQuestion.englishQuestion.statementQuestion.map(
+          {editQuestion.englishQuestion?.statementQuestion?.length > 0 &&
+            editQuestion.englishQuestion.statementQuestion.map(
               (value, index) => (
                 <div
                   key={index}
@@ -79,9 +79,9 @@ const EnglishQueStatementBaseform = ({
         className="border-2 pl-2 text-lg border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
         id="username"
         type="text"
-        placeholder="Enter Statement"
+        placeholder="Enter suggestion"
         value={
-          addQuestion.englishQuestion.lastQuestion || ""
+          editQuestion.englishQuestion.lastQuestion || ""
         } // Defaulting to first statement (or customize as needed)
         onChange={
           handleChange
@@ -108,7 +108,7 @@ const EnglishQueStatementBaseform = ({
               <input
                 type="text"
                 name={`englishQuestion.options.${option}`}
-                value={addQuestion.englishQuestion.options[option]}
+                value={editQuestion.englishQuestion.options[option]}
                 onChange={handleChange}
                 className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                 placeholder={`Option ${option}`}
@@ -137,7 +137,7 @@ const EnglishQueStatementBaseform = ({
                     name="englishQuestion.answer" // Use the appropriate name for your state structure
                     value={option.value}
                     checked={
-                      addQuestion.englishQuestion.answer === option.value
+                      editQuestion.englishQuestion.answer === option.value
                     }
                     onChange={(e) => handleCheck("englishQuestion", e)} // Call handleCheck for radio selection
                     className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
@@ -164,7 +164,7 @@ const EnglishQueStatementBaseform = ({
           name="englishQuestion.solution" // Use a name that the handleChange function can understand
           className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full min-h-[100px] py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
           placeholder="Enter solution"
-          value={addQuestion.englishQuestion.solution} // Bind the value to the state
+          value={editQuestion.englishQuestion.solution} // Bind the value to the state
           onChange={handleChange} // Use handleChange for updating the value
         />
       </div>

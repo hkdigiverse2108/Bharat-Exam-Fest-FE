@@ -79,14 +79,10 @@ const EnglishQueStatementBaseform = ({
         className="border-2 pl-2 text-lg border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
         id="username"
         type="text"
-        placeholder="Enter Statement"
-        value={
-          addQuestion.englishQuestion.lastQuestion || ""
-        } // Defaulting to first statement (or customize as needed)
-        onChange={
-          handleChange
-        }
-        name="englishQuestion.lastQuestion" // Not strictly needed here for the handler
+        placeholder="Enter suggestion"
+        value={addQuestion.englishQuestion.lastQuestion || ""}
+        onChange={handleChange}
+        name="englishQuestion.lastQuestion"
       />
 
       {/* Options section */}

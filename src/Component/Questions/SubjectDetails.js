@@ -13,7 +13,10 @@ import { CurrentQuestion, QuestionList } from "../../Context/Action";
 import SingleSelect from "../Ui/SingleSelect";
 import FilterQuestion from "../Ui/FilterQuestion";
 import ImgUpdatePage from "../Subject/ImgUpdatePage";
-import { fetchQuestionsBySubject } from "../../Hooks/getQuestionsApi";
+import {
+  fetchQuestionsBySubject,
+  getQuestionData,
+} from "../../Hooks/getQuestionsApi";
 
 function SubjectDetails() {
   const navigate = useNavigate();
@@ -71,6 +74,7 @@ function SubjectDetails() {
   function handleFilterData() {
     setToggle(!toggle);
   }
+
   function handleSubject() {
     setShow(!show);
   }
@@ -139,11 +143,14 @@ function SubjectDetails() {
     navigate("/addQuestion");
   }
 
-  function handleEditque(value) {
-    dispatch(CurrentQuestion(value));
-    // console.log(value);
-
-    navigate("/editQuestion");
+  async function handleEditque(valueId) {
+    try {
+      const data = await getQuestionData(valueId, accessToken);
+      dispatch(CurrentQuestion(data.data));
+      navigate("/editQuestion");
+    } catch (err) {
+      setError("Failed to load data. Please try again later."); // Set error state
+    }
   }
 
   const [selectedNames, setSelectedNames] = useState([]);
@@ -275,8 +282,11 @@ function SubjectDetails() {
   useEffect(() => {
     const getQuestions = async () => {
       try {
-        const data = await fetchQuestionsBySubject(accessToken, CurrentSubject?._id);
-        
+        const data = await fetchQuestionsBySubject(
+          accessToken,
+          CurrentSubject?._id
+        );
+
         // Check if data is valid
         if (!data) {
           console.log("No data received", data);
@@ -287,15 +297,16 @@ function SubjectDetails() {
 
         setQustions(Questions);
         setSubtopics(subTopics);
-
+        dispatch(CurrentQuestion());
         // Filter subTopics based on CurrentSubject.subTopics
         const filteredData = subTopics.filter((subject) =>
-          CurrentSubject.subTopics?.some((criteria) => subject._id === criteria._id)
+          CurrentSubject.subTopics?.some(
+            (criteria) => subject._id === criteria._id
+          )
         );
 
         // Safely set the selected subtopic if it exists
         if (filteredData.length > 0) {
-          console.log(filteredData[0]);
           setSelectedSubtopic(filteredData[0]);
         } else {
           console.log("No matching subtopics found");
@@ -406,7 +417,7 @@ function SubjectDetails() {
                             </svg>
                           </button>
                           <button
-                            onClick={() => handleEditque(value)}
+                            onClick={() => handleEditque(value._id)}
                             className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-green-100 border  hover:bg-opacity-90  "
                           >
                             <svg

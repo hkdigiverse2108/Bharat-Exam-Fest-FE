@@ -2,11 +2,11 @@ import React from "react";
 import { MdStar } from "react-icons/md";
 
 const NormalHindQueBaseForm = ({
-  addQuestion,
+  editQuestion,
   handleChange,
   optionsArray1,
   handleCheck,
-  setAddQuestion,
+  seteditQuestion,
 }) => {
   return (
     <>
@@ -29,7 +29,7 @@ const NormalHindQueBaseForm = ({
           type="text"
           placeholder="Add question"
           name="hindiQuestion.question"
-          value={addQuestion.hindiQuestion.question}
+          value={editQuestion.hindiQuestion.question}
           onChange={handleChange}
         />
 
@@ -48,7 +48,7 @@ const NormalHindQueBaseForm = ({
                 <input
                   type="text"
                   name={`hindiQuestion.options.${option}`}
-                  value={addQuestion.hindiQuestion.options[option]}
+                  value={editQuestion.hindiQuestion.options[option]}
                   onChange={handleChange}
                   className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                   placeholder={`Option ${option}`}
@@ -77,7 +77,7 @@ const NormalHindQueBaseForm = ({
                       name="hindiQuestion.answer" // Use the appropriate name for your state structure
                       value={option.value}
                       checked={
-                        addQuestion.hindiQuestion.answer === option.value
+                        editQuestion.hindiQuestion.answer === option.value
                       }
                       onChange={(e) => handleCheck("hindiQuestion", e)} // Call handleCheck for radio selection
                       className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
@@ -103,9 +103,9 @@ const NormalHindQueBaseForm = ({
           <textarea
             id="message"
             rows="4"
-            name={addQuestion.hindiQuestion.solution}
+            name={editQuestion.hindiQuestion.solution}
             onChange={(e) =>
-              setAddQuestion((prev) => ({
+              seteditQuestion((prev) => ({
                 ...prev,
                 hindiQuestion: {
                   ...prev.hindiQuestion,

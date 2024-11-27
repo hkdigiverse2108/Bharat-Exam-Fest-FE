@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -7,104 +7,158 @@ import { VscSaveAs } from "react-icons/vsc";
 import { FaPlus } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import MultipleSelect from "../Ui/MultiSelection";
 import SingleSelect from "../Ui/SingleSelect";
 import RadioButtons from "../Ui/RadioButtons";
+import HindiQuestionPairForm from "./QuestionType/Edit/HindiQuestionBase/HindiQuestionPairForm";
+import EnglishQuestionPairForm from "./QuestionType/Edit/EnglishQuestionBase/EnglishQuestionPairForm";
+import EnglishQueStatementBaseform from "./QuestionType/Edit/EnglishQuestionBase/EnglishQueStatmentBaseform";
+import NormalquestionBaseForm from "./QuestionType/Edit/EnglishQuestionBase/NormalQuestionBaseForm";
+import NormalHindQueBaseForm from "./QuestionType/Edit/HindiQuestionBase/NormalHindQueBaseForm";
+import HindiQueStatementBaseform from "./QuestionType/Edit/HindiQuestionBase/HindiQueStatementBaseform";
+import MultipleSelect from "../Ui/MultiSelection";
 
 function EditQuestion() {
   const navigate = useNavigate();
   const classId = useSelector((state) => state.authConfig.userInfo[0].data._id);
   const subject = useSelector((state) => state.userConfig.CurrentQue[0]);
+
   const [editQuestion, setEditQuestion] = useState({
-    questionId: subject._id,
-    subjectId: subject.subjectId,
-    classesId: classId,
-    subtopicIds: subject.subtopicIds,
-    questionBank: subject.questionBank,
-    type: subject.type,
-    questionType: subject.questionType,
+    questionId: "",
+    subjectId: "",
+    classesId: "",
+    subtopicIds: [],
+    questionBank: "",
+    type: "",
+    questionType: "",
     englishQuestion: {
-      question: subject.englishQuestion.question,
-      options: subject.englishQuestion.options,
-      answer: subject.englishQuestion.answer,
-      solution: subject.englishQuestion.solution,
-      statementQuestion: subject.englishQuestion.statementQuestion,
-      pairQuestion: subject.englishQuestion.pairQuestion || [""],
-      lastQuestion: subject.englishQuestion.lastQuestion,
+      question: "",
+      options: { A: "", B: "", C: "", D: "" },
+      answer: "",
+      solution: "",
+      statementQuestion: [],
+      pairQuestion: [],
+      lastQuestion: "",
     },
     hindiQuestion: {
-      question: subject.hindiQuestion.question,
-      options: subject.hindiQuestion.options,
-      answer: subject.hindiQuestion.answer,
-      solution: subject.hindiQuestion.solution,
-      statementQuestion: subject.hindiQuestion.statementQuestion,
-      pairQuestion: subject.hindiQuestion.pairQuestion || [""],
-      lastQuestion: subject.hindiQuestion.lastQuestion,
+      question: "",
+      options: { A: "", B: "", C: "", D: "" },
+      answer: "",
+      solution: "",
+      statementQuestion: [],
+      pairQuestion: [],
+      lastQuestion: "",
     },
   });
 
-  const [type, setType] = useState(editQuestion.type);
-  const [questionType, setQuestionType] = useState(editQuestion.questionType);
-  const [subtopics, setSubtopics] = useState([]);
+  // const memoizedQuestionType = useMemo(() => questionType, [questionType]);
+
+  const [type, setType] = useState("");
+  const [questionType, setQuestionType] = useState("");
   const [subTopicName, setSubTopicName] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState(
-    editQuestion.subjectId
-  );
+  const [selectedSubject, setSelectedSubject] = useState("");
   const [subjectname, setSubjectname] = useState([]);
 
   const accessToken = useSelector(
     (state) => state.authConfig.userInfo[0].data.token
   );
+  const [subtopics, setSubtopics] = useState([]);
+
   const [options, setOptions] = useState({
-    english: { A: false, B: false, C: false, D: false },
-    hindi: { A: false, B: false, C: false, D: false },
+    englishQuestion: { A: false, B: false, C: false, D: false },
+    hindiQuestion: { A: false, B: false, C: false, D: false },
   });
-  const optionsArray1 = Object.keys(options.english).map((key) => ({
+  const optionsArray1 = Object.keys(options.englishQuestion).map((key) => ({
     label: `Option ${key}`,
     value: key,
-    checked: options.english[key],
+    checked: options.englishQuestion[key],
   }));
-  const optionsArray2 = Object.keys(options.hindi).map((key) => ({
+  const optionsArray2 = Object.keys(options.hindiQuestion).map((key) => ({
     label: `Option ${key}`,
     value: key,
-    checked: options.hindi[key],
+    checked: options.hindiQuestion[key],
   }));
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    const [lang, field, option] = name.split("."); // Split the name to get the language, field, and option
+
+    if (lang === "englishQuestion" || lang === "hindiQuestion") {
+      if (field === "options" && option) {
+        setEditQuestion((prev) => ({
+          ...prev,
+          [lang]: {
+            ...prev[lang],
+            options: {
+              ...prev[lang].options,
+              [option]: value,
+            },
+          },
+        }));
+      } else {
+        setEditQuestion((prev) => ({
+          ...prev,
+          [lang]: {
+            ...prev[lang],
+            [field]: value, // Update the field (solution in this case)
+          },
+        }));
+      }
+    } else {
+      setEditQuestion((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
 
   const handleCheck = (language, event) => {
     const selectedValue = event.target.value;
 
+    // Update the options state
     setOptions((prev) => {
       const newOptions = { ...prev };
+
+      // Ensure options exist for the given language
+      if (!newOptions[language]) {
+        newOptions[language] = { A: false, B: false, C: false, D: false };
+      }
+
+      // Set all options to false and mark the selected one as true
       Object.keys(newOptions[language]).forEach((key) => {
         newOptions[language][key] = key === selectedValue;
       });
+
       return newOptions;
     });
+
+    // Update the selected answer in editQuestion state
+    setEditQuestion((prev) => ({
+      ...prev,
+      [language]: {
+        ...prev[language],
+        answer: selectedValue, // Save the selected value as the answer
+      },
+    }));
   };
 
   const handleTypeChange = (event) => {
-    const { value } = event.target;
-    setType(event.target.value);
-    setEditQuestion((prev) => ({
-      ...prev,
-      type: value,
-    }));
+    setEditQuestion((prev) => ({ ...prev, type: event.target.value }));
   };
 
   const handleSubjectChange = (event) => {
     const { value } = event.target;
-    setSelectedSubject(value);
+    setEditQuestion((prev) => ({ ...prev, subjectId: value._id }));
   };
 
   const handleSubtopicChange = (event) => {
     const { value } = event.target;
-    const dataId = value.map((res) => res?._id);
-    setSubTopicName(dataId);
+
+    const uniqueValues = Array.from(new Set(value.map((item) => item._id)));
     setSelectedSubtopic(value);
     setEditQuestion((prev) => ({
       ...prev,
-      subtopicIds: dataId,
+      subtopicIds: uniqueValues,
     }));
   };
 
@@ -114,16 +168,11 @@ function EditQuestion() {
   const [currentHindiPair, setCurrentHindiPair] = useState("");
 
   const addStatementQuestion = (language) => {
-    let currentStatement;
-    if (language === "english") {
-      currentStatement = currentEngStatement;
-    } else if (language === "hindi") {
-      currentStatement = currentHindiStatement;
-    }
-
-    if (currentStatement.trim() === "") {
+    const currentStatement =
+      language === "english" ? currentEngStatement : currentHindiStatement;
+    if (!currentStatement.trim()) {
       toast.error("Please enter a statement.");
-      return; // Prevent adding empty statements
+      return;
     }
 
     setEditQuestion((prev) => ({
@@ -136,57 +185,87 @@ function EditQuestion() {
         ],
       },
     }));
-
-    // Reset the current statement field
-    if (language === "english") {
-      setCurrentEngStatement("");
-    } else {
-      setCurrentHindiStatement("");
-    }
-
     toast.success("Statement added!");
   };
 
-  const addPairQuestion = (language) => {
-    const { question, answer } = editQuestion[language + "Question"];
+  const handleStatementQuestionChange = (event) => {
+    const { name, value } = event.target;
+    const [lang, field, option] = name.split(".");
+    const currentQuestionType = editQuestion.questionType;
 
-    if (question.trim() === "" || answer.trim() === "") {
-      toast.error("Please enter both question and answer.");
-      return;
+    if (currentQuestionType === "pair") {
+      const updatedPairQuestions = [value];
+
+      setEditQuestion((prev) => ({
+        ...prev,
+        [lang]: {
+          ...prev[lang],
+          [field]: updatedPairQuestions,
+          lastQuestion: value,
+        },
+      }));
+    } else if (currentQuestionType === "statement") {
+      // Logic for handling normal statement questions
+      const updatedStatements = [...editQuestion[lang].statements, value];
+
+      setEditQuestion((prev) => ({
+        ...prev,
+        [lang]: {
+          ...prev[lang],
+          [field]: updatedStatements,
+          lastQuestion: value,
+        },
+      }));
     }
-
-    const newPair = {
-      question,
-      options,
-    };
-    setEditQuestion((prev) => ({
-      ...prev,
-      [language + "Question"]: {
-        ...prev[language + "Question"],
-        pairQuestion: [...prev[language + "Question"].pairQuestion, newPair],
-      },
-    }));
-
-    toast.success("Question and answer pair added!");
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const keys = name.split(".");
-    setEditQuestion((prev) => {
-      const newState = { ...prev };
-      let temp = newState;
-
-      keys.forEach((key, index) => {
-        if (index === keys.length - 1) {
-          temp[key] = value;
-        } else {
-          temp = temp[key];
-        }
-      });
-
-      return newState;
+  const handlePairQuestionChange = (language, index, field, value) => {
+    const updatedPairQuestion = [...editQuestion[language].pairQuestion];
+    updatedPairQuestion[index] = {
+      ...updatedPairQuestion[index],
+      [field]: value,
+    };
+    setEditQuestion({
+      ...editQuestion,
+      [language]: {
+        ...editQuestion[language],
+        pairQuestion: updatedPairQuestion,
+      },
     });
+  };
+
+  const [inputs, setInputs] = useState({
+    input1: "",
+    input2: "",
+  });
+
+  // Handle input change for both input1 and input2
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setInputs((prevInputs) => ({
+      ...prevInputs,
+      [name]: value,
+    }));
+  };
+
+  const handleAddPair = (language) => {
+    if (inputs.input1.trim() !== "" && inputs.input2.trim() !== "") {
+      const combinedValue = `${inputs.input1} - ${inputs.input2}`;
+      console.log(combinedValue);
+      setEditQuestion((prev) => ({
+        ...prev,
+        [language]: {
+          ...prev[language],
+          pairQuestion: [...prev[language].pairQuestion, combinedValue],
+        },
+      }));
+      setInputs({
+        input1: "",
+        input2: "",
+      });
+    } else {
+      toast.warn("Fillup empty space!");
+    }
   };
 
   useEffect(() => {
@@ -359,61 +438,168 @@ function EditQuestion() {
       console.log("An error occurred while fetching data.");
     }
   };
-
   useEffect(() => {
-    if (subject.englishQuestion.options) {
-      const newOptions = { ...options };
-      Object.keys(newOptions.english).forEach((key) => {
-        // Check if the current option key exists in the questionData.options
-        newOptions.english[key] = subject.englishQuestion.answer === key;
-      });
+    // Ensure the options are defined before proceeding
+    const englishOptions = editQuestion.englishQuestion.options || {};
+    const hindiOptions = editQuestion.hindiQuestion.options || {};
 
-      setOptions(newOptions);
-    }
-  }, [options, subject.englishQuestion]);
+    // Copy the existing options structure
+    const newOptions = { ...options };
+
+    // Loop through the English options and update based on the selected answer
+    Object.keys(englishOptions).forEach((key) => {
+      newOptions.englishQuestion[key] =
+        editQuestion.englishQuestion.answer === key;
+    });
+
+    // Loop through the Hindi options and update based on the selected answer
+    Object.keys(hindiOptions).forEach((key) => {
+      newOptions.hindiQuestion[key] = editQuestion.hindiQuestion.answer === key;
+    });
+
+    // Update the options state
+    setOptions({
+      englishQuestion: { ...newOptions.englishQuestion },
+      hindiQuestion: { ...newOptions.hindiQuestion },
+    });
+  }, [
+    editQuestion.englishQuestion.answer,
+    editQuestion.englishQuestion.options,
+    editQuestion.hindiQuestion.answer,
+    editQuestion.hindiQuestion.options,
+    options,
+  ]);
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    // Check if responseData exists and auto-fill the state
+    if (subject) {
+      // Auto-fill the 'type' and 'questionType' from subject
+      setType(subject.type || "");
+      setQuestionType(subject.questionType || "");
+
+      // Assuming the 'subtopicIds' field contains the list of subtopic IDs
+      // You can fill `subTopicName` based on the available subtopic names or IDs.
+      setSubTopicName(subject.subtopicIds || []);
+      setSelectedSubtopic(subject.subtopicIds || []);
+
+      // For the subject name, assuming it's the 'subjectId' or a name field
+      setSelectedSubject(subject.subjectId || "");
+
+      // Assuming 'subjectname' contains a list of names or objects, here we set it accordingly
+      // (Modify this based on the actual structure of the response data)
+      setSubjectname(subject._id); // Just a placeholder example
+    }
+  }, [subject]);
+
+  useEffect(() => {
+    if (subject) {
+      setEditQuestion({
+        questionId: subject._id,
+        subjectId: subject.subjectId,
+        classesId: subject.classesId,
+        subtopicIds: subject.subtopicIds,
+        questionBank: subject.questionBank,
+        type: subject.type,
+        questionType: subject.questionType,
+        englishQuestion: {
+          question: subject.englishQuestion.question,
+          options: subject.englishQuestion.options,
+          answer: subject.englishQuestion.answer,
+          solution: subject.englishQuestion.solution,
+          statementQuestion: subject.englishQuestion.statementQuestion,
+          pairQuestion: subject.englishQuestion.pairQuestion || [],
+          lastQuestion: subject.englishQuestion.lastQuestion,
+        },
+        hindiQuestion: {
+          question: subject.hindiQuestion.question,
+          options: subject.hindiQuestion.options,
+          answer: subject.hindiQuestion.answer,
+          solution: subject.hindiQuestion.solution,
+          statementQuestion: subject.hindiQuestion.statementQuestion,
+          pairQuestion: subject.hindiQuestion.pairQuestion || [],
+          lastQuestion: subject.hindiQuestion.lastQuestion,
+        },
+      });
+      console.log(subject);
+    }
+  }, [subject]);
+
+  // useEffect(() => {
+  //   const getContestData = async () => {
+  //     try {
+  //       const data = await fetchContestData(tokenFromRedux);
+  //       setContesTypeData(data);
+  //     } catch (err) {
+  //       console.error(
+  //         err || "An error occurred while fetching the contest data"
+  //       );
+  //     }
+  //   };
+
+  //   getContestData(); // Call the function to fetch data
+  // }, [tokenFromRedux]);
+
+  // useEffect(() => {
+  //   if (contestFromRedux) {
+  //     setContestData({
+  //       name: contestFromRedux.name,
+  //       contestTypeId: contestFromRedux.type,
+  //       startDate: contestFromRedux.startDate,
+  //       endDate: contestFromRedux.endDate,
+  //       totalSpots: contestFromRedux.totalSpots,
+  //       fees: contestFromRedux.fees,
+  //       winningAmountPerFee: contestFromRedux.winningAmountPerFee,
+  //       winnerPercentage: contestFromRedux.winnerPercentage,
+  //       ranks: contestFromRedux.ranks.map((rank) => ({
+  //         startPlace: rank.startPlace || "", // Map place to startPlace
+  //         endPlace: rank.endPlace || "", // Initialize endPlace
+  //         price: rank.price || 0, // Initialize price
+  //       })),
+  //       totalQuestions: contestFromRedux.totalQuestions,
+  //       totalTime: contestFromRedux.totalTime,
+  //       totalMarks: contestFromRedux.totalMarks,
+  //       classesId: contestFromRedux.classesId,
+  //     });
+  //     setSelectedValues([contestFromRedux.classesId]);
+  //     // selectedContestType(contestFromRedux.contestTypeId);
+  //     const combinedDate = getCombinedDate(contestFromRedux);
+  //     setDateRange(combinedDate);
+  //   }
+  //   console.log(contestData);
+  // }, [contestFromRedux]);
+
   return (
     <>
-      <section className=" bg-white dark:bg-gray-900 overflow-y-auto rounded-lg border-2 border-slate-300 font-sans">
+      <section className="bg-white dark:bg-gray-900 rounded-lg border-2 border-slate-300 font-sans">
         <div className="py-8 px-4 space-y-2 lg:px-6">
           <div className="space-y-4">
             <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
-              Edit question
+              Edit Question
             </p>
-            <p className="text-xl tracking-tight font-medium text-left text-slate-600 dark:text-white ">
+            <p className="text-xl tracking-tight font-medium text-left text-slate-600 dark:text-white">
               Fill in the details below to create a new question.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-2  lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
             <div className="space-y-2">
-              <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
+              <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
                 Subject
               </label>
               <SingleSelect
                 label="Subject"
-                value={selectedSubject}
+                value={subjectname}
                 onChange={handleSubjectChange}
                 options={subjectname}
               />
             </div>
+
             <div className="space-y-2">
-              <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
-                Subtopics
-              </label>
-              <MultipleSelect
-                label="Subtopics"
-                value={selectedSubtopic}
-                onChange={handleSubtopicChange}
-                options={subtopics}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
-                Question bank
+              <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
+                Subtopic
               </label>
               <MultipleSelect
                 label="Subtopics"
@@ -423,988 +609,144 @@ function EditQuestion() {
               />
             </div>
 
-            <div className="space-y-3">
-              <label className="font-medium text-gray-900 text-start capitalize text-md  dark:text-white">
-                Type
+            <div className="space-y-2">
+              <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
+                Question Type
               </label>
               <RadioButtons checkedValue={type} onChange={handleTypeChange} />
             </div>
           </div>
+
           {/* question_type */}
           <div className="p-4 md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
             <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
               Question Type :
             </p>
-            <div className="flex  items-center justify-start space-x-2">
-              <input
-                id="normal"
-                type="radio"
-                name="list-radio"
-                value="normal"
-                onChange={(e) =>
-                  setEditQuestion((prev) => ({
-                    ...prev,
-                    questionType: e.target.value,
-                  }))
-                }
-                checked={questionType === "normal"}
-                className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600  dark:bg-gray-600 dark:border-gray-500"
-              />
-              <label
-                htmlFor="normal"
-                className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
+            {["normal", "statement", "pair"].map((option, index) => (
+              <div
+                className="flex items-center justify-start space-x-2"
+                key={index}
               >
-                normal
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <input
-                id="statement"
-                type="radio"
-                name="list-radio"
-                value="statement"
-                onChange={(e) =>
-                  setEditQuestion((prev) => ({
-                    ...prev,
-                    questionType: e.target.value,
-                  }))
-                }
-                checked={questionType === "statement"}
-                className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
-              />
-              <label
-                htmlFor="statement"
-                className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-              >
-                statement
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <input
-                id="pair"
-                type="radio"
-                name="list-radio"
-                value="pair"
-                onChange={(e) =>
-                  setEditQuestion((prev) => ({
-                    ...prev,
-                    questionType: e.target.value,
-                  }))
-                }
-                checked={questionType === "pair"}
-                className="w-4 h-4 text-orange-600 bg-orange-600 border border-orange-600 dark:bg-gray-600 dark:border-gray-500"
-              />
-              <label
-                htmlFor="pair"
-                className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-              >
-                pair
-              </label>
-            </div>
-          </div>
-        </div>
-        <div className="px-4 py-2 space-y-6">
-          <div className="space-y-4">
-            {/* english */}
-            <div className="space-y-4">
-              <p className="text-2xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
-                english question section
-              </p>
-              <div className="space-y-2">
-                <div className="space-y-2">
-                  <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                    write question
-                  </p>
-                  {questionType === "pair" ? (
-                    <div className="duration-300 space-y-2">
-                      <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                        React, also known as ReactJS, is a popular and powerful
-                        JavaScript library used for building dynamic and
-                        interactive user interfaces, primarily for single-page
-                        applications (SPAs). It was developed and maintained by
-                        Facebook and has gained significant popularity due to
-                        its efficient rendering techniques, reusable components,
-                        and active community support. In this article, we will
-                        explore React Introduction, what React is, its key
-                        features, benefits, and why it’s a great choice for
-                        modern web development.
-                      </div>
-
-                      {/* options */}
-                      <div className=" p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          options
-                        </p>
-                        <div className="flex flex-row items-center  space-x-3">
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q1"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              a- option
-                              <MdStar className="text-orange-400  h-3 w-3 " />
-                            </label>
-                            <input
-                              type="text"
-                              name="q1"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q2"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              b- option
-                              <MdStar className="text-orange-400 h-3 w-3" />
-                            </label>
-                            <input
-                              type="text"
-                              name="q2"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q3"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              c- option
-                              <MdStar className="text-orange-400 h-3 w-3" />
-                            </label>
-                            <input
-                              type="text"
-                              name="q3"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q4"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              d- option
-                              <MdStar className="text-orange-400 h-3 w-3" />
-                            </label>
-                            <input
-                              type="text"
-                              name="q4"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      {/* answer */}
-                      <div className="p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          answer
-                        </p>
-                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
-                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio1"
-                                  type="radio"
-                                  value="A"
-                                  checked={options.A}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio1"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option A
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio2"
-                                  type="radio"
-                                  value="B"
-                                  checked={options.B}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio2"
-                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option B
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio3"
-                                  type="radio"
-                                  value="C"
-                                  checked={options.C}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio3"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option C
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio4"
-                                  type="radio"
-                                  value="D"
-                                  checked={options.D}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio4"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option D
-                                </label>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      {/* solution */}
-                      <div className="space-y-2">
-                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                          solution
-                        </p>
-                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces, primarily for
-                          single-page applications (SPAs). It was developed and
-                          maintained by Facebook and has gained significant
-                          popularity due to its efficient rendering techniques,
-                          reusable components, and active community support. In
-                          this article, we will explore React Introduction, what
-                          React is, its key features, benefits, and why it’s a
-                          great choice for modern web development.
-                        </div>
-                      </div>
-                    </div>
-                  ) : questionType === "statement" ? (
-                    <div className="duration-300 space-y-2">
-                      <input
-                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                        id="username"
-                        type="text"
-                        placeholder="Enter question"
-                        value={editQuestion.englishQuestion.question}
-                        onChange={handleChange}
-                        name="englishQuestion.question"
-                      />
-                      <div className="flex items-center justify-end w-full">
-                        <button
-                          onClick={() => addStatementQuestion("english")}
-                          className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90"
-                        >
-                          <FaPlus className="font-bold text-white w-4 h-4" />
-                          <p className="font-semibold">Add Statement</p>
-                        </button>
-                      </div>
-                      {/* statement */}
-                      <input
-                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                        id="username"
-                        type="text"
-                        placeholder="Enter Statement"
-                        value={currentEngStatement}
-                        onChange={(e) => setCurrentEngStatement(e.target.value)}
-                        name="englishQuestion.statementQuestion"
-                      />
-                      <div className="space-y-2">
-                        {editQuestion.englishQuestion.statementQuestion.map(
-                          (value, index) => (
-                            <div
-                              key={index}
-                              className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
-                            >
-                              {value}
-                            </div>
-                          )
-                        )}
-                      </div>
-                      <input
-                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                        id="username"
-                        type="text"
-                        placeholder="Enter suggestion"
-                        value={editQuestion.englishQuestion.lastQuestion}
-                        onChange={handleChange}
-                        name="englishQuestion.lastQuestion"
-                      />
-                      {/* options */}
-                      <div className=" p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          options
-                        </p>
-                        <div className="flex flex-row items-center space-x-3">
-                          {["A", "B", "C", "D"].map((option) => (
-                            <div key={option} className="w-1/4">
-                              <label
-                                htmlFor={`englishQuestion.options.${option}`}
-                                className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                              >
-                                Option - {option}
-                                <MdStar className="text-orange-400 h-3 w-3" />
-                              </label>
-                              <input
-                                type="text"
-                                name={`englishQuestion.options.${option}`}
-                                // value={
-                                //   editQuestion.englishQuestion.options[option]
-                                // }
-                                onChange={handleChange}
-                                className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                placeholder={`Option ${option}`}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      {/* answer */}
-                      <div className="p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          answer
-                        </p>
-
-                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
-                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-                            {optionsArray1.map((option, index) => (
-                              <li
-                                className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-                                key={index}
-                              >
-                                <div className="flex items-center ps-3">
-                                  <input
-                                    id={`radio${option.label}`}
-                                    type="radio"
-                                    value={option.value}
-                                    // checked={options.englishQuestion[option]}
-                                    onChange={(e) =>
-                                      handleCheck("englishQuestion", e)
-                                    }
-                                    className="w-4 h-4 text-blue-600 border-gray-300 checked:bg -blue-600 checked:outline-none"
-                                  />
-                                  <label
-                                    htmlFor={`radio${option.label}`}
-                                    className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                  >
-                                    Option {option.value}
-                                  </label>
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                      {/* solution */}
-                      <div className="space-y-2">
-                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                          solution
-                        </p>
-                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces, primarily for
-                          single-page applications (SPAs). It was developed and
-                          maintained by Facebook and has gained significant
-                          popularity due to its efficient rendering techniques,
-                          reusable components, and active community support. In
-                          this article, we will explore React Introduction, what
-                          React is, its key features, benefits, and why it’s a
-                          great choice for modern web development.
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      {/* value input */}
-                      <input
-                        className=" border-2 pl-4 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                        id="question"
-                        type="text"
-                        placeholder="Add question"
-                        name="englishQuestion.question"
-                        value={editQuestion.englishQuestion.question}
-                        onChange={handleChange}
-                      />
-
-                      {/* options */}
-                      <div className=" p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          options
-                        </p>
-                        <div className="flex flex-row items-center space-x-3">
-                          {["A", "B", "C", "D"].map((option) => (
-                            <div key={option} className="w-1/4">
-                              <label className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white">
-                                Option - {option}
-                                <MdStar className="text-orange-400 h-3 w-3" />
-                              </label>
-                              <input
-                                type="text"
-                                name={`englishQuestion.options.${option}`}
-                                value={
-                                  editQuestion.englishQuestion.options[option]
-                                }
-                                onChange={handleChange}
-                                className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                placeholder={`Option ${option}`}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      {/* answer */}
-                      <div className="p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          answer
-                        </p>
-
-                        <div className="flex flex-row items-center  space-x-3">
-                          {["A", "B", "C", "D"].map((option, index) => (
-                            <div
-                              key={index}
-                              className="flex flex-row items-center justify-start gap-x-6 text-sm font-medium text-gray-900 rounded-t-lg dark:border-gray-600"
-                            >
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id={option}
-                                  type="radio"
-                                  value={option}
-                                  checked={
-                                    option ===
-                                    editQuestion.englishQuestion.answer
-                                  }
-                                  onChange={(e) => {
-                                    setEditQuestion((prev) => ({
-                                      ...prev,
-                                      englishQuestion: {
-                                        ...prev.englishQuestion,
-                                        answer: option,
-                                      },
-                                    }));
-                                    handleCheck("english", e);
-                                  }}
-                                  className="w-4 h-4 text-blue-600 border-gray-300 "
-                                />
-                                <label
-                                  htmlFor={option}
-                                  className="w-full py-3 ms-2 text-base font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option {option}
-                                </label>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      {/* solution */}
-                      <div className="space-y-2">
-                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                          solution
-                        </p>
-                        <textarea
-                          id="message"
-                          rows="4"
-                          name={editQuestion.englishQuestion.solution}
-                          value={editQuestion.englishQuestion.solution}
-                          onChange={(e) =>
-                            setEditQuestion((prev) => ({
-                              ...prev,
-                              englishQuestion: {
-                                ...prev.englishQuestion,
-                                solution: e.target.value,
-                              },
-                            }))
-                          }
-                          className="block rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner p-2.5 w-full text-md bg-gray-50  border-gray-300 focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          placeholder="Your solution..."
-                        ></textarea>
-                      </div>
-                    </>
-                  )}
-                </div>
+                <input
+                  type="radio"
+                  id={`type-${option}`}
+                  value={option}
+                  name="questionType"
+                  checked={editQuestion.questionType === option} // Set checked based on the current questionType
+                  onChange={(e) => {
+                    setEditQuestion((prev) => ({
+                      ...prev,
+                      questionType: e.target.value, // Update questionType in the state
+                    }));
+                    setQuestionType(e.target.value); // If you also want to update this state
+                  }}
+                  className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
+                />
+                <label
+                  htmlFor={`type-${option}`}
+                  className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
+                >
+                  {option}
+                </label>
               </div>
-            </div>
-            {/* hindi */}
-            <div className="space-y-4">
-              <p className="text-2xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
-                hindi question section
-              </p>
-              <div className="space-y-2">
-                <div className="space-y-2">
-                  <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                    write question
-                  </p>
-                  {questionType === "pair" ? (
-                    <div className="duration-300 space-y-2">
-                      <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                        React, also known as ReactJS, is a popular and powerful
-                        JavaScript library used for building dynamic and
-                        interactive user interfaces, primarily for single-page
-                        applications (SPAs). It was developed and maintained by
-                        Facebook and has gained significant popularity due to
-                        its efficient rendering techniques, reusable components,
-                        and active community support. In this article, we will
-                        explore React Introduction, what React is, its key
-                        features, benefits, and why it’s a great choice for
-                        modern web development.
-                      </div>
-
-                      {/* options */}
-                      <div className=" p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          options
-                        </p>
-                        <div className="flex flex-row items-center  space-x-3">
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q1"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              a- option
-                              <MdStar className="text-orange-400  h-3 w-3 " />
-                            </label>
-                            <input
-                              type="text"
-                              name="q1"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q2"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              b- option
-                              <MdStar className="text-orange-400 h-3 w-3" />
-                            </label>
-                            <input
-                              type="text"
-                              name="q2"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q3"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              c- option
-                              <MdStar className="text-orange-400 h-3 w-3" />
-                            </label>
-                            <input
-                              type="text"
-                              name="q3"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                          <div className="w-1/4">
-                            <label
-                              htmlFor="q4"
-                              className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                            >
-                              d- option
-                              <MdStar className="text-orange-400 h-3 w-3" />
-                            </label>
-                            <input
-                              type="text"
-                              name="q4"
-                              className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600  border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                              placeholder="Enter Question"
-                              maxLength="19"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      {/* answer */}
-                      <div className="p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          answer
-                        </p>
-
-                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
-                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-                            <li className="border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio1"
-                                  type="radio"
-                                  value="A"
-                                  checked={options.A}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600  border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio1"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option A
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio2"
-                                  type="radio"
-                                  value="B"
-                                  checked={options.B}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio2"
-                                  className=" py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option B
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio3"
-                                  type="radio"
-                                  value="C"
-                                  checked={options.C}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio3"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option C
-                                </label>
-                              </div>
-                            </li>
-                            <li className=" border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id="radio4"
-                                  type="radio"
-                                  value="D"
-                                  checked={options.D}
-                                  // onChange={handleCheck}
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 checked:bg-blue-600 checked:outline-none"
-                                />
-                                <label
-                                  htmlFor="radio4"
-                                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option D
-                                </label>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      {/* solution */}
-                      <div className="space-y-2">
-                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                          solution
-                        </p>
-                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          React, also known as ReactJS, is a popular and
-                          powerful JavaScript library used for building dynamic
-                          and interactive user interfaces, primarily for
-                          single-page applications (SPAs). It was developed and
-                          maintained by Facebook and has gained significant
-                          popularity due to its efficient rendering techniques,
-                          reusable components, and active community support. In
-                          this article, we will explore React Introduction, what
-                          React is, its key features, benefits, and why it’s a
-                          great choice for modern web development.
-                        </div>
-                      </div>
-                    </div>
-                  ) : questionType === "statement" ? (
-                    <div className="duration-300 space-y-2">
-                      <input
-                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                        id="username"
-                        type="text"
-                        placeholder="Enter question"
-                        value={editQuestion.hindiQuestion.question}
-                        onChange={handleChange}
-                        name="englishQuestion.question"
-                      />
-                      <div className="flex items-center justify-end w-full">
-                        <button
-                          onClick={() => addStatementQuestion("hindi")}
-                          className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90"
-                        >
-                          <FaPlus className="font-bold text-white w-4 h-4" />
-                          <p className="font-semibold">Add Statement</p>
-                        </button>
-                      </div>
-                      {/* statement */}
-                      <input
-                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                        id="username"
-                        type="text"
-                        placeholder="Enter Statement"
-                        value={currentEngStatement}
-                        onChange={(e) => setCurrentEngStatement(e.target.value)}
-                        name="hindiQuestion.statementQuestion"
-                      />
-                      <div className="space-y-2">
-                        {editQuestion.hindiQuestion.statementQuestion.map(
-                          (value, index) => (
-                            <div
-                              key={index}
-                              className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
-                            >
-                              {value}
-                            </div>
-                          )
-                        )}
-                      </div>
-                      <input
-                        className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                        id="username"
-                        type="text"
-                        placeholder="Enter suggestion"
-                        value={editQuestion.hindiQuestion.lastQuestion}
-                        onChange={handleChange}
-                        name="hindiQuestion.lastQuestion"
-                      />
-                      {/* options */}
-                      <div className=" p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          options
-                        </p>
-                        <div className="flex flex-row items-center space-x-3">
-                          {["A", "B", "C", "D"].map((option) => (
-                            <div key={option} className="w-1/4">
-                              <label
-                                htmlFor={`hindiQuestion.options.${option}`}
-                                className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white"
-                              >
-                                Option - {option}
-                                <MdStar className="text-orange-400 h-3 w-3" />
-                              </label>
-                              <input
-                                type="text"
-                                name={`hindiQuestion.options.${option}`}
-                                // value={
-                                //   editQuestion.hindiQuestion.options[option]
-                                // }
-                                onChange={handleChange}
-                                className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                placeholder={`Option ${option}`}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      {/* answer */}
-                      <div className="p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          answer
-                        </p>
-                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
-                          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-                            {optionsArray1.map((option, index) => (
-                              <li
-                                className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-                                key={index}
-                              >
-                                <div className="flex items-center ps-3">
-                                  <input
-                                    id={`radio${option.label}`}
-                                    type="radio"
-                                    value={option.value}
-                                    // checked={options.hindiQuestion[option]}
-                                    onChange={(e) =>
-                                      handleCheck("hindiQuestion", e)
-                                    }
-                                    className="w-4 h-4 text-blue-600 border-gray-300 checked:bg -blue-600 checked:outline-none"
-                                  />
-                                  <label
-                                    htmlFor={`radio${option.label}`}
-                                    className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                  >
-                                    Option {option.value}
-                                  </label>
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                      {/* solution */}
-                      <div className="space-y-2">
-                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                          solution
-                        </p>
-                        <div className="rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                          {editQuestion.hindiQuestion.solution}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      {/* value input */}
-                      <input
-                        className=" border-2 pl-4 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-                        id="question"
-                        type="text"
-                        placeholder="Add question"
-                        name="hindiQuestion.question"
-                        value={editQuestion.hindiQuestion.question}
-                        onChange={handleChange}
-                      />
-                      {/* options */}
-                      <div className=" p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          options
-                        </p>
-                        <div className="flex flex-row items-center space-x-3">
-                          {["A", "B", "C", "D"].map((option) => (
-                            <div className="w-1/4" key={option}>
-                              <label className="flex mb-2 text-start capitalize text-base font-medium text-gray-700 dark:text-white">
-                                Option - {option}
-                                <MdStar className="text-orange-400 h-3 w-3" />
-                              </label>
-                              <input
-                                type="text"
-                                name={`hindiQuestion.options.${option}`}
-                                value={
-                                  editQuestion.hindiQuestion.options[option]
-                                }
-                                onChange={handleChange}
-                                className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                placeholder={`Option ${option}`}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      {/* answer */}
-                      <div className="p-4 space-y-4">
-                        <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-                          answer
-                        </p>
-
-                        <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
-                          {["A", "B", "C", "D"].map((option, index) => (
-                            <div
-                              key={index}
-                              className="flex flex-row items-center justify-start gap-x-6 text-sm font-medium text-gray-900 rounded-t-lg dark:border-gray-600"
-                            >
-                              <div className="flex items-center ps-3">
-                                <input
-                                  id={option}
-                                  type="radio"
-                                  value={option}
-                                  checked={
-                                    option === editQuestion.hindiQuestion.answer
-                                  }
-                                  onChange={(e) => {
-                                    setEditQuestion((prev) => ({
-                                      ...prev,
-                                      hindiQuestion: {
-                                        ...prev.hindiQuestion,
-                                        answer: option,
-                                      },
-                                    }));
-                                    handleCheck("hindi", e);
-                                  }}
-                                  className="w-4 h-4 text-blue-600 border-gray-300 "
-                                />
-                                <label
-                                  htmlFor={option}
-                                  className="w-full py-3 ms-2 text-base font-medium text-gray-900 dark:text-gray-300"
-                                >
-                                  Option {option}
-                                </label>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      {/* solution */}
-                      <div className="space-y-2">
-                        <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
-                          solution
-                        </p>
-                        <textarea
-                          id="message"
-                          rows="4"
-                          name={editQuestion.hindiQuestion.solution}
-                          value={editQuestion.hindiQuestion.solution}
-                          onChange={(e) =>
-                            setEditQuestion((prev) => ({
-                              ...prev,
-                              hindiQuestion: {
-                                ...prev.hindiQuestion,
-                                solution: e.target.value,
-                              },
-                            }))
-                          }
-                          className="block rounded-md border  px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner p-2.5 w-full text-md bg-gray-50  border-gray-300 focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          placeholder="Your solution..."
-                        ></textarea>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
-          <div className="flex items-center justify-center">
+
+          {questionType === "pair" ? (
+            <EnglishQuestionPairForm
+              editQuestion={editQuestion}
+              setEditQuestion={setEditQuestion}
+              currentEngPair={currentEngPair}
+              setCurrentEngPair={setCurrentEngPair}
+              addPairQuestion={handleAddPair}
+              handleChange={handleChange}
+              handleCheck={handleCheck}
+              optionsArray1={optionsArray1}
+              handlePairQuestionChange={handlePairQuestionChange}
+              handleAddPair={handleAddPair}
+              handleStatementQuestionChange={handleStatementQuestionChange}
+              inputs={inputs} // Pass inputs as prop
+              handleInputChange={handleInputChange}
+            />
+          ) : questionType === "statement" ? (
+            <EnglishQueStatementBaseform
+              editQuestion={editQuestion}
+              setEditQuestion={setEditQuestion}
+              currentStatement={currentEngStatement}
+              setCurrentStatement={setCurrentEngStatement}
+              handleChange={handleChange}
+              handleCheck={handleCheck}
+              optionsArray1={optionsArray1}
+              handlePairQuestionChange={handleStatementQuestionChange}
+              handleAddStatement={addStatementQuestion}
+            />
+          ) : (
+            <NormalquestionBaseForm
+              editQuestion={editQuestion}
+              setEditQuestion={setEditQuestion}
+              handleChange={handleChange}
+              handleCheck={handleCheck}
+              optionsArray1={optionsArray1}
+            />
+          )}
+
+          {questionType === "pair" ? (
+            <HindiQuestionPairForm
+              editQuestion={editQuestion}
+              setEditQuestion={setEditQuestion}
+              currentHindiPair={currentHindiPair}
+              addPairQuestion={handleAddPair}
+              handleChange={handleChange}
+              handleCheck={handleCheck}
+              optionsArray1={optionsArray1}
+              handlePairQuestionChange={handlePairQuestionChange}
+              handleStatementQuestionChange={handleStatementQuestionChange}
+              handleAddPair={handleAddPair}
+              inputs={inputs} // Pass inputs as prop
+              handleInputChange={handleInputChange}
+            />
+          ) : questionType === "statement" ? (
+            <HindiQueStatementBaseform
+              editQuestion={editQuestion}
+              setEditQuestion={setEditQuestion}
+              currentStatement={currentHindiStatement}
+              setCurrentStatement={setCurrentHindiStatement}
+              handleChange={handleChange}
+              handleCheck={handleCheck}
+              optionsArray1={optionsArray1}
+              handlePairQuestionChange={handleStatementQuestionChange}
+              handleAddStatement={addStatementQuestion}
+            />
+          ) : (
+            <NormalHindQueBaseForm
+              editQuestion={editQuestion}
+              setEditQuestion={setEditQuestion}
+              handleChange={handleChange}
+              handleCheck={handleCheck}
+              optionsArray1={optionsArray1}
+            />
+          )}
+
+          <div className="mt-6 text-center">
             <button
+              type="button"
               onClick={EditQuestion}
-              className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90  "
+              className="inline-flex items-center py-2 px-6 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
             >
-              <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
-                <VscSaveAs />
-              </svg>
-              <p className=" font-medium">save question</p>
+              <VscSaveAs className="mr-2" />
+              Save Question
             </button>
           </div>
         </div>
+        <ToastContainer
+          draggable={false}
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick={false}
+          theme="dark"
+        />
       </section>
-      <ToastContainer
-        draggable={false}
-        autoClose={2000}
-        position={"top-center"}
-        hideProgressBar={false}
-        newestOnTop={true}
-        closeOnClick={false}
-        theme="dark"
-      />
     </>
   );
 }

@@ -1,12 +1,12 @@
 import React from "react";
 import { MdStar } from "react-icons/md";
 
-const NormalHindQueBaseForm = ({
-  addQuestion,
+const NormalquestionBaseForm = ({
+  editQuestion,
   handleChange,
   optionsArray1,
   handleCheck,
-  setAddQuestion,
+  seteditQuestion,
 }) => {
   return (
     <>
@@ -14,7 +14,7 @@ const NormalHindQueBaseForm = ({
         {/* english */}
         <div className="space-y-4">
           <p className="text-2xl tracking-tight font-semibold text-left text-gray-900 dark:text-white capitalize">
-            hindi question section
+            english question section
           </p>
           <div className="space-y-2">
             <p className="flex items-center capitalize text-lg font-medium text-gray-900 dark:text-white">
@@ -28,8 +28,8 @@ const NormalHindQueBaseForm = ({
           id="question"
           type="text"
           placeholder="Add question"
-          name="hindiQuestion.question"
-          value={addQuestion.hindiQuestion.question}
+          name="englishQuestion.question"
+          value={editQuestion.englishQuestion.question}
           onChange={handleChange}
         />
 
@@ -47,8 +47,8 @@ const NormalHindQueBaseForm = ({
                 </label>
                 <input
                   type="text"
-                  name={`hindiQuestion.options.${option}`}
-                  value={addQuestion.hindiQuestion.options[option]}
+                  name={`englishQuestion.options.${option}`}
+                  value={editQuestion.englishQuestion.options[option]}
                   onChange={handleChange}
                   className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                   placeholder={`Option ${option}`}
@@ -65,6 +65,32 @@ const NormalHindQueBaseForm = ({
           </p>
           <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
             <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
+              {/* {optionsArray1.map((option) => (
+                <li
+                  key={option.value}
+                  className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+                >
+                  <div className="flex items-center ps-3">
+                    <input
+                      id={`radio${option.value}`}
+                      type="radio"
+                      name="englishQuestion.answer" // Use the appropriate name for your state structure
+                      value={option.value}
+                      checked={
+                        editQuestion.englishQuestion.answer === option.value
+                      } // Check if this option is selected
+                      onChange={(e) => handleCheck("englishQuestion", e)} // Call handleCheck for updating the answer
+                      className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                    />
+                    <label
+                      htmlFor={`radio${option.value}`}
+                      className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >
+                      {option.label}
+                    </label>
+                  </div>
+                </li>
+              ))} */}
               {optionsArray1.map((option) => (
                 <li
                   key={option.value}
@@ -74,12 +100,10 @@ const NormalHindQueBaseForm = ({
                     <input
                       id={`radio${option.value}`}
                       type="radio"
-                      name="hindiQuestion.answer" // Use the appropriate name for your state structure
+                      name="englishQuestion.answer" // Ensure this matches the state key for your language
                       value={option.value}
-                      checked={
-                        addQuestion.hindiQuestion.answer === option.value
-                      }
-                      onChange={(e) => handleCheck("hindiQuestion", e)} // Call handleCheck for radio selection
+                      checked={option.checked} // Check if the current option is selected
+                      onChange={(e) => handleCheck("englishQuestion", e)} // Call handleCheck on selection
                       className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
                     />
                     <label
@@ -103,12 +127,12 @@ const NormalHindQueBaseForm = ({
           <textarea
             id="message"
             rows="4"
-            name={addQuestion.hindiQuestion.solution}
+            name={editQuestion.englishQuestion.solution}
             onChange={(e) =>
-              setAddQuestion((prev) => ({
+              seteditQuestion((prev) => ({
                 ...prev,
-                hindiQuestion: {
-                  ...prev.hindiQuestion,
+                englishQuestion: {
+                  ...prev.englishQuestion,
                   solution: e.target.value,
                 },
               }))
@@ -122,4 +146,4 @@ const NormalHindQueBaseForm = ({
   );
 };
 
-export default NormalHindQueBaseForm;
+export default NormalquestionBaseForm;
