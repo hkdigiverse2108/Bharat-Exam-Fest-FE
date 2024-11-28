@@ -514,18 +514,15 @@ export default function CreateContest() {
       </div>
       <div className={`${time === true ? "block" : "hidden"}`}>
         <TimeSelector
-          onChange={handleChange}
-          confirm={date}
-          onClose={handleTimeshow}
-          selected={startDate}
-          onChangeTimeRange={(time) => {
-            setContestData((prevData) => ({
-              ...prevData,
-              totalTime: time,
-            }));
-          }}
-          onTimeRangeChange={handleTimeRangeChange}
-          setConfirm={() => handleTimeshow()}
+          onChange={handleDateRangeChange} // Your function for handling date range change
+          confirm={date} // The selected date range for confirmation
+          onClose={handleTimeshow} // Your function to close the time selector
+          selected={startDate} // The selected start date
+          startDate={startDate} // The start date prop
+          endDate={endDate} // The end date prop
+          onChangeTimeRange={handleTimeRangeChange} // The function to handle time range change
+          onTimeRangeChange={handleTimeRangeChange} // The function to handle time range change
+          setConfirm={() => handleTimeshow()} // Function to confirm time selection
         />
       </div>
       <ToastContainer

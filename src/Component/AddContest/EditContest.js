@@ -561,18 +561,15 @@ export default function EditContest() {
       </div>
       <div className={`${time === true ? "block" : "hidden"}`}>
         <TimeSelector
-          onChange={handleChange}
-          confirm={date}
-          onClose={handleTimeshow}
-          selected={startDate}
-          onChangeTimeRange={(time) => {
-            setContestData((prevData) => ({
-              ...prevData,
-              totalTime: time,
-            }));
-          }}
-          onTimeRangeChange={handleTimeRangeChange}
-          setConfirm={() => handleTimeshow()}
+             onChange={handleDateRangeChange} 
+             confirm={date} 
+             onClose={handleTimeshow} 
+             selected={startDate}
+             startDate={startDate}
+             endDate={endDate} 
+             onChangeTimeRange={handleTimeRangeChange}
+             onTimeRangeChange={handleTimeRangeChange}
+             setConfirm={() => handleTimeshow()}
         />
       </div>
       <ToastContainer
