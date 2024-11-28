@@ -27,7 +27,6 @@ export default function FilterQuestion({ label, value, onChange, options }) {
           labelId="my-select-label"
           value={value}
           onChange={onChange}
-          id={label}
           displayEmpty
           MenuProps={MenuProps}
         >

@@ -9,7 +9,7 @@ const HindiQueStatementBaseform = ({
   setCurrentStatement,
   handleChange,
   handleCheck,
-  optionsArray1,
+  optionsArray,
   handleAddStatement,
 }) => {
   return (
@@ -120,11 +120,8 @@ const HindiQueStatementBaseform = ({
           </p>
           <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
             <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-              {optionsArray1.map((option) => (
-                <li
-                  key={option.value}
-                  className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-                >
+              {optionsArray.map((option) => (
+                <li key={option.value}>
                   <div className="flex items-center ps-3">
                     <input
                       id={`radio${option.value}`}
@@ -133,8 +130,8 @@ const HindiQueStatementBaseform = ({
                       value={option.value}
                       checked={
                         editQuestion.hindiQuestion.answer === option.value
-                      }
-                      onChange={(e) => handleCheck("hindiQuestion", e)} // Call handleCheck for radio selection
+                      } // Ensure the correct radio button is checked
+                      onChange={(e) => handleCheck("hindiQuestion", e)} // Call handleCheck for englishQuestion selection
                       className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
                     />
                     <label

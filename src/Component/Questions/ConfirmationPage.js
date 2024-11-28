@@ -3,6 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function ConfirmationPage({ confirm, onCancel, onDelete }) {
+  if (!confirm) return null;
   return (
     <>
       <div className="fixed z-50 inset-0 overflow-hidden duration-300 ease-in-out">

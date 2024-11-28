@@ -27,7 +27,7 @@ const DropdownUser = ({ authData }) => {
 
   const handleLogout = () => {
     toast.success("Logout successfully");
-    localStorage.removeItem("classes");
+    dispatch(logOutAdmin(),logOut());
     Navigation();
     handleToggle();
     setTimeout(() => {

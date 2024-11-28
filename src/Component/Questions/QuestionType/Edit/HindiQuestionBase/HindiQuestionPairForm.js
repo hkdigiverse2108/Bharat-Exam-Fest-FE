@@ -12,7 +12,7 @@ const HindiQuestionPairForm = ({
   addPairQuestion,
   handleChange,
   handleCheck,
-  optionsArray1,
+  optionsArray,
   handleStatementQuestionChange,
   handleAddPair,
   inputs,
@@ -44,7 +44,7 @@ const HindiQuestionPairForm = ({
       {/* Add Pair Button */}
       <div className="space-y-2 flex flex-col items-center">
         <button
-          onClick={() => handleAddPair("hindiQuestion")}
+          onClick={() => handleAddPair("hindi ")}
           className="inline-flex items-center space-x-2 rounded-lg px-6 py-2 text-md text-white bg-orange-500 hover:bg-opacity-90"
         >
           <FaPlus className="w-4 h-4" />
@@ -52,31 +52,37 @@ const HindiQuestionPairForm = ({
         </button>
 
         {/* Question Pair Inputs */}
-        <div className="grid grid-cols-2 gap-4 w-full">
-          <div className="space-y-2">
-            <label className="text-md font-medium text-gray-900 dark:text-white">
+        <div className="grid grid-cols-2 items-center gap-x-2 w-full">
+          <div className="space-y-2 ">
+            <label
+              htmlFor="hindi.input1"
+              className="font-medium text-gray-900 dark:text-white text-md capitalize"
+            >
               Question
             </label>
             <input
               type="text"
+              placeholder="Enter answer"
               id="input1"
-              name="input1"
-              value={inputs.input1}
-              onChange={handleInputChange}
-              className="border-2 border-gray-400 rounded-md w-full py-2 px-3 text-gray-800 focus:outline-none focus:ring-purple-600 focus:border-purple-600"
+              name="inputs.hindi.input1"
+              onChange={(e) => handleInputChange("hindi", e)}
+              className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-md font-medium text-gray-900 dark:text-white">
+          <div className="space-y-2 ">
+            <label
+              htmlFor="hindi.input2"
+              className="font-medium text-gray-900 dark:text-white text-md capitalize"
+            >
               Answer
             </label>
             <input
               type="text"
+              placeholder="Enter answer"
               id="input2"
-              name="input2"
-              value={inputs.input2}
-              onChange={handleInputChange}
-              className="border-2 border-gray-400 rounded-md w-full py-2 px-3 text-gray-800 focus:outline-none focus:ring-purple-600 focus:border-purple-600"
+              name="inputs.hindi.input2"
+              onChange={(e) => handleInputChange("hindi", e)}
+              className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
             />
           </div>
         </div>
@@ -88,7 +94,7 @@ const HindiQuestionPairForm = ({
           editQuestion.hindiQuestion.pairQuestion.map((pair, index) => {
             const [question, answer] = pair.split(" - ");
             return (
-              <div key={index} className="grid grid-cols-2 gap-4">
+              <div key={index} className="grid grid-cols-2 gap-x-2">
                 <span className="border border-green-300 p-2 text-gray-600 dark:text-gray-400">
                   {question}
                 </span>
@@ -150,25 +156,29 @@ const HindiQuestionPairForm = ({
           Answer
         </p>
         <div className="flex space-x-6">
-          {optionsArray1.map((option) => (
-            <div key={option.value} className="flex items-center">
-              <input
-                id={`radio${option.value}`}
-                type="radio"
-                name="hindiQuestion.answer"
-                value={option.value}
-                checked={editQuestion.hindiQuestion.answer === option.value}
-                onChange={(e) => handleCheck("hindiQuestion", e)}
-                className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600"
-              />
-              <label
-                htmlFor={`radio${option.value}`}
-                className="ml-2 text-sm text-gray-900 dark:text-gray-300"
-              >
-                {option.label}
-              </label>
-            </div>
-          ))}
+          <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
+            {optionsArray.map((option) => (
+              <li key={option.value}>
+                <div className="flex items-center ps-3">
+                  <input
+                    id={`radio${option.value}`}
+                    type="radio"
+                    name="hindiQuestion.answer" // Use the appropriate name for your state structure
+                    value={option.value}
+                    checked={editQuestion.hindiQuestion.answer === option.value} // Ensure the correct radio button is checked
+                    onChange={(e) => handleCheck("hindiQuestion", e)} // Call handleCheck for englishQuestion selection
+                    className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
+                  />
+                  <label
+                    htmlFor={`radio${option.value}`}
+                    className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >
+                    {option.label}
+                  </label>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 

@@ -4,7 +4,7 @@ const initialData = {
   CurrentSubject: [],
   Questions: [],
   CurrentQue: [],
-  Logintype: "Admin",
+  Logintype: "classes",
 };
 
 const DataProvider = (state = initialData, action) => {
@@ -12,7 +12,7 @@ const DataProvider = (state = initialData, action) => {
     case "LOGIN_ADMIN":
       return {
         ...state,
-        classesData: [action.payload],
+        classesData: action.payload,
       };
 
     case "CLASSES":
@@ -20,7 +20,7 @@ const DataProvider = (state = initialData, action) => {
         ...state,
         classesData: [action.payload],
       };
-      
+
     case "SUBJECT":
       return {
         ...state,
@@ -52,7 +52,14 @@ const DataProvider = (state = initialData, action) => {
       };
 
     case "LOGOUT":
-      return state;
+      return {
+        ...state,
+        classesData: [],
+        Subject: [],
+        CurrentSubject: [],
+        Questions: [],
+        CurrentQue: [],
+      };
 
     default:
       return state;

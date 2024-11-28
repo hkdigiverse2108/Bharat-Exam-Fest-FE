@@ -14,6 +14,8 @@ import EnglishQueStatementBaseform from "./QuestionType/Add/EnglishQuestionBase/
 import NormalquestionBaseForm from "./QuestionType/Add/EnglishQuestionBase/NormalQuestionBaseForm";
 import NormalHindQueBaseForm from "./QuestionType/Add/HindiQuestionBase/NormalHindQueBaseForm";
 import HindiQueStatementBaseform from "./QuestionType/Add/HindiQuestionBase/HindiQueStatementBaseform";
+import { addNewQuestion } from "../../Hooks/QuestionsApi";
+import { fetchData } from "../../Hooks/getSubjectApi";
 
 function AddQuestion() {
   const navigate = useNavigate();
@@ -24,7 +26,6 @@ function AddQuestion() {
   const subject = useSelector((state) => state.userConfig.CurrentSubject);
   // console.log(subject);
 
-  // State Management
   const [type, setType] = useState("concept");
   const [questionType, setQuestionType] = useState("normal");
   const memoizedQuestionType = useMemo(() => questionType, [questionType]);
@@ -34,7 +35,7 @@ function AddQuestion() {
     subjectId: subject._id,
     classesId: classId,
     subtopicIds: [],
-    type: "concept",
+    type: type,
     questionType: questionType,
     englishQuestion: {
       question: "",
@@ -43,7 +44,7 @@ function AddQuestion() {
       options: { A: "", B: "", C: "", D: "" },
       statementQuestion: [],
       pairQuestion: [],
-      lastQuestion: "",
+      lastQuestion: "Bahrat Exam Fest",
     },
     hindiQuestion: {
       question: "",
@@ -52,20 +53,57 @@ function AddQuestion() {
       options: { A: "", B: "", C: "", D: "" },
       statementQuestion: [],
       pairQuestion: [],
-      lastQuestion: "",
+      lastQuestion: "Bahrat Exam Fest",
     },
   });
-
   const [subtopics, setSubtopics] = useState([]);
   const [options, setOptions] = useState({
-    englishQuestion: { A: false, B: false, C: false, D: false },
+    AnswerOption: { A: false, B: false, C: false, D: false },
   });
 
-  const optionsArray1 = Object.keys(options.englishQuestion).map((key) => ({
+  const optionsArray = Object.keys(options.AnswerOption).map((key) => ({
     label: `Option ${key}`,
     value: key,
-    checked: options.englishQuestion[key],
+    checked: options.AnswerOption[key],
   }));
+
+  const handleCheck = (language, event) => {
+    const selectedValue = event.target.value;
+
+    // Update the options for the selected language
+    setOptions((prev) => {
+      const newOptions = { ...prev };
+
+      // If the language option doesn't exist, initialize it
+      if (!newOptions[language]) {
+        newOptions[language] = { A: false, B: false, C: false, D: false };
+      }
+
+      Object.keys(newOptions[language]).forEach((key) => {
+        newOptions[language][key] = key === selectedValue;
+      });
+
+      return newOptions;
+    });
+
+    setAddQuestion((prev) => ({
+      ...prev,
+      englishQuestion: {
+        ...prev.englishQuestion,
+        answer: selectedValue,
+      },
+      hindiQuestion: {
+        ...prev.hindiQuestion,
+        answer: selectedValue,
+      },
+    }));
+  };
+
+  const radioOptions = [
+    { value: "concept", label: "Concept" },
+    { value: "aptitude", label: "Aptitude" },
+    { value: "random", label: "Random" },
+  ];
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -100,37 +138,8 @@ function AddQuestion() {
     }
   };
 
-  const handleCheck = (language, event) => {
-    const selectedValue = event.target.value;
-
-    // Update the options state
-    setOptions((prev) => {
-      const newOptions = { ...prev };
-
-      // Ensure options exist for the given language
-      if (!newOptions[language]) {
-        newOptions[language] = { A: false, B: false, C: false, D: false };
-      }
-
-      // Set all options to false and mark the selected one as true
-      Object.keys(newOptions[language]).forEach((key) => {
-        newOptions[language][key] = key === selectedValue;
-      });
-
-      return newOptions;
-    });
-
-    // Update the selected answer in addQuestion state
-    setAddQuestion((prev) => ({
-      ...prev,
-      [language]: {
-        ...prev[language],
-        answer: selectedValue, // Save the selected value as the answer
-      },
-    }));
-  };
-
   const handleTypeChange = (event) => {
+    setType(event.target.value);
     setAddQuestion((prev) => ({ ...prev, type: event.target.value }));
   };
 
@@ -210,8 +219,9 @@ function AddQuestion() {
           lastQuestion: value,
         },
       }));
+      setCurrentEngPair("");
+      setCurrentHindiPair("");
     } else if (currentQuestionType === "statement") {
-      // Logic for handling normal statement questions
       const updatedStatements = [...addQuestion[lang].statements, value];
 
       setAddQuestion((prev) => ({
@@ -222,6 +232,8 @@ function AddQuestion() {
           lastQuestion: value,
         },
       }));
+      setCurrentEngStatement("");
+      setCurrentHindiStatement("");
     }
   };
 
@@ -238,46 +250,78 @@ function AddQuestion() {
         pairQuestion: updatedPairQuestion,
       },
     });
+    setCurrentEngPair("");
+    setCurrentHindiPair("");
   };
 
   const [inputs, setInputs] = useState({
-    input1: "",
-    input2: "",
+    english: {
+      input1: "",
+      input2: "",
+    },
+    hindi: {
+      input1: "",
+      input2: "",
+    },
   });
 
-  // Handle input change for both input1 and input2
-  const handleInputChange = (e) => {
+  const handleInputChange = (language, e) => {
     const { name, value } = e.target;
     setInputs((prevInputs) => ({
       ...prevInputs,
-      [name]: value,
+      [language]: {
+        ...prevInputs[language],
+        [name]: value,
+      },
     }));
   };
 
   const handleAddPair = (language) => {
-    if (inputs.input1.trim() !== "" && inputs.input2.trim() !== "") {
-      const combinedValue = `${inputs.input1} - ${inputs.input2}`;
-      console.log(combinedValue);
+    const { input1, input2 } = inputs[language];
+
+    if (input1.trim() !== "" && input2.trim() !== "") {
+      const combinedValue = `${input1} - ${input2}`;
+
       setAddQuestion((prev) => ({
         ...prev,
-        [language]: {
-          ...prev[language],
-          pairQuestion: [...prev[language].pairQuestion, combinedValue],
+        [language === "english" ? "englishQuestion" : "hindiQuestion"]: {
+          ...prev[language === "english" ? "englishQuestion" : "hindiQuestion"],
+          pairQuestion: [
+            ...prev[
+              language === "english" ? "englishQuestion" : "hindiQuestion"
+            ].pairQuestion,
+            combinedValue,
+          ],
         },
       }));
-      setInputs({
-        input1: "",
-        input2: "",
-      });
+
+      // Clear the input fields after adding
+      setInputs((prev) => ({
+        ...prev,
+        [language]: {
+          input1: "",
+          input2: "",
+        },
+      }));
     } else {
-      toast.warn("Fillup empty space!");
+      toast.warn("Fill up empty space!");
     }
   };
 
   useEffect(() => {
     console.log("QUESTION", addQuestion);
   }, [addQuestion]);
-  // Form Validation
+
+  const handleGetData = async () => {
+    try {
+      const { response1, response2 } = await fetchData(accessToken, subject);
+      setSubtopics(response1.subTopic);
+      setSubjectname(response2.subjects);
+    } catch (error) {
+      toast.error("Failed to fetch data.");
+    }
+  };
+
   const isEmpty = () => {
     const { englishQuestion, hindiQuestion } = addQuestion;
     if (
@@ -300,24 +344,16 @@ function AddQuestion() {
     return false;
   };
 
-  const addNewQuestion = async () => {
+  const handleSubmit = () => {
     if (isEmpty()) {
       toast.warning("Please fill up empty fields.");
     }
     try {
-      const response = await axios.post(
-        "https://api-bef.hkdigiverse.com/question/add",
-        addQuestion,
-        {
-          headers: {
-            Authorization: accessToken,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      const response = addNewQuestion(addQuestion, accessToken);
       if (response.status === 200) {
         toast.success(response.data.message);
         navigate("/subjectDetails");
+        handleGetData();
       } else {
         toast.error("Failed to add question");
       }
@@ -326,26 +362,9 @@ function AddQuestion() {
     }
   };
 
-  // Fetching Data
-  const fetchData = async () => {
-    try {
-      const urlSubtopics = `https://api-bef.hkdigiverse.com/sub-topic/all?page=1&limit=10`;
-      const urlSubjectName = `https://api-bef.hkdigiverse.com/subject/${subject._id}`;
-      const [response1, response2] = await Promise.all([
-        axios.get(urlSubtopics, { headers: { Authorization: accessToken } }),
-        axios.get(urlSubjectName, { headers: { Authorization: accessToken } }),
-      ]);
-
-      setSubtopics(response1.data.data.sub_topic_data);
-      setSubjectname(response2.data.data);
-    } catch (error) {
-      toast.error("Failed to fetch data.");
-    }
-  };
-
   useEffect(() => {
-    fetchData();
-  }, []);
+    handleGetData();
+  }, [accessToken]);
 
   return (
     <section className="bg-white dark:bg-gray-900 rounded-lg border-2 border-slate-300 font-sans duration-300 ease-in-out">
@@ -387,7 +406,11 @@ function AddQuestion() {
             <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
               Question Type
             </label>
-            <RadioButtons checkedValue={type} onChange={handleTypeChange} />
+            <RadioButtons
+              options={radioOptions}
+              checkedValue={type}
+              onChange={handleTypeChange}
+            />
           </div>
         </div>
 
@@ -433,11 +456,11 @@ function AddQuestion() {
             addPairQuestion={handleAddPair}
             handleChange={handleChange}
             handleCheck={handleCheck}
-            optionsArray1={optionsArray1}
+            optionsArray={optionsArray}
             handlePairQuestionChange={handlePairQuestionChange}
             handleAddPair={handleAddPair}
             handleStatementQuestionChange={handleStatementQuestionChange}
-            inputs={inputs} // Pass inputs as prop
+            inputs={inputs.english} // Pass inputs as prop
             handleInputChange={handleInputChange}
           />
         ) : questionType === "statement" ? (
@@ -448,7 +471,7 @@ function AddQuestion() {
             setCurrentStatement={setCurrentEngStatement}
             handleChange={handleChange}
             handleCheck={handleCheck}
-            optionsArray1={optionsArray1}
+            optionsArray={optionsArray}
             handlePairQuestionChange={handleStatementQuestionChange}
             handleAddStatement={addStatementQuestion}
           />
@@ -458,7 +481,7 @@ function AddQuestion() {
             setAddQuestion={setAddQuestion}
             handleChange={handleChange}
             handleCheck={handleCheck}
-            optionsArray1={optionsArray1}
+            optionsArray={optionsArray}
           />
         )}
 
@@ -470,11 +493,11 @@ function AddQuestion() {
             addPairQuestion={handleAddPair}
             handleChange={handleChange}
             handleCheck={handleCheck}
-            optionsArray1={optionsArray1}
+            optionsArray={optionsArray}
             handlePairQuestionChange={handlePairQuestionChange}
             handleStatementQuestionChange={handleStatementQuestionChange}
             handleAddPair={handleAddPair}
-            inputs={inputs} // Pass inputs as prop
+            inputs={inputs.hindi} // Pass inputs as prop
             handleInputChange={handleInputChange}
           />
         ) : questionType === "statement" ? (
@@ -485,7 +508,7 @@ function AddQuestion() {
             setCurrentStatement={setCurrentHindiStatement}
             handleChange={handleChange}
             handleCheck={handleCheck}
-            optionsArray1={optionsArray1}
+            optionsArray={optionsArray}
             handlePairQuestionChange={handleStatementQuestionChange}
             handleAddStatement={addStatementQuestion}
           />
@@ -495,14 +518,14 @@ function AddQuestion() {
             setAddQuestion={setAddQuestion}
             handleChange={handleChange}
             handleCheck={handleCheck}
-            optionsArray1={optionsArray1}
+            optionsArray={optionsArray}
           />
         )}
 
         <div className="mt-6 text-center">
           <button
             type="button"
-            onClick={addNewQuestion}
+            onClick={handleSubmit}
             className="inline-flex items-center py-2 px-6 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
           >
             <VscSaveAs className="mr-2" />

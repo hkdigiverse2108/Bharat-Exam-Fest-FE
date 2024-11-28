@@ -9,7 +9,7 @@ const EnglishQueStatementBaseform = ({
   setCurrentStatement,
   handleChange,
   handleCheck,
-  optionsArray1,
+  optionsArray,
   handleAddStatement,
 }) => {
   return (
@@ -121,7 +121,7 @@ const EnglishQueStatementBaseform = ({
         </p>
         <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
           <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-            {optionsArray1.map((option) => (
+            {optionsArray.map((option) => (
               <li
                 key={option.value}
                 className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"

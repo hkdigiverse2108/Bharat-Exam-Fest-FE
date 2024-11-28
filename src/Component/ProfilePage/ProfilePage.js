@@ -10,6 +10,7 @@ import MultipleSelection from "../Ui/MultiSelection";
 import axios from "axios";
 import { updateProfile } from "../../Hooks/updateProfileApi";
 import { loginAdmin } from "../../Context/Action";
+import { imgUpload } from "../../Hooks/updateImage";
 
 export default function ProfilePage() {
   const dispatch = useDispatch();
@@ -32,49 +33,25 @@ export default function ProfilePage() {
     },
   });
 
-  const imgUpload = async (file) => {
-    try {
-      if (!file) {
-        toast.warning("No file selected");
-        return;
-      }
+  const handleImageUpload = async (file) => {
+    const response = await imgUpload(file, accessToken);
 
-      const formData = new FormData();
-      formData.append("image", file); // Append the file to FormData
-
-      const config = {
-        method: "post",
-        url: "https://api-bef.hkdigiverse.com/upload",
-        headers: {
-          Authorization: accessToken,
-          "Content-Type": "multipart/form-data",
-        },
-        data: formData,
-      };
-
-      const response = await axios.request(config);
-      console.log("Upload response:", response.data);
+    if (response.status === 200) {
       setFormData((prevData) => ({
         ...prevData,
         image: response.data.data,
       }));
-      toast.success("Image uploaded successfully!");
-    } catch (err) {
-      console.error(err);
-      const errorMessage =
-        err.response?.data?.message || "Failed to upload image.";
-      toast.error(errorMessage);
+      toast.success(response.data.message);
+    } else {
+      console.error(response.data);
+      toast.error(response.data.message);
     }
-  };
-
-  const handleUpload = (value) => {
-    imgUpload(value);
   };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image") {
-      handleUpload(files[0]);
+      handleImageUpload(files[0]);
     } else if (name.startsWith("contact.")) {
       const contactField = name.split(".")[1];
 

@@ -4,7 +4,7 @@ import { MdStar } from "react-icons/md";
 const NormalquestionBaseForm = ({
   addQuestion,
   handleChange,
-  optionsArray1,
+  optionsArray,
   handleCheck,
   setAddQuestion,
 }) => {
@@ -65,20 +65,21 @@ const NormalquestionBaseForm = ({
           </p>
           <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
             <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-              
-              {optionsArray1.map((option) => (
+              {optionsArray.map((option, index) => (
                 <li
-                  key={option.value}
+                  key={index}
                   className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
                 >
                   <div className="flex items-center ps-3">
                     <input
                       id={`radio${option.value}`}
                       type="radio"
-                      name="englishQuestion.answer" // Ensure this matches the state key for your language
+                      name="englishQuestion.answer"
                       value={option.value}
-                      checked={option.checked} // Check if the current option is selected
-                      onChange={(e) => handleCheck("englishQuestion", e)} // Call handleCheck on selection
+                      checked={
+                        addQuestion.englishQuestion.answer === option.value
+                      }
+                      onChange={(e) => handleCheck("englishQuestion", e)}
                       className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
                     />
                     <label

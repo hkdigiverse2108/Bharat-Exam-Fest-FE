@@ -81,15 +81,6 @@ export default function ImgUpdatePage({ confirm, onClose }) {
       const response = await axios.request(config);
       console.log(response.data);
 
-      // if (response.status === 200) {
-      //   toast.success(response.data.data.message);
-      //   dispatch(editBanner(imgEdit), updateImageData(null));
-      //   onClose();
-      // } else if (response.status === 500) {
-      //   toast.error(response.data.data.message);
-      // } else {
-      //   toast.error(response.message);
-      // }
     } catch (err) {
       console.error(err.message);
       console.error("An error occurred while adding the question.");
@@ -184,7 +175,6 @@ export default function ImgUpdatePage({ confirm, onClose }) {
       <ToastContainer
         draggable={false}
         autoClose={2000}
-        position={"top-center"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchSubjects, fetchTotalCount } from "../../Hooks/getSubjectApi";
 
 function SubjectPage() {
-  const {token,_id} = useSelector(
-    (state) => state.authConfig.userInfo[0].data
+  const { token, _id } = useSelector(
+    (state) => state.userConfig.classesData[0]
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -21,32 +21,23 @@ function SubjectPage() {
   }
 
   useEffect(() => {
-    const getSubjects = async () => {
-      if (!token) {
-        console.error("Access token is required");
-        setError("Access token is required");
-        return;
-      }
-
+    const fetchSubjectsData = async () => {
       try {
-        const data = await fetchSubjects(token,_id);
-        setData(data.subjects);
-        setTotalQuestion(data.totalQuestions);
-        console.log("Total Questions:", data.totalQuestions);
-      } catch (err) {
-        console.error("Error fetching subjects:", err.message);
-        setError(err.message);
+        const { totalQuestions, subjects } = await fetchSubjects(token, _id);
+        setData(subjects);
+        setTotalQuestion(totalQuestions);
+      } catch (error) {
+        console.error("Error fetching subjects:", error);
       }
     };
 
-    getSubjects();
-  }, [token]);
+    fetchSubjectsData();
+  }, [_id, token]);
   return (
     <>
       <section>
         <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
           {data.map((value, index) => {
-            // Find the corresponding count from totalQuestions based on subjectName
             const matchingQuestion = totalQuestion.filter(
               (q) => q.subjectName === value.name
             );

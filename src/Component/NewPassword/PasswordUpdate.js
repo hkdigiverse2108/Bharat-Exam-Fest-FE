@@ -1,25 +1,27 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { VscSaveAs } from "react-icons/vsc";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-// import { RxEyeOpen } from "react-icons/rx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import { updateData } from "../../Context/Action/index";
+import { resetPasswordApiCall } from "../../Hooks/resetPassword";
+import { loginAdmin } from "../../Context/Action/index";
 
 export default function PasswordUpdate() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [toggle1, setToggle1] = useState(false);
   const [toggle2, setToggle2] = useState(false);
-  const userAccess = useSelector((state) => state.authConfig.userInfo[0]);
+  const userAccess = useSelector((state) => state.userConfig.classesData[0]);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [currentUser, setCurrentUser] = useState({
-    uniqueId: userAccess.email,
+    uniqueId: "",
     password: "",
-    userType: userAccess.userType,
+    userType: "",
   });
+
   const isEmpty = () => {
     if (
       !currentUser.uniqueId ||
@@ -31,81 +33,63 @@ export default function PasswordUpdate() {
     return false;
   };
 
-  async function ChangePassword() {
+  const validatePasswordMatch = () => {
+    return currentUser.password === confirmPassword;
+  };
+
+  const ChangePassword = async () => {
     try {
       if (isEmpty()) {
         toast.warning("Please fill up empty fields.");
+      } else if (!validatePasswordMatch()) {
+        toast.warn("Password does not match.");
       } else {
-        if (currentUser.password !== confirmPassword) {
-          toast.warn("Password dose not match");
+        const response = await resetPasswordApiCall(currentUser, userAccess);
+
+        if (response.status === 200) {
+          toast.success(response.data.message);
+          dispatch(loginAdmin(response.data.data));
+          console.log("Success", response.data);
+          navigate("/");
+        } else if (response.status === 400) {
+          console.log("Bad Request", response.data);
+          toast.error(response.data.message);
+        } else if (response.status === 401) {
+          console.log("Unauthorized", response.data);
+          toast.error(response.data.message);
+        } else if (response.status === 500) {
+          console.log("Server Error", response.data);
+          toast.error(response.data.message);
         } else {
-          let data = JSON.stringify(currentUser);
-          console.log(currentUser);
-
-          let config = {
-            method: "post",
-            maxBodyLength: Infinity,
-            url: "https://api-bef.hkdigiverse.com/auth/reset-password",
-            headers: {
-              Authorization: userAccess.token,
-              "Content-Type": "application/json",
-            },
-            data: data,
-          };
-
-          axios
-            .request(config)
-            .then((response) => {
-              // Handle specific status codes
-              switch (response.status) {
-                case 200:
-                  console.log("Success", response.data);
-                  toast.success(response.data.message);
-                  navigate("/"); // Navigate to the homepage or any other route
-                  break;
-                case 400:
-                  console.log("Bad Request", response.data);
-                  toast.error(response.data.message);
-                  break;
-                case 401:
-                  console.log("Unauthorized", response.data);
-                  toast.error(response.data.message);
-                  break;
-                case 500:
-                  console.log("Server Error", response.data);
-                  toast.error(response.data.message);
-                  break;
-                default:
-                  console.log("Unexpected response status:", response.status);
-                  toast.error(
-                    "An unexpected error occurred. Please try again."
-                  );
-                  break;
-              }
-            })
-            .catch((error) => {
-              if (error.response) {
-                // The request was made and the server responded with a status code
-                console.error("Response error:", error.response);
-                toast.error("An error occurred while processing your request.");
-              } else if (error.request) {
-                // The request was made but no response was received
-                console.error("No response received:", error.request);
-                toast.error(
-                  "No response received from the server. Please check your network connection."
-                );
-              } else {
-                // Something happened in setting up the request
-                console.error("Error", error.message);
-                toast.error("An error occurred. Please try again later.");
-              }
-            });
+          console.log("Unexpected response status:", response.status);
+          toast.error("An unexpected error occurred. Please try again.");
         }
       }
     } catch (err) {
-      console.error(err.message);
+      if (err.response) {
+        console.error("Response error:", err.response);
+        console.error("An error occurred while processing your request.");
+      } else if (err.request) {
+        console.error("No response received:", err.request);
+        console.error(
+          "No response received from the server. Please check your network connection."
+        );
+      } else {
+        console.error("Error", err.message);
+        console.error("An error occurred. Please try again later.");
+      }
     }
-  }
+  };
+
+  useEffect(() => {
+    if (userAccess) {
+      setCurrentUser({
+        uniqueId: userAccess.email || "",
+        password: "",
+        userType: userAccess.userType || "",
+      });
+    }
+  }, [userAccess]);
 
   return (
     <>
@@ -125,7 +109,7 @@ export default function PasswordUpdate() {
               <div className="flex items-center justify-between space-y-1">
                 <label
                   className="flex  text-start capitalize text-xl font-medium text-gray-700 dark:text-white"
-                  htmlFor="phone"
+                  htmlFor="newpassword"
                 >
                   new password
                 </label>
@@ -138,6 +122,7 @@ export default function PasswordUpdate() {
               </div>
               <div className="relative w-full">
                 <input
+                  id="newpassword"
                   className="text-black text-md px-4 py-6 border-2 border-gray-200  w-full h-12 rounded-lg"
                   type={toggle1 ? "text" : "password"}
                   name="password"
@@ -175,7 +160,7 @@ export default function PasswordUpdate() {
               <div className="flex items-center justify-between space-y-1">
                 <label
                   className="flex  text-start capitalize text-xl font-medium text-gray-700 dark:text-white"
-                  htmlFor="phone"
+                  htmlFor="confirmpassword"
                 >
                   confirm new password
                 </label>
@@ -188,6 +173,7 @@ export default function PasswordUpdate() {
               </div>
               <div className="relative w-full">
                 <input
+                  id="confirmpassword"
                   className="text-black text-md px-4 py-6 border-2 border-gray-200  w-full h-12 rounded-lg"
                   type={toggle2 ? "text" : "password"}
                   name="password"
@@ -243,11 +229,9 @@ export default function PasswordUpdate() {
           </button>
         </div>
       </section>
-
       <ToastContainer
         draggable={false}
         autoClose={2000}
-        position={"top-center"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

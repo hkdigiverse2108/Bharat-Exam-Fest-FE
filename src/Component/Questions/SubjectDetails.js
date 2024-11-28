@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { TfiPlus, TfiFilter, TfiPencil } from "react-icons/tfi";
 import { AiOutlineDelete } from "react-icons/ai";
 import ConfirmationPage from "./ConfirmationPage";
@@ -8,27 +8,26 @@ import "react-toastify/dist/ReactToastify.css";
 import FilterSide from "../Filterpage/FilterSide";
 import MultiSelection from "../Ui/MultiSelection";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { CurrentQuestion, QuestionList } from "../../Context/Action";
 import SingleSelect from "../Ui/SingleSelect";
 import FilterQuestion from "../Ui/FilterQuestion";
-import ImgUpdatePage from "../Subject/ImgUpdatePage";
 import {
   fetchQuestionsBySubject,
   getQuestionData,
-} from "../../Hooks/getQuestionsApi";
+} from "../../Hooks/QuestionsApi";
 
 function SubjectDetails() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const { token } = useSelector((state) => state.authConfig.userInfo[0].data);
+  const { token, _id } = useSelector(
+    (state) => state.userConfig.classesData[0]
+  );
   const CurrentSubject = useSelector(
     (state) => state.userConfig.CurrentSubject
   );
-
   const questionList = useSelector((state) => state.userConfig.Questions);
 
+  const [loading, setLoading] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [show, setShow] = useState(false);
@@ -83,7 +82,6 @@ function SubjectDetails() {
     );
     setFilteredQuestions(filteredQuestions);
     handleFilterData();
-    // resetFilters();
     console.log("Checked Filters:", filteredQuestions);
   };
 
@@ -93,149 +91,111 @@ function SubjectDetails() {
     setSelectedSubtopic(value);
   };
 
-  // useEffect(() => {
-  //   const sortQuestions = () => {
-  //     let sorted = [...questions];
-  //     if (filters.newestFirst) {
-  //       sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  //     } else if (filters.olderFirst) {
-  //       sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-  //     } else if (filters.lastModified) {
-  //       sorted.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  //     }
-
-  //     setFilteredQuestions(sorted);
-  //   };
-  //   sortQuestions();
-  // }, [filters, questions, subTopicName]);
-
-  // useEffect(() => {
-  //   const initialFilters = {};
-  //   questions.forEach((question) => {
-  //     if (question.type) {
-  //       initialFilters[question.type] = true;
-  //     }
-  //   });
-  //   setFilters((prev) => ({
-  //     ...prev,
-  //     ...initialFilters,
-  //   }));
-  // }, [questions]);
-
   function handleCreateque() {
     navigate("/addQuestion");
   }
 
   async function handleEditque(valueId) {
     try {
-      const data = await getQuestionData(token,valueId );
+      const data = await getQuestionData(token, valueId);
       dispatch(CurrentQuestion(data.data));
       navigate("/editQuestion");
     } catch (err) {
-      setError("Failed to load data. Please try again later."); // Set error state
+      setError("Failed to load data. Please try again later.");
     }
   }
 
-  const [selectedNames, setSelectedNames] = useState([]);
-
-  function handleDelete(value) {
-    setItemToDelete(value);
-    setConfirm(!confirm);
-  }
+  const handleDelete = (questionId) => {
+    setItemToDelete(questionId);
+    setConfirm(true);
+  };
 
   const getQuestions = async () => {
     try {
-      const data = await fetchQuestionsBySubject(token, CurrentSubject?._id);
+      const data = await fetchQuestionsBySubject(
+        token,
+        CurrentSubject?._id,
+        _id
+      );
 
-      // Check if data is valid
       if (!data) {
         console.log("No data received", data);
         return;
       }
 
-      const { Questions, subTopics } = data; // Destructure data
+      const { Questions = [], subTopics = [] } = data;
 
       setQustions(Questions);
       setSubtopics(subTopics);
+
       dispatch(CurrentQuestion());
-      // Filter subTopics based on CurrentSubject.subTopics
+
       const filteredData = subTopics.filter((subject) =>
-        CurrentSubject.subTopics?.some(
+        CurrentSubject?.subTopics?.some(
           (criteria) => subject._id === criteria._id
         )
       );
 
-      // Safely set the selected subtopic if it exists
       if (filteredData.length > 0) {
         setSelectedSubtopic(filteredData[0]);
       } else {
         console.log("No matching subtopics found");
       }
     } catch (err) {
-      setError(`Error fetching questions: ${err.message}`);
+      console.error("Error fetching questions:", err);
+      setError(`Error fetching questions: ${err.message || "Unknown error"}`);
     }
   };
 
   const deleteQuestion = async () => {
+    setLoading(true);
     try {
-      let config = {
-        method: "delete",
-        maxBodyLength: Infinity,
-        url: `https://api-bef.hkdigiverse.com/question/delete/${itemToDelete}`,
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      };
-
-      axios
-        .request(config)
-        .then((response) => {
-          console.log("deleteQuestion", response);
-          toast.success(response.data.message);
-          handleDelete();
-          getQuestions();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } catch (err) {
-      console.error(err.message);
+      const response = await deleteQuestion(token, itemToDelete);
+      console.log("deleteQuestion response:", response);
+      toast.success(response.data.message);
+      getQuestions();
+      setConfirm(false);
+      setItemToDelete(null);
+    } catch (error) {
+      console.error("Error deleting question:", error);
+      toast.error(error.message || "Failed to delete question");
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    const sortQuestions = () => {
-      // Defensive check to ensure questions is an array
-      if (!Array.isArray(questions)) {
-        console.error("Questions is not an array:", questions);
-        return; // Exit if questions is not an array
-      }
+  const sortedQuestions = useMemo(() => {
+    if (!Array.isArray(questions)) {
+      console.error("Questions is not an array:", questions);
+      return []; 
+    }
 
-      let sorted = [...questions];
-      if (filters.newestFirst) {
-        sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      } else if (filters.olderFirst) {
-        sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-      } else if (filters.lastModified) {
-        sorted.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-      }
+    let sorted = [...questions];
+    if (filters.newestFirst) {
+      sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (filters.olderFirst) {
+      sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    } else if (filters.lastModified) {
+      sorted.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    }
 
-      setFilteredQuestions(sorted);
-    };
-
-    sortQuestions();
-  }, [filters, questions]);
+    return sorted;
+  }, [questions, filters]);
 
   useEffect(() => {
-    // Defensive check to ensure questions is an array
+    setFilteredQuestions(sortedQuestions);
+  }, [sortedQuestions]);
+
+  useEffect(() => {
     if (Array.isArray(questions)) {
       const initialFilters = {};
+
       questions.forEach((question) => {
         if (question.type) {
           initialFilters[question.type] = true;
         }
       });
+
       setFilters((prev) => ({
         ...prev,
         ...initialFilters,
@@ -246,8 +206,10 @@ function SubjectDetails() {
   }, [questions]);
 
   useEffect(() => {
-    getQuestions();
-  }, [CurrentSubject?._id, CurrentSubject.subTopics, token]);
+    if (CurrentSubject?._id && _id) {
+      getQuestions();
+    }
+  }, [CurrentSubject?._id, _id]);
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -343,7 +305,7 @@ function SubjectDetails() {
                               className="font-bold  w-5 h-5"
                               viewBox="0 0 16 16"
                             >
-                              <AiOutlineDelete />
+                              {loading ? "Deleting..." : <AiOutlineDelete />}
                             </svg>
                           </button>
                           <button

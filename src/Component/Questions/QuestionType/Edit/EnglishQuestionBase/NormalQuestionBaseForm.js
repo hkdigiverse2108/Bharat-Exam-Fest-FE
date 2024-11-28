@@ -4,7 +4,7 @@ import { MdStar } from "react-icons/md";
 const NormalquestionBaseForm = ({
   editQuestion,
   handleChange,
-  optionsArray1,
+  optionsArray,
   handleCheck,
   seteditQuestion,
 }) => {
@@ -65,19 +65,18 @@ const NormalquestionBaseForm = ({
           </p>
           <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
             <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-              {optionsArray1.map((option) => (
-                <li
-                  key={option.value}
-                  className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-                >
+              {optionsArray.map((option) => (
+                <li key={option.value}>
                   <div className="flex items-center ps-3">
                     <input
                       id={`radio${option.value}`}
                       type="radio"
-                      name="englishQuestion.answer" // Ensure this matches the state key for your language
+                      name="englishQuestion.answer" // Use the appropriate name for your state structure
                       value={option.value}
-                      checked={option.checked} // Check if the current option is selected
-                      onChange={(e) => handleCheck("englishQuestion", e)} // Call handleCheck on selection
+                      checked={
+                        editQuestion.englishQuestion.answer === option.value
+                      } // Ensure the correct radio button is checked
+                      onChange={(e) => handleCheck("englishQuestion", e)} // Call handleCheck for englishQuestion selection
                       className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
                     />
                     <label
@@ -102,9 +101,7 @@ const NormalquestionBaseForm = ({
             id="message"
             rows="4"
             name={editQuestion.englishQuestion.solution}
-            value={
-              editQuestion.englishQuestion.solution || ""
-            }
+            value={editQuestion.englishQuestion.solution || ""}
             onChange={(e) =>
               seteditQuestion((prev) => ({
                 ...prev,

@@ -4,7 +4,7 @@ import { MdStar } from "react-icons/md";
 const NormalHindQueBaseForm = ({
   addQuestion,
   handleChange,
-  optionsArray1,
+  optionsArray,
   handleCheck,
   setAddQuestion,
 }) => {
@@ -65,7 +65,7 @@ const NormalHindQueBaseForm = ({
           </p>
           <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
             <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-              {optionsArray1.map((option) => (
+              {optionsArray.map((option) => (
                 <li
                   key={option.value}
                   className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
@@ -74,12 +74,10 @@ const NormalHindQueBaseForm = ({
                     <input
                       id={`radio${option.value}`}
                       type="radio"
-                      name="hindiQuestion.answer" // Use the appropriate name for your state structure
+                      name="hindiQuestion.answer"
                       value={option.value}
-                      checked={
-                        addQuestion.hindiQuestion.answer === option.value
-                      }
-                      onChange={(e) => handleCheck("hindiQuestion", e)} // Call handleCheck for radio selection
+                      checked={addQuestion.hindiQuestion.answer === option.value}
+                      onChange={(e) => handleCheck("hindiQuestion", e)}
                       className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
                     />
                     <label

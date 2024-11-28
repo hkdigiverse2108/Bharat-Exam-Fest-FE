@@ -5,14 +5,14 @@ import { MdStar } from "react-icons/md";
 const EnglishQuestionPairForm = ({
   addQuestion,
   setAddQuestion,
-    currentStatement,
+  currentStatement,
   setCurrentStatement,
   currentEngPair,
   setCurrentEngPair,
   addPairQuestion,
   handleChange,
   handleCheck,
-  optionsArray1,
+  optionsArray,
   handleStatementQuestionChange,
   handleAddPair,
   inputs,
@@ -50,37 +50,40 @@ const EnglishQuestionPairForm = ({
             <FaPlus className="font-bold text-white w-4 h-4" />
             <p className="font-semibold">Add Pair</p>
           </button>
-        </div>
 
-        {/* Question Input */}
-        <div className="grid grid-cols-2 items-center gap-x-2 w-full">
-          <div className="space-y-2 ">
-            <label className="font-medium text-gray-900 dark:text-white text-md capitalize">
-              Question
-            </label>
-            <input
-              type="text"
-              placeholder="Enter question"
-              id="input1"
-              name="input1"
-              value={inputs.input1}
-              onChange={handleInputChange}
-              className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-            />
-          </div>
-          <div className="space-y-2 ">
-            <label className="font-medium text-gray-900 dark:text-white text-md capitalize">
-              Answer
-            </label>
-            <input
-              type="text"
-              placeholder="Enter answer"
-              id="input2"
-              name="input2"
-              value={inputs.input2}
-              onChange={handleInputChange}
-              className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-            />
+          {/* Question Input */}
+          <div className="grid grid-cols-2 items-center gap-x-2 w-full">
+            <div className="space-y-2 ">
+              <label
+                htmlFor="english.input1"
+                className="font-medium text-gray-900 dark:text-white text-md capitalize"
+              >
+                Question
+              </label>
+              <input
+                type="text"
+                placeholder="Enter answer"
+                id="input1"
+                name="inputs.english.input1"
+                onChange={(e) => handleInputChange("english", e)}
+              />
+            </div>
+            <div className="space-y-2 ">
+              <label
+                htmlFor="english.input2"
+                className="font-medium text-gray-900 dark:text-white text-md capitalize"
+              >
+                Answer
+              </label>
+              <input
+                type="text"
+                placeholder="Enter answer"
+                id="input2"
+                name="inputs.english.input2"
+                onChange={(e) => handleInputChange("english", e)}
+                className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
+              />
+            </div>
           </div>
         </div>
 
@@ -150,11 +153,8 @@ const EnglishQuestionPairForm = ({
           </p>
           <div className="md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
             <ul className="flex items-center justify-start gap-x-6 w-full text-sm font-medium text-gray-900">
-              {optionsArray1.map((option) => (
-                <li
-                  key={option.value}
-                  className="border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-                >
+              {optionsArray.map((option) => (
+                <li key={option.value}>
                   <div className="flex items-center ps-3">
                     <input
                       id={`radio${option.value}`}
@@ -163,8 +163,8 @@ const EnglishQuestionPairForm = ({
                       value={option.value}
                       checked={
                         addQuestion.englishQuestion.answer === option.value
-                      }
-                      onChange={(e) => handleCheck("englishQuestion", e)} // Call handleCheck for radio selection
+                      } // Ensure the correct radio button is checked
+                      onChange={(e) => handleCheck("englishQuestion", e)} // Call handleCheck for englishQuestion selection
                       className="w-4 h-4 text-blue-600 border-gray-300 checked:bg-blue-600 checked:outline-none"
                     />
                     <label
