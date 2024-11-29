@@ -4,7 +4,7 @@ import { convertUtcToIst } from "../Utils/timeUtils"; // Import the time convers
 
 const BASE_URL = "https://api-bef.hkdigiverse.com";
 
-export const resetPasswordApiCall = async (currentUser, userAccess) => {
+export const resetPasswordApiCall = async (currentUser, token) => {
   try {
     const data = JSON.stringify(currentUser);
 
@@ -12,7 +12,7 @@ export const resetPasswordApiCall = async (currentUser, userAccess) => {
       method: "post",
       url: `${BASE_URL}/auth/reset-password`,
       headers: {
-        Authorization: `${userAccess.token}`,
+        Authorization: `${token}`,
         "Content-Type": "application/json",
       },
       data: data,

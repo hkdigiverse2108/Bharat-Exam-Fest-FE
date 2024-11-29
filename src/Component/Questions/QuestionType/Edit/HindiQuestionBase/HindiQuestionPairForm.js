@@ -4,19 +4,14 @@ import { MdStar } from "react-icons/md";
 
 const HindiQuestionPairForm = ({
   editQuestion,
-  setEditQuestion,
   currentStatement,
-  setCurrentStatement,
-  currentHindiPair,
-  setCurrentHindiPair,
-  addPairQuestion,
   handleChange,
   handleCheck,
   optionsArray,
   handleStatementQuestionChange,
   handleAddPair,
-  inputs,
   handleInputChange,
+  inputs,
 }) => {
   return (
     <div className="space-y-6 duration-300 ease-in-out">
@@ -44,7 +39,7 @@ const HindiQuestionPairForm = ({
       {/* Add Pair Button */}
       <div className="space-y-2 flex flex-col items-center">
         <button
-          onClick={() => handleAddPair("hindi ")}
+          onClick={() => handleAddPair("hindi")}
           className="inline-flex items-center space-x-2 rounded-lg px-6 py-2 text-md text-white bg-orange-500 hover:bg-opacity-90"
         >
           <FaPlus className="w-4 h-4" />
@@ -63,9 +58,9 @@ const HindiQuestionPairForm = ({
             <input
               type="text"
               placeholder="Enter answer"
-              id="input1"
-              name="inputs.hindi.input1"
-              onChange={(e) => handleInputChange("hindi", e)}
+              id="hindi.input1"
+              name="input1"
+              onChange={(e) => handleInputChange("hindi", e)} 
               className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
             />
           </div>
@@ -79,9 +74,9 @@ const HindiQuestionPairForm = ({
             <input
               type="text"
               placeholder="Enter answer"
-              id="input2"
-              name="inputs.hindi.input2"
-              onChange={(e) => handleInputChange("hindi", e)}
+              id="hindi.input2"
+              name="input2" 
+              onChange={(e) => handleInputChange("hindi", e)} // Call handler with "english"
               className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
             />
           </div>
@@ -116,7 +111,7 @@ const HindiQuestionPairForm = ({
           id="statement"
           type="text"
           placeholder="Enter statement"
-          value={currentStatement}
+          value={editQuestion.hindiQuestion.lastQuestion}
           onChange={handleStatementQuestionChange}
           name="hindiQuestion.statementQuestion"
         />

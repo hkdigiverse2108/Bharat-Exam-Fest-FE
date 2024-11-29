@@ -1,22 +1,21 @@
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 import { MdStar } from "react-icons/md";
+import FullTable from "../../../../Ui/Table";
 
 const HindiQuestionPairForm = ({
   addQuestion,
-  setAddQuestion,
   currentStatement,
-  setCurrentStatement,
-  currentHindiPair,
-  setCurrentHindiPair,
-  addPairQuestion,
+  inputs,
   handleChange,
   handleCheck,
   optionsArray,
   handleStatementQuestionChange,
   handleAddPair,
-  inputs,
   handleInputChange,
+  handleSaveEdit,
+  handleEditField,
+  handleDeletePair,
 }) => {
   return (
     <div className="space-y-4">
@@ -42,7 +41,7 @@ const HindiQuestionPairForm = ({
         />
 
         {/* Add Pair Button */}
-        <div className="space-y-2 flex flex-col items-center">
+        {/* <div className="space-y-2 flex flex-col items-center">
           <button
             onClick={() => handleAddPair("hindi")}
             className="inline-flex items-center space-x-2 rounded-lg px-6 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90"
@@ -51,7 +50,6 @@ const HindiQuestionPairForm = ({
             <p className="font-semibold">Add Pair</p>
           </button>
 
-          {/* Question Input */}
           <div className="grid grid-cols-2 items-center gap-x-2 w-full">
             <div className="space-y-2 ">
               <label
@@ -63,9 +61,10 @@ const HindiQuestionPairForm = ({
               <input
                 type="text"
                 placeholder="Enter answer"
-                id="input1"
-                name="inputs.hindi.input1"
-                onChange={(e) => handleInputChange("hindi", e)}
+                id="hindi.input1"
+                name="input1"
+                onChange={(e) => handleInputChange("hindi", e)} // Call handler with "english"
+                className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
               />
             </div>
             <div className="space-y-2 ">
@@ -78,17 +77,17 @@ const HindiQuestionPairForm = ({
               <input
                 type="text"
                 placeholder="Enter answer"
-                id="input2"
-                name="inputs.hindi.input2"
-                onChange={(e) => handleInputChange("hindi", e)}
+                id="hindi.input2"
+                name="input2"
+                onChange={(e) => handleInputChange("hindi", e)} // Call handler with "english"
                 className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
               />
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Pair Questions */}
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           {addQuestion.hindiQuestion?.pairQuestion?.length > 0 &&
             addQuestion.hindiQuestion?.pairQuestion.map((pair, index) => {
               const [question, answer] = pair.split(" - ");
@@ -106,6 +105,13 @@ const HindiQuestionPairForm = ({
                 </div>
               );
             })}
+        </div> */}
+        <div className="space-y-2">
+          <FullTable
+            pairQuestion={addQuestion.hindiQuestion.pairQuestion}
+            language={"hindiQuestion"}
+            handleChange={handleAddPair}
+          />
         </div>
         <input
           className="border-2 pl-2 text-lg border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"

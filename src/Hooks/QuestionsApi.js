@@ -5,17 +5,13 @@ import { keyframes } from "@emotion/react";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-export const fetchQuestionsBySubject = async (
-  accessToken,
-  subjectId,
-  classesId
-) => {
+export const fetchQuestionsBySubject = async (token, subjectId, classesId) => {
   try {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
       headers: {
-        Authorization: ` ${accessToken}`,
+        Authorization: ` ${token}`,
         "Content-Type": "application/json",
       },
     };
@@ -47,23 +43,24 @@ export const fetchQuestionsBySubject = async (
   }
 };
 
-export const getQuestionData = async (accessToken, questionId) => {
+export const getQuestionData = async (token, questionId) => {
   try {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
       headers: {
-        Authorization: ` ${accessToken}`,
+        Authorization: ` ${token}`,
+        "Content-Type": "application/json",
       },
     };
 
-    const response = await axios.get(
+    const response = await axios.request(
       `${BASE_URL}/question/${questionId}`,
       config
     );
 
     if (response.status === 200) {
-      return response.data;
+      return response.data.data;
     } else {
       throw new Error("Failed to fetch question data");
     }
@@ -73,12 +70,12 @@ export const getQuestionData = async (accessToken, questionId) => {
   }
 };
 
-export const deleteQuestion = async (accessToken, itemToDelete) => {
+export const deleteQuestion = async (token, itemToDelete) => {
   try {
     const config = {
       method: "delete",
       headers: {
-        Authorization: `${accessToken}`,
+        Authorization: `${token}`,
         "Content-Type": "application/json",
       },
     };
@@ -107,20 +104,21 @@ export const deleteQuestion = async (accessToken, itemToDelete) => {
   }
 };
 
-export const addNewQuestion = async (addQuestion, accessToken) => {
+export const addNewQuestion = async (addQuestion, token) => {
   try {
     const data = JSON.stringify(addQuestion);
     const config = {
       method: "post",
       maxBodyLength: Infinity,
-      url : `${BASE_URL}/question/add`,
+      url: `${BASE_URL}/question/add`,
       headers: {
-        Authorization: ` ${accessToken}`,
+        Authorization: `${token}`,
       },
       data: data,
     };
 
     const response = await axios.request(config);
+    console.log(response);
 
     if (response.status === 200) {
       if (response.data.createdAt) {
@@ -134,20 +132,19 @@ export const addNewQuestion = async (addQuestion, accessToken) => {
       return response;
     }
   } catch (error) {
-    toast.error("An error occurred while adding the question."); // Handle any errors
     console.error("Error adding question:", error); // Log the error for debugging
   }
 };
 
-export const editQuestionAPI = async (editQuestion, accessToken) => {
+export const editQuestionAPI = async (editQuestion, token) => {
   try {
-    const data = JSON.stringify(editQuestion); 
+    const data = JSON.stringify(editQuestion);
     const config = {
       method: "post",
       maxBodyLength: Infinity,
-      url : `${BASE_URL}/question/edit`,
+      url: `${BASE_URL}/question/edit`,
       headers: {
-        Authorization: accessToken,
+        Authorization: token,
         "Content-Type": "application/json",
       },
       data: data,
@@ -157,7 +154,7 @@ export const editQuestionAPI = async (editQuestion, accessToken) => {
 
     if (response.status === 200) {
       if (response.data.createdAt) {
-        const indiaTime = convertUtcToIst(response.data.createdAt); 
+        const indiaTime = convertUtcToIst(response.data.createdAt);
         console.log("Converted IST time:", indiaTime);
         response.data.createdAt = indiaTime;
       }

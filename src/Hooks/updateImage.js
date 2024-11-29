@@ -6,7 +6,7 @@ import moment from "moment-timezone";
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 // Function to upload an image
-export const imgUpload = async (file, accessToken) => {
+export const imgUpload = async (file, token) => {
   try {
     if (!file) {
       toast.warning("No file selected");
@@ -21,7 +21,7 @@ export const imgUpload = async (file, accessToken) => {
       method: "post",
       url: `${BASE_URL}/upload`,
       headers: {
-        Authorization: `${accessToken}`,
+        Authorization: `${token}`,
         "Content-Type": "multipart/form-data",
       },
       data: formData,

@@ -4,19 +4,14 @@ import { MdStar } from "react-icons/md";
 
 const EnglishQuestionPairForm = ({
   editQuestion,
-  setEditQuestion,
   currentStatement,
-  setCurrentStatement,
-  currentEngPair,
-  setCurrentEngPair,
-  addPairQuestion,
   handleChange,
   handleCheck,
   optionsArray,
   handleStatementQuestionChange,
   handleAddPair,
-  inputs,
   handleInputChange,
+  inputs,
 }) => {
   return (
     <div className="space-y-4 duration-300 ease-in-out">
@@ -58,9 +53,9 @@ const EnglishQuestionPairForm = ({
             <input
               type="text"
               placeholder="Enter answer"
-              id="input1"
-              name="inputs.english.input1"
-              onChange={(e) => handleInputChange("english", e)}
+              id="english.input1"
+              name="input1"
+              onChange={(e) => handleInputChange("english", e)} // Call handler with "english"
               className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
             />
           </div>
@@ -74,9 +69,9 @@ const EnglishQuestionPairForm = ({
             <input
               type="text"
               placeholder="Enter answer"
-              id="input2"
-              name="inputs.english.input2"
-              onChange={(e) => handleInputChange("english", e)}
+              id="english.input2"
+              name="input2"
+              onChange={(e) => handleInputChange("english", e)} // Call handler with "english"
               className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
             />
           </div>
@@ -111,7 +106,7 @@ const EnglishQuestionPairForm = ({
           id="statement"
           type="text"
           placeholder="Enter statement"
-          value={currentStatement}
+          value={editQuestion.englishQuestion.lastQuestion}
           onChange={handleStatementQuestionChange}
           name="englishQuestion.statementQuestion"
         />

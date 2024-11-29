@@ -100,17 +100,9 @@ const NormalHindQueBaseForm = ({
           <textarea
             id="message"
             rows="4"
-            name={editQuestion.hindiQuestion.solution}
-            value={editQuestion.hindiQuestion.solution || ""}
-            onChange={(e) =>
-              seteditQuestion((prev) => ({
-                ...prev,
-                hindiQuestion: {
-                  ...prev.hindiQuestion,
-                  solution: e.target.value,
-                },
-              }))
-            }
+            name="hindiQuestion.solution"
+            value={editQuestion?.hindiQuestion?.solution || ""}
+            onChange={handleChange}
             className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full min-h-[100px] py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
             placeholder="Enter solution..."
           />

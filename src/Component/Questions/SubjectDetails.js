@@ -15,12 +15,14 @@ import {
   fetchQuestionsBySubject,
   getQuestionData,
 } from "../../Hooks/QuestionsApi";
+import { fetchSubjects } from "../../Hooks/getSubjectApi";
 
 function SubjectDetails() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { token, _id } = useSelector(
-    (state) => state.userConfig.classesData
+  const { _id } = useSelector((state) => state.userConfig.classesData);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0]?.token
   );
   const CurrentSubject = useSelector(
     (state) => state.userConfig.CurrentSubject
@@ -97,8 +99,8 @@ function SubjectDetails() {
 
   async function handleEditque(valueId) {
     try {
-      const data = await getQuestionData(token, valueId);
-      dispatch(CurrentQuestion(data.data));
+      const responseData = await getQuestionData(accessToken, valueId);
+      dispatch(CurrentQuestion(responseData));
       navigate("/editQuestion");
     } catch (err) {
       setError("Failed to load data. Please try again later.");
@@ -110,24 +112,64 @@ function SubjectDetails() {
     setConfirm(true);
   };
 
+  const [isLoading, setIsLoading] = useState(false); 
+  const [networkError, setNetworkError] = useState(""); 
+  const [deleteError, setDeleteError] = useState(false);
+
+  const handleFilter = () => {
+    handleFilterData();
+  };
+
+  const handleCreate = () => {
+    handleCreateque();
+  };
+
+  // Handle error display
+  useEffect(() => {
+    if (error) {
+      setDeleteError(true);
+      setTimeout(() => setDeleteError(false), 3000); // Hide error after 3 seconds
+    }
+  }, [error]);
+
+  // Fetch subjects data (example from previous part)
+  useEffect(() => {
+    const fetchSubjectsData = async () => {
+      setIsLoading(true);
+      try {
+        const { subjects } = await fetchSubjects(accessToken, _id);
+        setSubjectData(subjects);
+        // setQustions(totalQuestions);
+        setIsLoading(false); // Set loading to false after data is fetched
+      } catch (error) {
+        setIsLoading(false); // Set loading to false if there's an error
+        setNetworkError(error.message || "Network error occurred"); // Store the error message
+        toast.error(
+          "Error fetching subjects: " + (error.message || "Unknown error")
+        ); // Show error toast
+      }
+    };
+
+    fetchSubjectsData();
+  }, [_id, accessToken]);
+
+  // Get Questions function
   const getQuestions = async () => {
+    setIsLoading(true); // Set loading to true before making the API call
     try {
       const data = await fetchQuestionsBySubject(
-        token,
+        accessToken,
         CurrentSubject?._id,
         _id
       );
-
       if (!data) {
         console.log("No data received", data);
         return;
       }
 
       const { Questions = [], subTopics = [] } = data;
-
       setQustions(Questions);
       setSubtopics(subTopics);
-
       dispatch(CurrentQuestion(Questions));
 
       const filteredData = subTopics.filter((subject) =>
@@ -143,31 +185,39 @@ function SubjectDetails() {
       }
     } catch (err) {
       console.error("Error fetching questions:", err);
-      setError(`Error fetching questions: ${err.message || "Unknown error"}`);
+      setNetworkError(
+        `Error fetching questions: ${err.message || "Unknown error"}`
+      );
+      toast.error(err.message || "Error fetching questions");
+    } finally {
+      setIsLoading(false); // Set loading to false after the request is done
     }
   };
 
+  // Delete question function
   const deleteQuestion = async () => {
-    setLoading(true);
+    setIsLoading(true); // Set loading to true while deleting the question
     try {
-      const response = await deleteQuestion(token, itemToDelete);
+      const response = await deleteQuestion(accessToken, itemToDelete);
       console.log("deleteQuestion response:", response);
       toast.success(response.data.message);
-      getQuestions();
+      getQuestions(); // Refresh the question list after deleting
       setConfirm(false);
       setItemToDelete(null);
     } catch (error) {
       console.error("Error deleting question:", error);
       toast.error(error.message || "Failed to delete question");
+      setNetworkError(error.message || "Failed to delete question");
     } finally {
-      setLoading(false);
+      setIsLoading(false); // Set loading to false after the request is done
     }
   };
 
+  // Sorting Questions based on filters
   const sortedQuestions = useMemo(() => {
     if (!Array.isArray(questions)) {
       console.error("Questions is not an array:", questions);
-      return []; 
+      return [];
     }
 
     let sorted = [...questions];
@@ -189,13 +239,11 @@ function SubjectDetails() {
   useEffect(() => {
     if (Array.isArray(questions)) {
       const initialFilters = {};
-
       questions.forEach((question) => {
         if (question.type) {
           initialFilters[question.type] = true;
         }
       });
-
       setFilters((prev) => ({
         ...prev,
         ...initialFilters,
@@ -205,48 +253,40 @@ function SubjectDetails() {
     }
   }, [questions]);
 
+  // When CurrentSubject or _id changes, fetch questions
   useEffect(() => {
     if (CurrentSubject?._id && _id) {
       getQuestions();
     }
   }, [CurrentSubject?._id, _id]);
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   return (
     <>
       <section className="bg-white dark:bg-gray-900 p-4 overflow-y-auto rounded-lg border border-slate-300 font-sans">
-        <div className="space-y-10 ">
-          <div className=" space-y-4">
-            <div className="flex items-center 2xl:justify-end xl:justify-end  lg:justify-end md:justify-end sm:justify-center space-x-4">
+        <div className="space-y-10">
+          {/* Filter and Create Buttons */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-end space-x-4">
+              {/* Filter Button */}
               <button
-                onClick={() => handleFilterData()}
-                className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-orange-400 border border-orange-500 hover:bg-opacity-90  "
+                onClick={handleFilter}
+                className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-orange-400 border border-orange-500 hover:bg-opacity-90"
               >
-                <svg
-                  className="font-bold text-orange-400 w-4 h-4"
-                  viewBox="0 0 16 16"
-                >
-                  <TfiFilter />
-                </svg>
-                <p className=" font-semibold">filter</p>
+                <TfiFilter className="font-bold text-orange-400 w-4 h-4" />
+                <p className="font-semibold">Filter</p>
               </button>
+
+              {/* Create New Question Button */}
               <button
-                onClick={() => handleCreateque()}
-                className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90  "
+                onClick={handleCreate}
+                className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase text-white bg-orange-500 hover:bg-opacity-90"
               >
-                <svg
-                  className="font-bold text-white w-4 h-4"
-                  viewBox="0 0 16 16"
-                >
-                  <TfiPlus />
-                </svg>
-                <p className=" font-semibold">create new question</p>
+                <TfiPlus className="font-bold text-white w-4 h-4" />
+                <p className="font-semibold">Create New Question</p>
               </button>
             </div>
-            <div className=" space-y-2 flex flex-col items-start w-full">
+
+            <div className="space-y-2 flex flex-col items-start w-full">
               <p className="text-3xl tracking-tight font-semibold text-left text-gray-900 dark:text-white uppercase">
                 {CurrentSubject.name}
               </p>
@@ -260,93 +300,91 @@ function SubjectDetails() {
               </div>
             </div>
           </div>
-          <div className="w-full space-y-6 text-left  md:gap-16 dark:border-gray-700 font-sans">
-            {questions.length > 0 ? (
-              <ul className="space-y-4">
-                {filteredQuestions
-                  .filter((question) =>
-                    subTopicName !== null
-                      ? question.subtopicIds &&
-                        question.subtopicIds.length > 0 &&
-                        question.subtopicIds.includes(subTopicName)
-                      : question
-                  )
-                  .map((value, index) => (
-                    <li key={index} className="space-y-2">
-                      <div className="flex items-center justify-between text-lg font-medium text-gray-900 dark:text-white">
-                        <div className="flex items-center justify-between gap-x-4">
-                          <p className="block font-sans text-lg font-medium text-blue-gray-900 capitalize antialiased">
-                            {index + 1}
-                          </p>
-                          <p className="block font-sans text-lg font-medium text-blue-gray-900 capitalize antialiased">
-                            {value.englishQuestion.question}
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-end space-x-4 pr-2">
-                          <span
-                            value="Verified"
-                            className={`${
-                              value.type === "concept"
-                                ? "bg-green-100  text-green-600"
-                                : value.type === "aptitude"
-                                ? "bg-yellow-100  text-yellow-600"
-                                : value.type === "random"
-                                ? "bg-red-100  text-red-600"
-                                : "bg-gray-100  text-gray-900"
-                            } px-4 text-sm leading-8 font-medium rounded-full capitalize `}
-                          >
-                            {value.type}
-                          </span>
-                          <button
-                            onClick={() => handleDelete(value._id)}
-                            className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-red-100 border  hover:bg-opacity-90  "
-                          >
-                            <svg
-                              className="font-bold  w-5 h-5"
-                              viewBox="0 0 16 16"
+
+          {isLoading ? (
+            <p>Loading questions...</p>
+          ) : networkError ? (
+            <p className="text-red-500">Error: {networkError}</p>
+          ) : (
+            <div className="w-full space-y-6 text-left md:gap-16 dark:border-gray-700 font-sans">
+              {questions.length > 0 ? (
+                <ul className="space-y-4">
+                  {filteredQuestions
+                    .filter((question) =>
+                      subTopicName !== null
+                        ? question.subtopicIds &&
+                          question.subtopicIds.length > 0 &&
+                          question.subtopicIds.includes(subTopicName)
+                        : question
+                    )
+                    .map((value, index) => (
+                      <li key={index} className="space-y-2">
+                        <div className="flex items-center justify-between text-lg font-medium text-gray-900 dark:text-white">
+                          <div className="flex items-center justify-between gap-x-4">
+                            <p className="text-lg font-medium text-blue-gray-900 capitalize">
+                              {index + 1}
+                            </p>
+                            <p className="text-lg font-medium text-blue-gray-900 capitalize">
+                              {value.englishQuestion.question}
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-end space-x-4 pr-2">
+                            <span
+                              className={`${
+                                value.type === "concept"
+                                  ? "bg-green-100 text-green-600"
+                                  : value.type === "aptitude"
+                                  ? "bg-yellow-100 text-yellow-600"
+                                  : value.type === "random"
+                                  ? "bg-red-100 text-red-600"
+                                  : "bg-gray-100 text-gray-900"
+                              } px-4 text-sm leading-8 font-medium rounded-full capitalize`}
                             >
-                              {loading ? "Deleting..." : <AiOutlineDelete />}
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => handleEditque(value._id)}
-                            className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-green-100 border  hover:bg-opacity-90  "
-                          >
-                            <svg
-                              className="font-bold  w-5 h-5"
-                              viewBox="0 0 17 17"
+                              {value.type}
+                            </span>
+                            <button
+                              onClick={() => handleDelete(value._id)}
+                              className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-red-100 border hover:bg-opacity-90"
                             >
-                              <TfiPencil />
-                            </svg>
-                          </button>
+                              <AiOutlineDelete className="font-bold w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleEditque(value._id)}
+                              className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center uppercase bg-green-100 border hover:bg-opacity-90"
+                            >
+                              <TfiPencil className="font-bold w-5 h-5" />
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      <div className="rounded-md border border-gray-300 px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
-                        {value.englishQuestion.solution}
-                      </div>
-                    </li>
-                  ))}
-              </ul>
-            ) : (
-              "No questions found"
-            )}
+                        <div className="rounded-md border border-gray-300 px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner">
+                          {value.englishQuestion.solution}
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              ) : (
+                <p>No questions found</p>
+              )}
+            </div>
+          )}
+
+          <div className={`${confirm === true ? "block" : "hidden"}`}>
+            <ConfirmationPage
+              confirm={confirm}
+              onDelete={deleteQuestion}
+              onCancel={() => {}}
+            />
           </div>
-        </div>
-        <div className={`${confirm === true ? "block" : "hidden"}`}>
-          <ConfirmationPage
-            confirm={confirm}
-            onDelete={deleteQuestion}
-            onCancel={handleDelete}
-          />
-        </div>
-        <div className={`${toggle === true ? "block" : "hidden"}`}>
-          <FilterSide
-            filterData={filters}
-            lastModify={lastModifyfilter}
-            onChange={handleCheckboxChange}
-            apply={applyFilters}
-            onClose={handleFilterData}
-          />
+
+          <div className={`${toggle === true ? "block" : "hidden"}`}>
+            <FilterSide
+              filterData={filters}
+              lastModify={lastModifyfilter}
+              onChange={handleCheckboxChange}
+              apply={applyFilters}
+              onClose={handleFilterData}
+            />
+          </div>
         </div>
       </section>
       <ToastContainer

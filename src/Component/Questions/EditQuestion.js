@@ -21,50 +21,93 @@ import {
   editQuestionAPI,
   fetchQuestionsBySubject,
 } from "../../Hooks/QuestionsApi";
+import Loading from "../Loader/Loading";
 
 function EditQuestion() {
   const navigate = useNavigate();
-  const ClassesData = useSelector((state) => state.userConfig.classesData);
-  const subject = useSelector((state) => state.userConfig.CurrentQue[0]);
+  const { _id } = useSelector((state) => state.userConfig.classesData);
+  const accessToken = useSelector(
+    (state) => state.authConfig.userInfo[0]?.token
+  );
+  const currentQuestion = useSelector(
+    (state) => state.userConfig.CurrentQue[0]
+  );
   const CurrentSubject = useSelector(
     (state) => state.userConfig.CurrentSubject
   );
-
-  const [editQuestion, setEditQuestion] = useState({
-    questionId: "",
-    subjectId: "",
-    classesId: "",
-    subtopicIds: [],
-    questionBank: "",
-    type: "",
-    questionType: "",
-    englishQuestion: {
-      question: "",
-      options: { A: "", B: "", C: "", D: "" },
-      answer: "",
-      solution: "",
-      statementQuestion: [],
-      pairQuestion: [],
-      lastQuestion: "",
-    },
-    hindiQuestion: {
-      question: "",
-      options: { A: "", B: "", C: "", D: "" },
-      answer: "",
-      solution: "",
-      statementQuestion: [],
-      pairQuestion: [],
-      lastQuestion: "",
-    },
-  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [networkError, setNetworkError] = useState("");
+  const [deleteError, setDeleteError] = useState(false);
   const [type, setType] = useState("");
   const [questionType, setQuestionType] = useState("");
   const [subTopicName, setSubTopicName] = useState([]);
   const [selectedSubtopic, setSelectedSubtopic] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [subjectname, setSubjectname] = useState([]);
-
   const [subtopics, setSubtopics] = useState([]);
+  const [currentEngStatement, setCurrentEngStatement] = useState("");
+  const [currentHindiStatement, setCurrentHindiStatement] = useState("");
+  const [currentEngPair, setCurrentEngPair] = useState("");
+  const [currentHindiPair, setCurrentHindiPair] = useState("");
+
+  const [editQuestion, setEditQuestion] = useState(() => {
+    if (questionType === "normal") {
+      return {
+        questionId: "",
+        subjectId: "",
+        classesId: "",
+        subtopicIds: [],
+        questionBank: "",
+        type: "",
+        questionType: "",
+        englishQuestion: {
+          question: "",
+          options: { A: "", B: "", C: "", D: "" },
+          answer: "",
+          solution: "",
+          statementQuestion: [],
+          pairQuestion: [],
+        },
+        hindiQuestion: {
+          question: "",
+          options: { A: "", B: "", C: "", D: "" },
+          answer: "",
+          solution: "",
+          statementQuestion: [],
+          pairQuestion: [],
+        },
+      };
+    } else {
+      return {
+        questionId: "",
+        subjectId: "",
+        classesId: "",
+        subtopicIds: [],
+        questionBank: "",
+        type: "",
+        questionType: "",
+        englishQuestion: {
+          question: "",
+          options: { A: "", B: "", C: "", D: "" },
+          answer: "",
+          solution: "",
+          statementQuestion: [],
+          pairQuestion: [],
+          lastQuestion: "",
+        },
+        hindiQuestion: {
+          question: "",
+          options: { A: "", B: "", C: "", D: "" },
+          answer: "",
+          solution: "",
+          statementQuestion: [],
+          pairQuestion: [],
+          lastQuestion: "",
+        },
+      };
+    }
+  });
+
   const radioOptions = [
     { value: "concept", label: "Concept" },
     { value: "aptitude", label: "Aptitude" },
@@ -117,31 +160,35 @@ function EditQuestion() {
     const { name, value } = event.target;
     const [lang, field, option] = name.split("."); // Split the name to get the language, field, and option
 
+    // Check if the field is related to either English or Hindi questions
     if (lang === "englishQuestion" || lang === "hindiQuestion") {
       if (field === "options" && option) {
+        // If it's an option field (like A, B, C, D), update the specific option
         setEditQuestion((prev) => ({
           ...prev,
           [lang]: {
             ...prev[lang],
             options: {
               ...prev[lang].options,
-              [option]: value,
+              [option]: value, // Update the specific option (A, B, C, or D)
             },
           },
         }));
       } else {
+        // If it's any other field (question, answer, solution, etc.), just update that field
         setEditQuestion((prev) => ({
           ...prev,
           [lang]: {
             ...prev[lang],
-            [field]: value, // Update the field (solution in this case)
+            [field]: value, // Update the field (question, solution, etc.)
           },
         }));
       }
     } else {
+      // If the field is not related to English or Hindi questions, update it directly
       setEditQuestion((prev) => ({
         ...prev,
-        [name]: value,
+        [name]: value, // Update the other fields like subjectId, classesId, etc.
       }));
     }
   };
@@ -166,11 +213,6 @@ function EditQuestion() {
       subtopicIds: uniqueValues,
     }));
   };
-
-  const [currentEngStatement, setCurrentEngStatement] = useState("");
-  const [currentHindiStatement, setCurrentHindiStatement] = useState("");
-  const [currentEngPair, setCurrentEngPair] = useState("");
-  const [currentHindiPair, setCurrentHindiPair] = useState("");
 
   const addStatementQuestion = (language) => {
     const currentStatement =
@@ -298,31 +340,35 @@ function EditQuestion() {
   };
 
   useEffect(() => {
-    console.log("EDIT", editQuestion);
+    console.log("EDIT QUESTION", editQuestion);
   }, [editQuestion]);
 
   const handleGetData = async () => {
+    setIsLoading(true); // Set loading to true when fetching data
     try {
-      const data = await fetchQuestionsBySubject(
-        ClassesData.token,
+      const { subTopics } = await fetchQuestionsBySubject(
+        accessToken,
         CurrentSubject?._id,
-        ClassesData._id
+        _id
       );
-      const Subjectdata = await fetchData(ClassesData.token, CurrentSubject?._id);
+      const Subjectdata = await fetchData(accessToken, CurrentSubject?._id);
 
-      if (!data || !Subjectdata) {
-        console.log("No data received", data);
+      if (!subTopics || !Subjectdata) {
+        console.log("No data received");
         return;
       }
-      console.log(Subjectdata);
-      
-      const { subTopics = [] } = data;
       const { subjects = [] } = Subjectdata;
+      console.log(subjects);
 
-      setSubTopicName(subTopics);
+      setSubtopics(subTopics);
       setSubjectname(subjects);
+      setSelectedSubject(subjects);
+      setIsLoading(false);
     } catch (error) {
       console.error("Failed to fetch data.");
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -362,58 +408,21 @@ function EditQuestion() {
     return false;
   };
 
-  // const EditQuestion = async () => {
-  //   try {
-  //     if (isEmpty()) {
-  //       toast.warning("Please fill up empty fields.");
-  //     } else {
-  //       let data = JSON.stringify(editQuestion);
-  //       console.log(editQuestion);
-
-  //       let config = {
-  //         method: "post",
-  //         maxBodyLength: Infinity,
-  //         url: "https://api-bef.hkdigiverse.com/question/edit",
-  //         headers: {
-  //           Authorization: ClassesData.token,
-  //           "Content-Type": "application/json",
-  //         },
-  //         data: data,
-  //       };
-
-  //       const response = await axios.request(config);
-
-  //       if (response.status === 200) {
-  //         toast.success(response.data.message);
-  //         console.log("success", response.data);
-  //         navigate("/subjectDetails");
-  //       } else {
-  //         console.log("failed", response);
-  //         console.log("msg", response.message);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
-
   const EditQuestion = async () => {
     try {
       if (isEmpty(editQuestion)) {
         toast.warning("Please fill up empty fields.");
       } else {
-        const response = await editQuestionAPI(editQuestion, ClassesData.token);
+        const response = await editQuestionAPI(editQuestion, accessToken);
 
         if (response.status === 200) {
           toast.success(response.data.message);
           console.log("success", response.data);
           navigate("/subjectDetails");
-          handleGetData();
+          handleGetData(); // Refresh data after success
         } else {
           console.log("failed", response.data);
           toast.error(response.data.message);
-        }
-        if (response) {
         }
       }
     } catch (err) {
@@ -421,9 +430,35 @@ function EditQuestion() {
       toast.error("An error occurred while editing the question.");
     }
   };
+  useEffect(() => {
+    if (questionType === "normal") {
+      setEditQuestion((prevState) => ({
+        ...prevState,
+        englishQuestion: {
+          ...prevState.englishQuestion,
+          lastQuestion: "", 
+        },
+        hindiQuestion: {
+          ...prevState.hindiQuestion,
+          lastQuestion: "", 
+        },
+      }));
+    } else {
+      setEditQuestion((prevState) => ({
+        ...prevState,
+        englishQuestion: {
+          ...prevState.englishQuestion,
+          lastQuestion: prevState.englishQuestion.lastQuestion || "",
+        },
+        hindiQuestion: {
+          ...prevState.hindiQuestion,
+          lastQuestion: prevState.hindiQuestion.lastQuestion || "",
+        },
+      }));
+    }
+  }, [questionType]); 
 
   useEffect(() => {
-    // Ensure that `editQuestion` and its nested properties are defined
     if (
       !editQuestion ||
       !editQuestion.englishQuestion ||
@@ -432,85 +467,113 @@ function EditQuestion() {
       return; // Exit early if any of these objects are undefined
     }
 
-    // Ensure the options are defined before proceeding
     const englishOptions = editQuestion.englishQuestion.options || {};
     const hindiOptions = editQuestion.hindiQuestion.options || {};
 
-    // Copy the existing options structure
     const newOptions = { ...options };
 
-    // Loop through the English options and update based on the selected answer
     Object.keys(englishOptions).forEach((key) => {
       newOptions.englishQuestion = newOptions.englishQuestion || {}; // Initialize if undefined
       newOptions.englishQuestion[key] =
         editQuestion.englishQuestion.answer === key;
     });
 
-    // Loop through the Hindi options and update based on the selected answer
     Object.keys(hindiOptions).forEach((key) => {
       newOptions.hindiQuestion = newOptions.hindiQuestion || {}; // Initialize if undefined
       newOptions.hindiQuestion[key] = editQuestion.hindiQuestion.answer === key;
     });
 
-    // Update the options state
     setOptions({
       AnswerOption: { ...newOptions.englishQuestion },
     });
-  }, [
-    editQuestion,
-    editQuestion.englishQuestion.answer,
-    editQuestion.englishQuestion.options,
-    editQuestion.hindiQuestion.answer,
-    editQuestion.hindiQuestion.options,
-    options,
-  ]);
+  }, [editQuestion.englishQuestion, editQuestion.hindiQuestion]);
 
   useEffect(() => {
     handleGetData();
-  }, [ClassesData.token]);
+  }, [accessToken, CurrentSubject?._id]);
 
   useEffect(() => {
-    if (subject) {
-      // Set question edit data
-      setEditQuestion({
-        questionId: subject._id,
-        subjectId: subject.subjectId,
-        classesId: subject.classesId,
-        subtopicIds: subject.subtopicIds,
-        questionBank: subject.questionBank,
-        type: subject.type,
-        questionType: subject.questionType,
-        englishQuestion: {
-          question: subject.englishQuestion.question,
-          options: subject.englishQuestion.options,
-          answer: subject.englishQuestion.answer,
-          solution: subject.englishQuestion.solution,
-          statementQuestion: subject.englishQuestion.statementQuestion,
-          pairQuestion: subject.englishQuestion.pairQuestion || [],
-          lastQuestion: subject.englishQuestion.lastQuestion,
-        },
-        hindiQuestion: {
-          question: subject.hindiQuestion.question,
-          options: subject.hindiQuestion.options,
-          answer: subject.hindiQuestion.answer,
-          solution: subject.hindiQuestion.solution,
-          statementQuestion: subject.hindiQuestion.statementQuestion,
-          pairQuestion: subject.hindiQuestion.pairQuestion || [],
-          lastQuestion: subject.hindiQuestion.lastQuestion,
-        },
-      });
+    if (currentQuestion) {
+      if (currentQuestion?.questionType === "normal") {
+        const newEditQuestion = {
+          questionId: currentQuestion._id,
+          subjectId: currentQuestion.subjectId,
+          classesId: currentQuestion.classesId,
+          subtopicIds: currentQuestion.subtopicIds,
+          questionBank: currentQuestion.questionBank,
+          type: currentQuestion.type,
+          questionType: currentQuestion.questionType,
+          englishQuestion: {
+            question: currentQuestion.englishQuestion.question,
+            options: currentQuestion.englishQuestion.options,
+            answer: currentQuestion.englishQuestion.answer,
+            solution: currentQuestion.englishQuestion.solution,
+            statementQuestion:
+              currentQuestion.englishQuestion.statementQuestion,
+            pairQuestion: currentQuestion.englishQuestion.pairQuestion || [],
+          },
+          hindiQuestion: {
+            question: currentQuestion.hindiQuestion.question,
+            options: currentQuestion.hindiQuestion.options,
+            answer: currentQuestion.hindiQuestion.answer,
+            solution: currentQuestion.hindiQuestion.solution,
+            statementQuestion: currentQuestion.hindiQuestion.statementQuestion,
+            pairQuestion: currentQuestion.hindiQuestion.pairQuestion || [],
+          },
+        };
+        setEditQuestion(newEditQuestion);
+      } else {
+        const newEditQuestion = {
+          questionId: currentQuestion._id,
+          subjectId: currentQuestion.subjectId,
+          classesId: currentQuestion.classesId,
+          subtopicIds: currentQuestion.subtopicIds,
+          questionBank: currentQuestion.questionBank,
+          type: currentQuestion.type,
+          questionType: currentQuestion.questionType,
+          englishQuestion: {
+            question: currentQuestion.englishQuestion.question,
+            options: currentQuestion.englishQuestion.options,
+            answer: currentQuestion.englishQuestion.answer,
+            solution: currentQuestion.englishQuestion.solution,
+            statementQuestion:
+              currentQuestion.englishQuestion.statementQuestion,
+            pairQuestion: currentQuestion.englishQuestion.pairQuestion || [],
+            lastQuestion:
+              currentQuestion.questionType !== "normal"
+                ? currentQuestion.englishQuestion.lastQuestion
+                : "",
+          },
+          hindiQuestion: {
+            question: currentQuestion.hindiQuestion.question,
+            options: currentQuestion.hindiQuestion.options,
+            answer: currentQuestion.hindiQuestion.answer,
+            solution: currentQuestion.hindiQuestion.solution,
+            statementQuestion: currentQuestion.hindiQuestion.statementQuestion,
+            pairQuestion: currentQuestion.hindiQuestion.pairQuestion || [],
+            lastQuestion:
+              currentQuestion.questionType !== "normal"
+                ? currentQuestion.hindiQuestion.lastQuestion
+                : "",
+          },
+        };
+        setEditQuestion(newEditQuestion);
+      }
 
-      // Set other state fields like type, questionType, and subtopic
-      setType(subject.type || "");
-      setQuestionType(subject.questionType || "");
-      setSubTopicName(subject.subtopicIds || []);
-      setSelectedSubtopic(subject.subtopicIds || []);
-      setSelectedSubject(subject.subjectId || "");
-      setSubjectname(subject._id); // Assuming subject._id is used for name (modify as needed)
+      const existSubtopics = currentQuestion.subtopicIds
+        .map((subtopicId) => {
+          const matchedSubtopic = subtopics.find(
+            (subtopic) => subtopic._id === subtopicId
+          );
+          return matchedSubtopic ? matchedSubtopic : null;
+        })
+        .filter((subtopic) => subtopic !== null);
 
-      // console.log(subject); // Optional: If you need to log the subject for debugging
+      setSelectedSubtopic(existSubtopics);
+      setType(currentQuestion.type || "");
+      setQuestionType(currentQuestion.questionType || "");
     }
-  }, [subject]);
+  }, [currentQuestion, subjectname, subtopics]);
 
   return (
     <>
@@ -524,163 +587,192 @@ function EditQuestion() {
               Fill in the details below to create a new question.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
-            <div className="space-y-2">
-              <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
-                Subject
-              </label>
-              <SingleSelect
-                label="Subject"
-                value={subjectname}
-                onChange={handleSubjectChange}
-                options={subjectname}
-              />
-            </div>
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
+                <div className="space-y-2">
+                  <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
+                    Subject
+                  </label>
+                  {networkError ? (
+                    <p className="text-red-500">Error: {networkError}</p> // Display network error message
+                  ) : (
+                    <SingleSelect
+                      label="Subject"
+                      value={selectedSubject}
+                      onChange={handleSubjectChange}
+                      options={subjectname}
+                    />
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
-                Subtopic
-              </label>
-              <MultipleSelect
-                label="Subtopics"
-                value={selectedSubtopic}
-                onChange={handleSubtopicChange}
-                options={subtopics}
-              />
-            </div>
+                <div className="space-y-2">
+                  <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
+                    Subtopic
+                  </label>
+                  {networkError ? (
+                    <p className="text-red-500">Error: {networkError}</p> // Display network error message
+                  ) : (
+                    <MultipleSelect
+                      label="Subtopics"
+                      value={selectedSubtopic}
+                      onChange={handleSubtopicChange}
+                      options={subtopics}
+                    />
+                  )}
+                </div>
 
-            <div className="space-y-3">
-              <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
-                Question Type
-              </label>
-              <RadioButtons
-                options={radioOptions}
-                checkedValue={type}
-                onChange={handleTypeChange}
-              />
-            </div>
-          </div>
-
-          {/* question_type */}
-          <div className="p-4 md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
-            <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-              Question Type :
-            </p>
-            {["normal", "statement", "pair"].map((option, index) => (
-              <div
-                className="flex items-center justify-start space-x-2"
-                key={index}
-              >
-                <input
-                  type="radio"
-                  id={`type-${option}`}
-                  value={option}
-                  name="questionType"
-                  checked={editQuestion.questionType === option} // Set checked based on the current questionType
-                  onChange={(e) => {
-                    setEditQuestion((prev) => ({
-                      ...prev,
-                      questionType: e.target.value, // Update questionType in the state
-                    }));
-                    setQuestionType(e.target.value); // If you also want to update this state
-                  }}
-                  className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
-                />
-                <label
-                  htmlFor={`type-${option}`}
-                  className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-                >
-                  {option}
-                </label>
+                <div className="space-y-3">
+                  <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
+                    Question Type
+                  </label>
+                  {networkError ? (
+                    <p className="text-red-500">Error: {networkError}</p> // Display network error message
+                  ) : (
+                    <RadioButtons
+                      options={radioOptions}
+                      checkedValue={type}
+                      onChange={handleTypeChange}
+                    />
+                  )}
+                </div>
               </div>
-            ))}
-          </div>
+              <div className="p-4 md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
+                <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                  Question Type :
+                </p>
+                {networkError ? (
+                  <p className="text-red-500">Error: {networkError}</p> // Error message for network failure
+                ) : (
+                  ["normal", "statement", "pair"].map((option, index) => (
+                    <div
+                      className="flex items-center justify-start space-x-2"
+                      key={index}
+                    >
+                      <input
+                        type="radio"
+                        id={`type-${option}`}
+                        value={option}
+                        name="questionType"
+                        checked={editQuestion.questionType === option}
+                        onChange={(e) => {
+                          setEditQuestion((prev) => ({
+                            ...prev,
+                            questionType: e.target.value,
+                          }));
+                          setQuestionType(e.target.value);
+                        }}
+                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
+                      />
+                      <label
+                        htmlFor={`type-${option}`}
+                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
+                      >
+                        {option}
+                      </label>
+                    </div>
+                  ))
+                )}
+              </div>
 
-          {questionType === "pair" ? (
-            <EnglishQuestionPairForm
-              editQuestion={editQuestion}
-              setEditQuestion={setEditQuestion}
-              currentEngPair={currentEngPair}
-              setCurrentEngPair={setCurrentEngPair}
-              addPairQuestion={handleAddPair}
-              handleChange={handleChange}
-              handleCheck={handleCheck}
-              optionsArray={optionsArray}
-              handlePairQuestionChange={handlePairQuestionChange}
-              handleAddPair={handleAddPair}
-              handleStatementQuestionChange={handleStatementQuestionChange}
-              inputs={inputs.english} // Pass inputs as prop
-              handleInputChange={handleInputChange}
-            />
-          ) : questionType === "statement" ? (
-            <EnglishQueStatementBaseform
-              editQuestion={editQuestion}
-              setEditQuestion={setEditQuestion}
-              currentStatement={currentEngStatement}
-              setCurrentStatement={setCurrentEngStatement}
-              handleChange={handleChange}
-              handleCheck={handleCheck}
-              optionsArray={optionsArray}
-              handlePairQuestionChange={handleStatementQuestionChange}
-              handleAddStatement={addStatementQuestion}
-            />
-          ) : (
-            <NormalquestionBaseForm
-              editQuestion={editQuestion}
-              setEditQuestion={setEditQuestion}
-              handleChange={handleChange}
-              handleCheck={handleCheck}
-              optionsArray={optionsArray}
-            />
+              {networkError ? (
+                <p className="text-red-500">Error: {networkError}</p> // Display network error message
+              ) : questionType === "pair" ? (
+                <EnglishQuestionPairForm
+                  editQuestion={editQuestion}
+                  setEditQuestion={setEditQuestion}
+                  currentEngPair={currentEngPair}
+                  setCurrentEngPair={setCurrentEngPair}
+                  addPairQuestion={handleAddPair}
+                  handleChange={handleChange}
+                  handleCheck={handleCheck}
+                  optionsArray={optionsArray}
+                  handlePairQuestionChange={handlePairQuestionChange}
+                  handleAddPair={handleAddPair}
+                  handleStatementQuestionChange={handleStatementQuestionChange}
+                  inputs={inputs.english} // Pass inputs as prop
+                  handleInputChange={handleInputChange}
+                />
+              ) : questionType === "statement" ? (
+                <EnglishQueStatementBaseform
+                  editQuestion={editQuestion}
+                  setEditQuestion={setEditQuestion}
+                  currentStatement={currentEngStatement}
+                  setCurrentStatement={setCurrentEngStatement}
+                  handleChange={handleChange}
+                  handleCheck={handleCheck}
+                  optionsArray={optionsArray}
+                  handlePairQuestionChange={handleStatementQuestionChange}
+                  handleAddStatement={addStatementQuestion}
+                />
+              ) : (
+                <NormalquestionBaseForm
+                  editQuestion={editQuestion}
+                  setEditQuestion={setEditQuestion}
+                  handleChange={handleChange}
+                  handleCheck={handleCheck}
+                  optionsArray={optionsArray}
+                />
+              )}
+              {networkError ? (
+                <p className="text-red-500">Error: {networkError}</p>
+              ) : questionType === "pair" ? (
+                <HindiQuestionPairForm
+                  editQuestion={editQuestion}
+                  setEditQuestion={setEditQuestion}
+                  currentHindiPair={currentHindiPair}
+                  addPairQuestion={handleAddPair}
+                  handleChange={handleChange}
+                  handleCheck={handleCheck}
+                  optionsArray={optionsArray}
+                  handlePairQuestionChange={handlePairQuestionChange}
+                  handleStatementQuestionChange={handleStatementQuestionChange}
+                  handleAddPair={handleAddPair}
+                  inputs={inputs.hindi} // Pass inputs as prop
+                  handleInputChange={handleInputChange}
+                />
+              ) : questionType === "statement" ? (
+                <HindiQueStatementBaseform
+                  editQuestion={editQuestion}
+                  setEditQuestion={setEditQuestion}
+                  currentStatement={currentHindiStatement}
+                  setCurrentStatement={setCurrentHindiStatement}
+                  handleChange={handleChange}
+                  handleCheck={handleCheck}
+                  optionsArray={optionsArray}
+                  handlePairQuestionChange={handleStatementQuestionChange}
+                  handleAddStatement={addStatementQuestion}
+                />
+              ) : (
+                <NormalHindQueBaseForm
+                  editQuestion={editQuestion}
+                  setEditQuestion={setEditQuestion}
+                  handleChange={handleChange}
+                  handleCheck={handleCheck}
+                  optionsArray={optionsArray}
+                />
+              )}
+              <div className="mt-6 text-center">
+                <button
+                  type="button"
+                  onClick={EditQuestion}
+                  className="inline-flex items-center py-2 px-6 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                  disabled={isLoading} // Disable the button during loading
+                >
+                  {isLoading ? (
+                    <span>Saving...</span> // Show loading text in the button during save operation
+                  ) : (
+                    <>
+                      <VscSaveAs className="mr-2" />
+                      Save Question
+                    </>
+                  )}
+                </button>
+              </div>
+            </>
           )}
-
-          {questionType === "pair" ? (
-            <HindiQuestionPairForm
-              editQuestion={editQuestion}
-              setEditQuestion={setEditQuestion}
-              currentHindiPair={currentHindiPair}
-              addPairQuestion={handleAddPair}
-              handleChange={handleChange}
-              handleCheck={handleCheck}
-              optionsArray={optionsArray}
-              handlePairQuestionChange={handlePairQuestionChange}
-              handleStatementQuestionChange={handleStatementQuestionChange}
-              handleAddPair={handleAddPair}
-              inputs={inputs.hindi} // Pass inputs as prop
-              handleInputChange={handleInputChange}
-            />
-          ) : questionType === "statement" ? (
-            <HindiQueStatementBaseform
-              editQuestion={editQuestion}
-              setEditQuestion={setEditQuestion}
-              currentStatement={currentHindiStatement}
-              setCurrentStatement={setCurrentHindiStatement}
-              handleChange={handleChange}
-              handleCheck={handleCheck}
-              optionsArray={optionsArray}
-              handlePairQuestionChange={handleStatementQuestionChange}
-              handleAddStatement={addStatementQuestion}
-            />
-          ) : (
-            <NormalHindQueBaseForm
-              editQuestion={editQuestion}
-              setEditQuestion={setEditQuestion}
-              handleChange={handleChange}
-              handleCheck={handleCheck}
-              optionsArray={optionsArray}
-            />
-          )}
-
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={EditQuestion}
-              className="inline-flex items-center py-2 px-6 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-            >
-              <VscSaveAs className="mr-2" />
-              Save Question
-            </button>
-          </div>
         </div>
         <ToastContainer
           draggable={false}

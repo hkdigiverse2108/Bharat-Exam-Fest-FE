@@ -1,15 +1,15 @@
 import axios from "axios";
-import { convertUtcToIst } from "../Utils/timeUtils"; // Import the time conversion function
+import { convertUtcToIst } from "../Utils/timeUtils";
 import { toast } from "react-toastify";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-export const fetchSubjects = async (accessToken, classesId) => {
+export const fetchSubjects = async (token, classesId) => {
   try {
     let config = {
       method: "get",
       headers: {
-        Authorization: `${accessToken}`,
+        Authorization: `${token}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -24,7 +24,6 @@ export const fetchSubjects = async (accessToken, classesId) => {
       config
     );
 
-    // Check if both responses are valid and return the data
     if (response1 && response2) {
       const totalQuestions = response1?.data?.data || [];
       const subjects = response2?.data?.data?.subject_data || [];
@@ -46,12 +45,13 @@ export const fetchSubjects = async (accessToken, classesId) => {
   }
 };
 
-export const fetchData = async (accessToken, subject) => {
+// fetch data for selected subject
+export const fetchData = async (token, subject) => {
   try {
     let config = {
       method: "get",
       headers: {
-        Authorization: `${accessToken}`,
+        Authorization: `${token}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -67,7 +67,7 @@ export const fetchData = async (accessToken, subject) => {
     );
     if (response1.status === 200 && response2.status === 200) {
       const subTopic = response1?.data?.data?.sub_topic_data || [];
-      const subjects = response2?.data?.data?.subject_data || [];
+      const subjects = response2?.data?.data || [];
 
       return {
         subTopic,

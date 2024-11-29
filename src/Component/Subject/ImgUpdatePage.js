@@ -12,9 +12,7 @@ export default function ImgUpdatePage({ confirm, onClose }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
-  );
+  const { token, _id } = useSelector((state) => state.userConfig.classesData[0]);
   const subjectData = useSelector((state) => state.userConfig.CurrentSubject);
   // console.log(subjectData);
 
@@ -72,7 +70,7 @@ export default function ImgUpdatePage({ confirm, onClose }) {
         maxBodyLength: Infinity,
         url: `https://api-bef.hkdigiverse.com/subject/edit`,
         headers: {
-          Authorization: accessToken,
+          Authorization: token,
           "Content-Type": "application/json",
         },
         data: data,

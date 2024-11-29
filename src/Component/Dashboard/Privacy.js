@@ -4,8 +4,9 @@ import { useSelector } from "react-redux";
 
 
 export default function Privacy() {
+  const {  _id } = useSelector((state) => state.userConfig.classesData);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0]?.token
   );
   // const addNewQuestion = async () => {
   //   try {
@@ -20,7 +21,7 @@ export default function Privacy() {
   //       maxBodyLength: Infinity,
   //       url: "https://api-bef.hkdigiverse.com/question/add",
   //       headers: {
-  //         Authorization: accessToken,
+  //         Authorization: token,
   //         "Content-Type": "application/json",
   //       },
   //       data: data,

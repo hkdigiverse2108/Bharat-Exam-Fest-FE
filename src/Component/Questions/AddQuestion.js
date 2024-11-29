@@ -16,47 +16,135 @@ import NormalHindQueBaseForm from "./QuestionType/Add/HindiQuestionBase/NormalHi
 import HindiQueStatementBaseform from "./QuestionType/Add/HindiQuestionBase/HindiQueStatementBaseform";
 import { addNewQuestion } from "../../Hooks/QuestionsApi";
 import { fetchData } from "../../Hooks/getSubjectApi";
+import Loading from "../Loader/Loading";
 
 function AddQuestion() {
   const navigate = useNavigate();
   const classId = useSelector((state) => state.authConfig.userInfo[0]._id);
+  // const { _id } = useSelector((state) => state.userConfig.classesData);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].token
+    (state) => state.authConfig.userInfo[0]?.token
   );
-  const subject = useSelector((state) => state.userConfig.CurrentSubject);
-  // console.log(subject);
+  const subject = useSelector((state) => state.userConfig.CurrentSubject?._id);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [networkError, setNetworkError] = useState("");
   const [type, setType] = useState("concept");
   const [questionType, setQuestionType] = useState("normal");
-  const memoizedQuestionType = useMemo(() => questionType, [questionType]);
-  const [selectedSubtopic, setSelectedSubtopic] = useState([]);
-  const [subjectname, setSubjectname] = useState([]);
-  const [addQuestion, setAddQuestion] = useState({
-    subjectId: subject._id,
-    classesId: classId,
-    subtopicIds: [],
-    type: type,
-    questionType: questionType,
-    englishQuestion: {
-      question: "",
-      answer: "",
-      solution: "",
-      options: { A: "", B: "", C: "", D: "" },
-      statementQuestion: [],
-      pairQuestion: [],
-      lastQuestion: "",
-    },
-    hindiQuestion: {
-      question: "",
-      answer: "",
-      solution: "",
-      options: { A: "", B: "", C: "", D: "" },
-      statementQuestion: [],
-      pairQuestion: [],
-      lastQuestion: "",
-    },
-  });
+  // const memoizedQuestionType = useMemo(() => questionType, [questionType]);
   const [subtopics, setSubtopics] = useState([]);
+  const [subjectname, setSubjectname] = useState([]);
+  const [selectedSubtopic, setSelectedSubtopic] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState([]);
+  const [addQuestion, setAddQuestion] = useState(() => {
+    if (questionType === "normal") {
+      return {
+        subjectId: subject,
+        classesId: classId,
+        subtopicIds: [],
+        type: type,
+        questionType: questionType,
+        englishQuestion: {
+          question: "",
+          answer: "",
+          solution: "",
+          options: { A: "", B: "", C: "", D: "" },
+          statementQuestion: [],
+          pairQuestion: [],
+        },
+        hindiQuestion: {
+          question: "",
+          answer: "",
+          solution: "",
+          options: { A: "", B: "", C: "", D: "" },
+          statementQuestion: [],
+          pairQuestion: [],
+        },
+      };
+    } else {
+      return {
+        subjectId: subject,
+        classesId: classId,
+        subtopicIds: [],
+        type: type,
+        questionType: questionType,
+        englishQuestion: {
+          question: "",
+          answer: "",
+          solution: "",
+          options: { A: "", B: "", C: "", D: "" },
+          statementQuestion: [],
+          pairQuestion: [],
+          lastQuestion: "", // Include lastQuestion for non-normal question types
+        },
+        hindiQuestion: {
+          question: "",
+          answer: "",
+          solution: "",
+          options: { A: "", B: "", C: "", D: "" },
+          statementQuestion: [],
+          pairQuestion: [],
+          lastQuestion: "", // Include lastQuestion for non-normal question types
+        },
+      };
+    }
+  });
+  // useEffect(() => {
+  //   setAddQuestion(() => {
+  //     if (questionType === "normal") {
+  //       return {
+  //         subjectId: "",
+  //         classesId: classId,
+  //         subtopicIds: [],
+  //         type: type,
+  //         questionType: questionType,
+  //         englishQuestion: {
+  //           question: "",
+  //           answer: "",
+  //           solution: "",
+  //           options: { A: "", B: "", C: "", D: "" },
+  //           statementQuestion: [],
+  //           pairQuestion: [],
+  //         },
+  //         hindiQuestion: {
+  //           question: "",
+  //           answer: "",
+  //           solution: "",
+  //           options: { A: "", B: "", C: "", D: "" },
+  //           statementQuestion: [],
+  //           pairQuestion: [],
+  //         },
+  //       };
+  //     } else {
+  //       return {
+  //         subjectId: subject,
+  //         classesId: classId,
+  //         subtopicIds: [],
+  //         type: type,
+  //         questionType: questionType,
+  //         englishQuestion: {
+  //           question: "",
+  //           answer: "",
+  //           solution: "",
+  //           options: { A: "", B: "", C: "", D: "" },
+  //           statementQuestion: [],
+  //           pairQuestion: [],
+  //           lastQuestion: "", // Add lastQuestion for non-normal types
+  //         },
+  //         hindiQuestion: {
+  //           question: "",
+  //           answer: "",
+  //           solution: "",
+  //           options: { A: "", B: "", C: "", D: "" },
+  //           statementQuestion: [],
+  //           pairQuestion: [],
+  //           lastQuestion: "", // Add lastQuestion for non-normal types
+  //         },
+  //       };
+  //     }
+  //   });
+  // }, [classId, questionType, subject, type]);
+
   const [options, setOptions] = useState({
     AnswerOption: { A: false, B: false, C: false, D: false },
   });
@@ -145,6 +233,9 @@ function AddQuestion() {
 
   const handleSubjectChange = (event) => {
     const { value } = event.target;
+    console.log(value);
+
+    setSelectedSubject(value);
     setAddQuestion((prev) => ({ ...prev, subjectId: value._id }));
   };
 
@@ -186,7 +277,7 @@ function AddQuestion() {
     const currentStatement =
       language === "english" ? currentEngStatement : currentHindiStatement;
     if (!currentStatement.trim()) {
-      toast.error("Please enter a statement.");
+      toast.warn("Please enter a statement.");
       return;
     }
 
@@ -265,60 +356,117 @@ function AddQuestion() {
     },
   });
 
-  const handleInputChange = (language, e) => {
-    const { name, value } = e.target;
-    setInputs((prevInputs) => ({
-      ...prevInputs,
-      [language]: {
-        ...prevInputs[language],
-        [name]: value,
-      },
-    }));
-  };
+  const handleInputChange = (value, language) => {
+    const newPair = { ...value.rowData };
+    console.log(newPair);
+    const combinedPair = `${newPair.question} - ${newPair.answer}`;
 
-  const handleAddPair = (language) => {
-    const { input1, input2 } = inputs[language];
+    console.log(combinedPair);
 
-    if (input1.trim() !== "" && input2.trim() !== "") {
-      const combinedValue = `${input1} - ${input2}`;
-
+    if (language === "englishQuestion") {
       setAddQuestion((prev) => ({
         ...prev,
-        [language === "english" ? "englishQuestion" : "hindiQuestion"]: {
-          ...prev[language === "english" ? "englishQuestion" : "hindiQuestion"],
-          pairQuestion: [
-            ...prev[
-              language === "english" ? "englishQuestion" : "hindiQuestion"
-            ].pairQuestion,
-            combinedValue,
-          ],
-        },
-      }));
-
-      // Clear the input fields after adding
-      setInputs((prev) => ({
-        ...prev,
-        [language]: {
-          input1: "",
-          input2: "",
+        englishQuestion: {
+          ...prev.englishQuestion,
+          pairQuestion: [...prev.englishQuestion.pairQuestion, ...combinedPair], // Add the combined pair to the array
         },
       }));
     } else {
-      toast.warn("Fill up empty space!");
+      setAddQuestion((prev) => ({
+        ...prev,
+        hindiQuestion: {
+          ...prev.hindiQuestion,
+          pairQuestion: [...prev.hindiQuestion.pairQuestion, ...combinedPair], // Add the combined pair to the array
+        },
+      }));
+    }
+  };
+
+  const handleEditField = (index, language, field) => {
+    setAddQuestion((prev) => {
+      const updatedPairs = [...prev[language].pairQuestion];
+      updatedPairs[index] = {
+        ...updatedPairs[index],
+        editing: { ...updatedPairs[index].editing, [field]: true },
+      };
+      return {
+        ...prev,
+        [language]: { ...prev[language], pairQuestion: updatedPairs },
+      };
+    });
+  };
+
+  const handleSaveEdit = (index, field, language, value) => {
+    setAddQuestion((prev) => {
+      const updatedPairs = [...prev[language].pairQuestion];
+      updatedPairs[index] = {
+        ...updatedPairs[index],
+        [field]: value,
+        editing: { ...updatedPairs[index].editing, [field]: false },
+      };
+      return {
+        ...prev,
+        [language]: { ...prev[language], pairQuestion: updatedPairs },
+      };
+    });
+  };
+
+  const handleDeletePair = (index, language) => {
+    setAddQuestion((prev) => {
+      const updatedPairs = prev[language].pairQuestion.filter(
+        (_, i) => i !== index
+      );
+      return {
+        ...prev,
+        [language]: { ...prev[language], pairQuestion: updatedPairs },
+      };
+    });
+  };
+
+  const handleAddPair = (value, language) => {
+    const newPair = { ...value.rowData };
+    console.log(newPair);
+    const combinedPair = `${newPair.question} - ${newPair.answer}`;
+
+    console.log(combinedPair);
+
+    if (language === "englishQuestion") {
+      setAddQuestion((prev) => ({
+        ...prev,
+        englishQuestion: {
+          ...prev.englishQuestion,
+          pairQuestion: [...prev.englishQuestion.pairQuestion, combinedPair], // Add the combined pair to the array
+        },
+      }));
+    } else {
+      setAddQuestion((prev) => ({
+        ...prev,
+        hindiQuestion: {
+          ...prev.hindiQuestion,
+          pairQuestion: [...prev.hindiQuestion.pairQuestion, combinedPair], // Add the combined pair to the array
+        },
+      }));
     }
   };
 
   useEffect(() => {
-    console.log("QUESTION", addQuestion);
+    console.log("ADD QUESTION", addQuestion);
   }, [addQuestion]);
 
   const handleGetData = async () => {
     try {
-      const { response1, response2 } = await fetchData(accessToken, subject);
-      setSubtopics(response1.subTopic);
-      setSubjectname(response2.subjects);
-    } catch (error) {
-      toast.error("Failed to fetch data.");
+      const { subTopic, subjects } = await fetchData(accessToken, subject);
+
+      setSubtopics(subTopic);
+      setSubjectname(subjects);
+      setSelectedSubject(subjects);
+      setIsLoading(false);
+      setNetworkError("");
+    } catch (err) {
+      setIsLoading(false);
+      setNetworkError(err.message);
+      console.error("Network issue: " + err.message);
+      console.error("Failed to fetch data.");
     }
   };
 
@@ -364,6 +512,7 @@ function AddQuestion() {
 
   useEffect(() => {
     handleGetData();
+    // console.log(subject);
   }, [accessToken]);
 
   return (
@@ -377,161 +526,184 @@ function AddQuestion() {
             Fill in the details below to create a new question.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
-          <div className="space-y-2">
-            <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
-              Subject
-            </label>
-            <SingleSelect
-              label="Subject"
-              value={subjectname}
-              onChange={handleSubjectChange}
-              options={subjectname}
-            />
+        {networkError ? (
+          <div className="bg-red-500 text-white text-center py-3 px-4 rounded-md mb-4">
+            <p>{networkError}</p>
           </div>
-
-          <div className="space-y-2">
-            <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
-              Subtopic
-            </label>
-            <MultiSelection
-              label="Subtopics"
-              value={selectedSubtopic}
-              onChange={handleSubtopicChange}
-              options={subtopics}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
-              Question Type
-            </label>
-            <RadioButtons
-              options={radioOptions}
-              checkedValue={type}
-              onChange={handleTypeChange}
-            />
-          </div>
-        </div>
-
-        {/* question_type */}
-        <div className="p-4 md:flex sm:flex text-sm font-medium text-gray-900 space-x-6  text-start dark:text-white">
-          <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
-            Question Type :
-          </p>
-          {["normal", "statement", "pair"].map((option, index) => (
-            <div className="flex  items-center justify-start space-x-2">
-              <input
-                type="radio"
-                key={index}
-                id={`type ${option}`}
-                value={option}
-                name={option}
-                checked={memoizedQuestionType === option}
-                onChange={(e) => {
-                  setAddQuestion((prev) => ({
-                    ...prev,
-                    questionType: e.target.value,
-                  }));
-                  setQuestionType(e.target.value);
-                }}
-                className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600  dark:bg-gray-600 dark:border-gray-500"
-              />
-              <label
-                htmlFor={`type ${option}`}
-                className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
-              >
-                {option}
-              </label>
-            </div>
-          ))}
-        </div>
-
-        {questionType === "pair" ? (
-          <EnglishQuestionPairForm
-            addQuestion={addQuestion}
-            setAddQuestion={setAddQuestion}
-            currentEngPair={currentEngPair}
-            setCurrentEngPair={setCurrentEngPair}
-            addPairQuestion={handleAddPair}
-            handleChange={handleChange}
-            handleCheck={handleCheck}
-            optionsArray={optionsArray}
-            handlePairQuestionChange={handlePairQuestionChange}
-            handleAddPair={handleAddPair}
-            handleStatementQuestionChange={handleStatementQuestionChange}
-            inputs={inputs.english} // Pass inputs as prop
-            handleInputChange={handleInputChange}
-          />
-        ) : questionType === "statement" ? (
-          <EnglishQueStatementBaseform
-            addQuestion={addQuestion}
-            setAddQuestion={setAddQuestion}
-            currentStatement={currentEngStatement}
-            setCurrentStatement={setCurrentEngStatement}
-            handleChange={handleChange}
-            handleCheck={handleCheck}
-            optionsArray={optionsArray}
-            handlePairQuestionChange={handleStatementQuestionChange}
-            handleAddStatement={addStatementQuestion}
-          />
         ) : (
-          <NormalquestionBaseForm
-            addQuestion={addQuestion}
-            setAddQuestion={setAddQuestion}
-            handleChange={handleChange}
-            handleCheck={handleCheck}
-            optionsArray={optionsArray}
-          />
-        )}
+          <>
+            {isLoading ? (
+              <Loading />
+            ) : (
+              <>
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-2 xl:grid-cols-4 xl:gap-3 2xl:grid-cols-4 2xl:gap-6">
+                  <div className="space-y-2">
+                    <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
+                      Subject
+                    </label>
+                    <SingleSelect
+                      label="Subject"
+                      value={selectedSubject}
+                      onChange={handleSubjectChange}
+                      options={subjectname}
+                    />
+                  </div>
 
-        {questionType === "pair" ? (
-          <HindiQuestionPairForm
-            addQuestion={addQuestion}
-            setAddQuestion={setAddQuestion}
-            currentHindiPair={currentHindiPair}
-            addPairQuestion={handleAddPair}
-            handleChange={handleChange}
-            handleCheck={handleCheck}
-            optionsArray={optionsArray}
-            handlePairQuestionChange={handlePairQuestionChange}
-            handleStatementQuestionChange={handleStatementQuestionChange}
-            handleAddPair={handleAddPair}
-            inputs={inputs.hindi} // Pass inputs as prop
-            handleInputChange={handleInputChange}
-          />
-        ) : questionType === "statement" ? (
-          <HindiQueStatementBaseform
-            addQuestion={addQuestion}
-            setAddQuestion={setAddQuestion}
-            currentStatement={currentHindiStatement}
-            setCurrentStatement={setCurrentHindiStatement}
-            handleChange={handleChange}
-            handleCheck={handleCheck}
-            optionsArray={optionsArray}
-            handlePairQuestionChange={handleStatementQuestionChange}
-            handleAddStatement={addStatementQuestion}
-          />
-        ) : (
-          <NormalHindQueBaseForm
-            addQuestion={addQuestion}
-            setAddQuestion={setAddQuestion}
-            handleChange={handleChange}
-            handleCheck={handleCheck}
-            optionsArray={optionsArray}
-          />
-        )}
+                  <div className="space-y-2">
+                    <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
+                      Subtopic
+                    </label>
+                    <MultiSelection
+                      label="Subtopics"
+                      value={selectedSubtopic}
+                      onChange={handleSubtopicChange}
+                      options={subtopics}
+                    />
+                  </div>
 
-        <div className="mt-6 text-center">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="inline-flex items-center py-2 px-6 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-          >
-            <VscSaveAs className="mr-2" />
-            Save Question
-          </button>
-        </div>
+                  <div className="space-y-2">
+                    <label className="font-medium text-gray-900 text-start capitalize text-md dark:text-white">
+                      Question Type
+                    </label>
+                    <RadioButtons
+                      options={radioOptions}
+                      checkedValue={type}
+                      onChange={handleTypeChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="p-4 md:flex sm:flex text-sm font-medium text-gray-900 space-x-6 text-start dark:text-white">
+                  <p className="flex items-center capitalize text-xl font-medium text-gray-900 dark:text-white">
+                    Question Type :
+                  </p>
+                  {["normal", "statement", "pair"].map((option, index) => (
+                    <div
+                      className="flex items-center justify-start space-x-2"
+                      key={index}
+                    >
+                      <input
+                        type="radio"
+                        id={`type ${option}`}
+                        value={option}
+                        name={option}
+                        checked={questionType === option}
+                        onChange={(e) => {
+                          setAddQuestion((prev) => ({
+                            ...prev,
+                            questionType: e.target.value,
+                          }));
+                          setQuestionType(e.target.value);
+                        }}
+                        className="w-4 h-4 text-orange-600 bg-orange-600 border-orange-600 dark:bg-gray-600 dark:border-gray-500"
+                      />
+                      <label
+                        htmlFor={`type ${option}`}
+                        className="w-full py-3 text-sm font-medium capitalize text-gray-900 dark:text-gray-300"
+                      >
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+
+                {questionType === "pair" ? (
+                  <EnglishQuestionPairForm
+                    addQuestion={addQuestion}
+                    setAddQuestion={setAddQuestion}
+                    currentEngPair={currentEngPair}
+                    setCurrentEngPair={setCurrentEngPair}
+                    handleAddPair={handleAddPair}
+                    handleSaveEdit={handleSaveEdit}
+                    handleEditField={handleEditField}
+                    handleDeletePair={handleDeletePair}
+                    handleChange={handleChange}
+                    handleCheck={handleCheck}
+                    optionsArray={optionsArray}
+                    handlePairQuestionChange={handlePairQuestionChange}
+                    handleStatementQuestionChange={
+                      handleStatementQuestionChange
+                    }
+                    inputs={inputs}
+                    handleInputChange={handleInputChange}
+                  />
+                ) : questionType === "statement" ? (
+                  <EnglishQueStatementBaseform
+                    addQuestion={addQuestion}
+                    setAddQuestion={setAddQuestion}
+                    currentStatement={currentEngStatement}
+                    setCurrentStatement={setCurrentEngStatement}
+                    handleChange={handleChange}
+                    handleCheck={handleCheck}
+                    optionsArray={optionsArray}
+                    handlePairQuestionChange={handleStatementQuestionChange}
+                    handleAddStatement={addStatementQuestion}
+                  />
+                ) : (
+                  <NormalquestionBaseForm
+                    addQuestion={addQuestion}
+                    setAddQuestion={setAddQuestion}
+                    handleChange={handleChange}
+                    handleCheck={handleCheck}
+                    optionsArray={optionsArray}
+                  />
+                )}
+
+                {questionType === "pair" ? (
+                  <HindiQuestionPairForm
+                    addQuestion={addQuestion}
+                    setAddQuestion={setAddQuestion}
+                    currentHindiPair={currentHindiPair}
+                    handleAddPair={handleAddPair}
+                    handleSaveEdit={handleSaveEdit}
+                    handleEditField={handleEditField}
+                    handleDeletePair={handleDeletePair}
+                    handleChange={handleChange}
+                    handleCheck={handleCheck}
+                    optionsArray={optionsArray}
+                    handlePairQuestionChange={handlePairQuestionChange}
+                    handleStatementQuestionChange={
+                      handleStatementQuestionChange
+                    }
+                    inputs={inputs}
+                    handleInputChange={handleInputChange}
+                  />
+                ) : questionType === "statement" ? (
+                  <HindiQueStatementBaseform
+                    addQuestion={addQuestion}
+                    setAddQuestion={setAddQuestion}
+                    currentStatement={currentHindiStatement}
+                    setCurrentStatement={setCurrentHindiStatement}
+                    handleChange={handleChange}
+                    handleCheck={handleCheck}
+                    optionsArray={optionsArray}
+                    handlePairQuestionChange={handleStatementQuestionChange}
+                    handleAddStatement={addStatementQuestion}
+                  />
+                ) : (
+                  <NormalHindQueBaseForm
+                    addQuestion={addQuestion}
+                    setAddQuestion={setAddQuestion}
+                    handleChange={handleChange}
+                    handleCheck={handleCheck}
+                    optionsArray={optionsArray}
+                  />
+                )}
+
+                <div className="mt-6 text-center">
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="inline-flex items-center py-2 px-6 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                  >
+                    <VscSaveAs className="mr-2" />
+                    Save Question
+                  </button>
+                </div>
+              </>
+            )}
+          </>
+        )}
       </div>
       <ToastContainer
         draggable={false}
