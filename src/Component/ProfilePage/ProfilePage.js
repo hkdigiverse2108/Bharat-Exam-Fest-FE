@@ -16,9 +16,9 @@ export default function ProfilePage() {
   const dispatch = useDispatch();
 
   const [toggle, setToggle] = useState(false);
-  const userData = useSelector((state) => state.userConfig.classesData[0]);
+  const userData = useSelector((state) => state.userConfig.classesData);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
+    (state) => state.authConfig.userInfo[0].token
   );
 
   const [formData, setFormData] = useState({

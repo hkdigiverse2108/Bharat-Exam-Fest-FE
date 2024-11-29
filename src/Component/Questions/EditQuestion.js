@@ -16,13 +16,20 @@ import NormalquestionBaseForm from "./QuestionType/Edit/EnglishQuestionBase/Norm
 import NormalHindQueBaseForm from "./QuestionType/Edit/HindiQuestionBase/NormalHindQueBaseForm";
 import HindiQueStatementBaseform from "./QuestionType/Edit/HindiQuestionBase/HindiQueStatementBaseform";
 import MultipleSelect from "../Ui/MultiSelection";
-import { fetchData } from "../../Hooks/getSubjectApi";
-import { editQuestionAPI } from "../../Hooks/QuestionsApi";
+import { fetchData, fetchSubjects } from "../../Hooks/getSubjectApi";
+import {
+  editQuestionAPI,
+  fetchQuestionsBySubject,
+} from "../../Hooks/QuestionsApi";
 
 function EditQuestion() {
   const navigate = useNavigate();
-  const classId = useSelector((state) => state.authConfig.userInfo[0].data._id);
+  const ClassesData = useSelector((state) => state.userConfig.classesData);
   const subject = useSelector((state) => state.userConfig.CurrentQue[0]);
+  const CurrentSubject = useSelector(
+    (state) => state.userConfig.CurrentSubject
+  );
+
   const [editQuestion, setEditQuestion] = useState({
     questionId: "",
     subjectId: "",
@@ -57,9 +64,6 @@ function EditQuestion() {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [subjectname, setSubjectname] = useState([]);
 
-  const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
-  );
   const [subtopics, setSubtopics] = useState([]);
   const radioOptions = [
     { value: "concept", label: "Concept" },
@@ -74,7 +78,7 @@ function EditQuestion() {
     value: key,
     checked: options.AnswerOption[key],
   }));
-  
+
   const handleCheck = (language, event) => {
     const selectedValue = event.target.value;
 
@@ -299,11 +303,26 @@ function EditQuestion() {
 
   const handleGetData = async () => {
     try {
-      const { response1, response2 } = await fetchData(accessToken, subject);
-      setSubtopics(response1.subTopic);
-      setSubjectname(response2.subjects);
+      const data = await fetchQuestionsBySubject(
+        ClassesData.token,
+        CurrentSubject?._id,
+        ClassesData._id
+      );
+      const Subjectdata = await fetchData(ClassesData.token, CurrentSubject?._id);
+
+      if (!data || !Subjectdata) {
+        console.log("No data received", data);
+        return;
+      }
+      console.log(Subjectdata);
+      
+      const { subTopics = [] } = data;
+      const { subjects = [] } = Subjectdata;
+
+      setSubTopicName(subTopics);
+      setSubjectname(subjects);
     } catch (error) {
-      toast.error("Failed to fetch data.");
+      console.error("Failed to fetch data.");
     }
   };
 
@@ -356,7 +375,7 @@ function EditQuestion() {
   //         maxBodyLength: Infinity,
   //         url: "https://api-bef.hkdigiverse.com/question/edit",
   //         headers: {
-  //           Authorization: accessToken,
+  //           Authorization: ClassesData.token,
   //           "Content-Type": "application/json",
   //         },
   //         data: data,
@@ -378,13 +397,12 @@ function EditQuestion() {
   //   }
   // };
 
-
   const EditQuestion = async () => {
     try {
       if (isEmpty(editQuestion)) {
         toast.warning("Please fill up empty fields.");
       } else {
-        const response = await editQuestionAPI(editQuestion, accessToken);
+        const response = await editQuestionAPI(editQuestion, ClassesData.token);
 
         if (response.status === 200) {
           toast.success(response.data.message);
@@ -449,7 +467,7 @@ function EditQuestion() {
 
   useEffect(() => {
     handleGetData();
-  }, [accessToken]);
+  }, [ClassesData.token]);
 
   useEffect(() => {
     if (subject) {
@@ -490,10 +508,9 @@ function EditQuestion() {
       setSelectedSubject(subject.subjectId || "");
       setSubjectname(subject._id); // Assuming subject._id is used for name (modify as needed)
 
-      console.log(subject); // Optional: If you need to log the subject for debugging
+      // console.log(subject); // Optional: If you need to log the subject for debugging
     }
   }, [subject]);
-
 
   return (
     <>

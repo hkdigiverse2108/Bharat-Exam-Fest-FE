@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentData, SubjectData } from "../../Context/Action/index";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSubjects, fetchTotalCount } from "../../Hooks/getSubjectApi";
+import Loading from "../Loader/Loading";
 
 function SubjectPage() {
-  const { token, _id } = useSelector(
-    (state) => state.userConfig.classesData[0]
-  );
+  const { token, _id } = useSelector((state) => state.userConfig.classesData);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [data, setData] = useState([]);

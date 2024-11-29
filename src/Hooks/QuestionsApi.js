@@ -38,7 +38,7 @@ export const fetchQuestionsBySubject = async (
       subTopics,
     };
   } catch (err) {
-    console.error("Error fetching data:", err);
+    toast.error("Error fetching data:", err);
     throw new Error(
       err.response?.data?.message ||
         err.message ||

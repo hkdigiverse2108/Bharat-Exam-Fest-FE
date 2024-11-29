@@ -1,7 +1,7 @@
 const userInfo = JSON.parse(localStorage.getItem("classes"));
 console.log("authentication",userInfo);
 
-const authState = userInfo 
+const authState = userInfo
   ? { isLoggedIn: true, userInfo }
   : { isLoggedIn: false, userInfo: null };
 

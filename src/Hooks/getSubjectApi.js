@@ -46,12 +46,7 @@ export const fetchSubjects = async (accessToken, classesId) => {
   }
 };
 
-export const fetchData = async (
-  accessToken,
-  subject,
-  setSubtopics,
-  setSubjectname
-) => {
+export const fetchData = async (accessToken, subject) => {
   try {
     let config = {
       method: "get",
@@ -67,11 +62,10 @@ export const fetchData = async (
       config
     );
     const response2 = await axios.request(
-      `${BASE_URL}/subject/${subject._id}`,
+      `${BASE_URL}/subject/${subject}`,
       config
     );
     if (response1.status === 200 && response2.status === 200) {
-      // If both responses are successful, process the data
       const subTopic = response1?.data?.data?.sub_topic_data || [];
       const subjects = response2?.data?.data?.subject_data || [];
 
@@ -88,7 +82,7 @@ export const fetchData = async (
       }
     }
   } catch (error) {
-    toast.error("Failed to fetch data.");
+    console.error("Failed to fetch data.");
     console.error("Error fetching data:", error);
   }
 };

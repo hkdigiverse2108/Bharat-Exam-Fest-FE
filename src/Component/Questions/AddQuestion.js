@@ -19,9 +19,9 @@ import { fetchData } from "../../Hooks/getSubjectApi";
 
 function AddQuestion() {
   const navigate = useNavigate();
-  const classId = useSelector((state) => state.authConfig.userInfo[0].data._id);
+  const classId = useSelector((state) => state.authConfig.userInfo[0]._id);
   const accessToken = useSelector(
-    (state) => state.authConfig.userInfo[0].data.token
+    (state) => state.authConfig.userInfo[0].token
   );
   const subject = useSelector((state) => state.userConfig.CurrentSubject);
   // console.log(subject);
@@ -44,7 +44,7 @@ function AddQuestion() {
       options: { A: "", B: "", C: "", D: "" },
       statementQuestion: [],
       pairQuestion: [],
-      lastQuestion: "Bahrat Exam Fest",
+      lastQuestion: "",
     },
     hindiQuestion: {
       question: "",
@@ -53,7 +53,7 @@ function AddQuestion() {
       options: { A: "", B: "", C: "", D: "" },
       statementQuestion: [],
       pairQuestion: [],
-      lastQuestion: "Bahrat Exam Fest",
+      lastQuestion: "",
     },
   });
   const [subtopics, setSubtopics] = useState([]);

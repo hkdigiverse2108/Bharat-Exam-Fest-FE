@@ -20,7 +20,7 @@ function SubjectDetails() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { token, _id } = useSelector(
-    (state) => state.userConfig.classesData[0]
+    (state) => state.userConfig.classesData
   );
   const CurrentSubject = useSelector(
     (state) => state.userConfig.CurrentSubject
@@ -128,7 +128,7 @@ function SubjectDetails() {
       setQustions(Questions);
       setSubtopics(subTopics);
 
-      dispatch(CurrentQuestion());
+      dispatch(CurrentQuestion(Questions));
 
       const filteredData = subTopics.filter((subject) =>
         CurrentSubject?.subTopics?.some(

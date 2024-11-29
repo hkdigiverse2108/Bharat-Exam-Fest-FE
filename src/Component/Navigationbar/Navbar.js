@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 
 function Navbar() {
   const userData = useSelector(
-    (state) => state.userConfig.classesData[0]
+    (state) => state.userConfig.classesData
   );
   const location = useLocation();
   const { pathname } = location;

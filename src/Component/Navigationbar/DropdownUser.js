@@ -12,7 +12,7 @@ const DropdownUser = ({ authData }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.userConfig.classesData[0]);
+  const userData = useSelector((state) => state.userConfig.classesData);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [confirm, setConfirm] = useState(false);
 

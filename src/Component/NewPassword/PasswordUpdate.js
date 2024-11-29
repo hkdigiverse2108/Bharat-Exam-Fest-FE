@@ -14,7 +14,7 @@ export default function PasswordUpdate() {
   const dispatch = useDispatch();
   const [toggle1, setToggle1] = useState(false);
   const [toggle2, setToggle2] = useState(false);
-  const userAccess = useSelector((state) => state.userConfig.classesData[0]);
+  const userAccess = useSelector((state) => state.userConfig.classesData);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [currentUser, setCurrentUser] = useState({
     uniqueId: "",
