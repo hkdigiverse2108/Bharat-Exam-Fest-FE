@@ -136,7 +136,6 @@ function AboutUs() {
   }, [accessToken]);
 
   const handleSaveAboutUs = async () => {
-    // Call the function to add or edit privacy policy
     await addOrEditAboutUs(editorContent, accessToken);
   };
 

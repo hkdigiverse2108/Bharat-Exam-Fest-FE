@@ -11,7 +11,7 @@ export default function Pending({ pendingData }) {
   const [dataToDisplay, setDataToDisplay] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-
+  const totalPages = Math.ceil(pendingData.length / itemsPerPage);
   useEffect(() => {
     setPendingList(pendingData);
     setDataToDisplay(pendingData.slice(0, itemsPerPage));
@@ -184,7 +184,7 @@ export default function Pending({ pendingData }) {
           </table>
         </div>
         <Pagination
-          total={Math.ceil(pendingData.length / itemsPerPage)}
+          total={totalPages}
           page={setCurrentPage}
           current={currentPage}
         />

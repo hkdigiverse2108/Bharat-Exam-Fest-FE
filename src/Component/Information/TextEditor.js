@@ -11,7 +11,6 @@ import {
 } from "@syncfusion/ej2-react-richtexteditor";
 
 function TextEditor() {
-  // Toolbar settings for the Rich Text Editor
   const toolbarSettings = {
     items: [
       "Bold",
@@ -48,8 +47,6 @@ function TextEditor() {
     ],
     type: "Expand",
   };
-
-  // Quick toolbar settings for image manipulation
   const quickToolbarSettings = {
     image: [
       "Replace",
@@ -66,8 +63,6 @@ function TextEditor() {
       "Dimension",
     ],
   };
-
-  
 
   return (
     <RichTextEditorComponent

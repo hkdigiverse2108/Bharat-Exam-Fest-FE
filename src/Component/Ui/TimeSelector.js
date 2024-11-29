@@ -66,21 +66,18 @@ const TimeSelector = ({onClose, startDate, endDate, onTimeRangeChange, setConfir
   const handleEndTimeChange = (newEndTime) => {
     if (!newEndTime || !endDate) return;
 
-    // Set the new end time combining it with the selected end date
     const newEnd = dayjs(endDate)
       .set("hour", newEndTime.hour())
       .set("minute", newEndTime.minute());
 
     setEndTime(newEnd);
 
-    // Calculate the duration with the updated end time and the current start time
     calculateDuration(startTime, newEnd);
   };
 
-  // Handle save and confirm the time selection
   const handleSave = () => {
-    setConfirm(); // Call the confirm function
-    onTimeRangeChange(totalDuration); // Notify the parent about the updated time range
+    setConfirm();
+    onTimeRangeChange(totalDuration); 
   };
 
   return (

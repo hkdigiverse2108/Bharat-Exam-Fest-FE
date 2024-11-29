@@ -58,7 +58,7 @@ export default function HowToPlay() {
       console.error("Error fetching how to play data:", error);
       setIsLoading(false);
       setErrorMessage("An error occurred while fetching data.");
-      toast.error("An error occurred while fetching data.");
+      console.error("An error occurred while fetching data.");
     }
   };
 
@@ -90,6 +90,7 @@ export default function HowToPlay() {
       console.error(err.message);
     }
   };
+  
   useEffect(() => {
     fetchHowToPlayAPI();
     // fetchData();

@@ -14,7 +14,7 @@ function SideNavbar() {
             <img
               src="BEFLogo.png"
               alt="Bharat Exam Fest"
-              className="w-auto h-auto  rounded-md"
+              className="w-auto h-auto rounded-md"
             />
           </NavLink>
         </div>

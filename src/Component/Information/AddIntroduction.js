@@ -70,7 +70,7 @@ export default function AddIntroduction({ setConfirm }) {
         toast.success("'How to Play' entry added successfully");
         navigate("/information");
       } else {
-        toast.error("Failed to add ");
+        toast.error("Failed to adding the question");
       }
     } catch (err) {
       console.error(err.message);
