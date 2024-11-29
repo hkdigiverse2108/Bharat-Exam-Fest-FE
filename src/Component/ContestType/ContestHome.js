@@ -161,8 +161,10 @@ export default function ContestHome() {
   }
 
   useEffect(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
     setContestDataShow(contest.slice(start, end));
-  }, [contest, currentPage, end, start]);
+  }, [currentPage]);
 
   useEffect(() => {
     fetchContestTypeData();

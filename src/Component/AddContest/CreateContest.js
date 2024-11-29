@@ -175,11 +175,11 @@ export default function CreateContest() {
     }));
   };
 
-  // useEffect(() => {
-  //   // console.log(startDate);
-  //   // console.log(endDate);
-  //   console.log(contestData);
-  // }, [contestData]);
+  useEffect(() => {
+    // console.log(startDate);
+    // console.log(endDate);
+    console.log(contestData);
+  }, [contestData]);
 
   const handleAddContest = async () => {
     try {

@@ -183,7 +183,7 @@ export default function AddContestHomepage() {
                 <tr key={index}>
                   <td className="p-4 border-b border-blue-gray-50">
                     <p className="block antialiased font-sans text-sm leading-normal font-normal">
-                      username1@1
+                     {value.name}
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50 overflow-hidden text-wrap">
