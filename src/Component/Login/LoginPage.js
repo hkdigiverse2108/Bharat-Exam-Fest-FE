@@ -67,7 +67,7 @@ function LoginPage() {
 
       let config = {
         method: "post",
-        url: `https://api-bef.hkdigiverse.com/auth/login`,
+        url: `${process.env.REACT_APP_BASE_URL}/auth/login`,
         maxBodyLength: Infinity,
         headers: {
           "Content-Type": "application/json",

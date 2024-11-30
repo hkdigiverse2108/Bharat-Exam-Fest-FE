@@ -51,7 +51,7 @@ function AddImagePage({ confirm, onClose }) {
 
       const config = {
         method: "post",
-        url: "https://api-bef.hkdigiverse.com/upload",
+        url: `${process.env.REACT_APP_BASE_URL}/upload`,
         headers: {
           Authorization: accessToken,
           "Content-Type": "multipart/form-data",
