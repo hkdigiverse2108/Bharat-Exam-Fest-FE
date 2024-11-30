@@ -1,6 +1,7 @@
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 import { MdStar } from "react-icons/md";
+import FullTable from "../../../../Ui/Table";
 
 const EnglishQuestionPairForm = ({
   editQuestion,
@@ -33,70 +34,16 @@ const EnglishQuestionPairForm = ({
           onChange={handleChange}
         />
       </div>
-      {/* Question Input */}
-      <div className="space-y-2 flex flex-col items-center">
-        <button
-          onClick={() => handleAddPair("english")}
-          className="inline-flex items-center space-x-2 rounded-lg px-6 py-2 text-md text-white bg-orange-500 hover:bg-opacity-90"
-        >
-          <FaPlus className="font-bold text-white w-4 h-4" />
-          <p className="font-semibold">Add Pair</p>
-        </button>
-        <div className="grid grid-cols-2 items-center gap-x-2 w-full">
-          <div className="space-y-2 ">
-            <label
-              htmlFor="english.input1"
-              className="font-medium text-gray-900 dark:text-white text-md capitalize"
-            >
-              Question
-            </label>
-            <input
-              type="text"
-              placeholder="Enter answer"
-              id="english.input1"
-              name="input1"
-              onChange={(e) => handleInputChange("english", e)} // Call handler with "english"
-              className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-            />
-          </div>
-          <div className="space-y-2 ">
-            <label
-              htmlFor="english.input2"
-              className="font-medium text-gray-900 dark:text-white text-md capitalize"
-            >
-              Answer
-            </label>
-            <input
-              type="text"
-              placeholder="Enter answer"
-              id="english.input2"
-              name="input2"
-              onChange={(e) => handleInputChange("english", e)} // Call handler with "english"
-              className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-            />
-          </div>
-        </div>
-      </div>
       {/* Pair Questions */}
       <div className="space-y-2">
-        {editQuestion.englishQuestion?.pairQuestion?.length > 0 &&
-          editQuestion.englishQuestion.pairQuestion.map((pair, index) => {
-            const [question, answer] = pair.split(" - ");
-            return (
-              <div
-                key={index}
-                className="grid grid-cols-2 items-center gap-x-2 w-full"
-              >
-                <span className="rounded-md border border-green-300 p-2 text-md text-justify font-normal text-gray-600 dark:text-gray-400">
-                  {question}
-                </span>
-                <span className="rounded-md border border-green-300 p-2 text-md text-justify font-normal text-gray-600 dark:text-gray-400">
-                  {answer}
-                </span>
-              </div>
-            );
-          })}
+        <FullTable
+          pairQuestion={editQuestion.englishQuestion.pairQuestion}
+          language={"englishQuestion"}
+          handleChange={handleAddPair}
+          questionType={"pair"}
+        />
       </div>
+     
       <div className="space-y-2">
         <label className="text-lg font-medium text-gray-900 dark:text-white">
           Enter Statement
@@ -108,7 +55,7 @@ const EnglishQuestionPairForm = ({
           placeholder="Enter statement"
           value={editQuestion.englishQuestion.lastQuestion}
           onChange={handleStatementQuestionChange}
-          name="englishQuestion.statementQuestion"
+          name="englishQuestion.lastQuestion"
         />
       </div>
       {/* Options A, B, C, D */}
@@ -129,7 +76,7 @@ const EnglishQuestionPairForm = ({
               <textarea
                 rows="3"
                 name={`englishQuestion.options.${option}`}
-                value={editQuestion.englishQuestion.options[option]}
+                value={editQuestion.englishQuestion.options[option] || "" }
                 onChange={handleChange}
                 className="block w-full min-h-22 max-h-22 p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                 placeholder={`Option ${option}`}

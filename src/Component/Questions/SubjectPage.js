@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentData, SubjectData } from "../../Context/Action/index";
 import axios from "axios";
@@ -28,24 +28,84 @@ function SubjectPage() {
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [networkError, setNetworkError] = useState(""); // Error state
 
+  const debounceTimeoutRef = useRef(null);
+
+  // Debounced function to fetch subjects
+  const handleGetData = useCallback(async () => {
+    setIsLoading(true);
+    setNetworkError("");
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    try {
+      // Use the fetchSubjects function, passing the necessary parameters
+      const { totalQuestions, subjects } = await fetchSubjects(accessToken, _id, signal);
+
+      if (!subjects || !totalQuestions) {
+        console.log("No data received");
+        return;
+      }
+
+      // Set the fetched data
+      setData(subjects);
+      setTotalQuestion(totalQuestions);
+    } catch (error) {
+      if (error.name === "AbortError") {
+        console.log("Fetch aborted");
+      } else {
+        console.error("Failed to fetch data.", error);
+        setNetworkError(error.message || "Unknown error");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+
+    return () => {
+      controller.abort(); // Cleanup function to abort the fetch
+    };
+  }, [accessToken, _id]);
+
+  // Debounce logic: delay the API call
+  const debounceGetData = useCallback(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current); // Clear previous timeout
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      handleGetData();
+    }, 500); // Adjust debounce delay (500ms)
+  }, [handleGetData]);
+
+  // useEffect hook to trigger debounced API request on dependencies change
   useEffect(() => {
-    const fetchSubjectsData = async () => {
-      setIsLoading(true);
-      try {
-        const { totalQuestions, subjects } = await fetchSubjects(accessToken, _id);
-        setData(subjects);
-        setTotalQuestion(totalQuestions);
-        setIsLoading(false);
-      } catch (error) {
-        setNetworkError(error.message || "Network error occurred");
-        console.error(
-          "Error fetching subjects: " + (error.message || "Unknown error")
-        );
+    debounceGetData();
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current); // Cleanup on unmount
       }
     };
+  }, [debounceGetData, accessToken, _id]);
+  
+  // useEffect(() => {
+  //   const fetchSubjectsData = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const { totalQuestions, subjects } = await fetchSubjects(accessToken, _id);
+  //       setData(subjects);
+  //       setTotalQuestion(totalQuestions);
+  //       setIsLoading(false);
+  //     } catch (error) {
+  //       setNetworkError(error.message || "Network error occurred");
+  //       console.error(
+  //         "Error fetching subjects: " + (error.message || "Unknown error")
+  //       );
+  //     }
+  //   };
 
-    fetchSubjectsData();
-  }, [_id, accessToken]);
+  //   fetchSubjectsData();
+  // }, [_id, accessToken]);
   return (
     <>
       <section>

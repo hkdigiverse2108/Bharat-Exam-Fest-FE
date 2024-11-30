@@ -5,7 +5,12 @@ import { keyframes } from "@emotion/react";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-export const fetchQuestionsBySubject = async (token, subjectId, classesId) => {
+export const fetchQuestionsBySubject = async (
+  token,
+  subjectId,
+  classesId,
+  signal
+) => {
   try {
     let config = {
       method: "get",
@@ -14,6 +19,7 @@ export const fetchQuestionsBySubject = async (token, subjectId, classesId) => {
         Authorization: ` ${token}`,
         "Content-Type": "application/json",
       },
+      signal: signal,
     };
 
     const response1 = await axios.get(
@@ -43,7 +49,7 @@ export const fetchQuestionsBySubject = async (token, subjectId, classesId) => {
   }
 };
 
-export const getQuestionData = async (token, questionId) => {
+export const getQuestionData = async (token, questionId, signal) => {
   try {
     let config = {
       method: "get",
@@ -52,6 +58,7 @@ export const getQuestionData = async (token, questionId) => {
         Authorization: ` ${token}`,
         "Content-Type": "application/json",
       },
+      signal: signal,
     };
 
     const response = await axios.request(
@@ -70,7 +77,7 @@ export const getQuestionData = async (token, questionId) => {
   }
 };
 
-export const deleteQuestion = async (token, itemToDelete) => {
+export const deleteExistQuestion = async (token, itemToDelete, signal) => {
   try {
     const config = {
       method: "delete",
@@ -78,6 +85,7 @@ export const deleteQuestion = async (token, itemToDelete) => {
         Authorization: `${token}`,
         "Content-Type": "application/json",
       },
+      signal: signal,
     };
 
     const response = await axios.delete(
@@ -113,12 +121,12 @@ export const addNewQuestion = async (addQuestion, token) => {
       url: `${BASE_URL}/question/add`,
       headers: {
         Authorization: `${token}`,
+        "Content-Type": "application/json",
       },
       data: data,
     };
 
     const response = await axios.request(config);
-    console.log(response);
 
     if (response.status === 200) {
       if (response.data.createdAt) {

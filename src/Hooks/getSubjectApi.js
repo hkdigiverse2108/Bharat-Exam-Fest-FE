@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-export const fetchSubjects = async (token, classesId) => {
+export const fetchSubjects = async (token, classesId, signal) => {
   try {
     let config = {
       method: "get",
@@ -13,6 +13,7 @@ export const fetchSubjects = async (token, classesId) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      signal: signal,
     };
 
     const response1 = await axios.request(
@@ -46,7 +47,7 @@ export const fetchSubjects = async (token, classesId) => {
 };
 
 // fetch data for selected subject
-export const fetchData = async (token, subject) => {
+export const fetchData = async (token, subject, signal) => {
   try {
     let config = {
       method: "get",
@@ -55,6 +56,7 @@ export const fetchData = async (token, subject) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      signal: signal,
     };
 
     const response1 = await axios.request(

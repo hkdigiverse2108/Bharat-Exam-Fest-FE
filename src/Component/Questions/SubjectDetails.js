@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TfiPlus, TfiFilter, TfiPencil } from "react-icons/tfi";
 import { AiOutlineDelete } from "react-icons/ai";
 import ConfirmationPage from "./ConfirmationPage";
@@ -12,6 +12,7 @@ import { CurrentQuestion, QuestionList } from "../../Context/Action";
 import SingleSelect from "../Ui/SingleSelect";
 import FilterQuestion from "../Ui/FilterQuestion";
 import {
+  deleteExistQuestion,
   fetchQuestionsBySubject,
   getQuestionData,
 } from "../../Hooks/QuestionsApi";
@@ -112,8 +113,8 @@ function SubjectDetails() {
     setConfirm(true);
   };
 
-  const [isLoading, setIsLoading] = useState(false); 
-  const [networkError, setNetworkError] = useState(""); 
+  const [isLoading, setIsLoading] = useState(false);
+  const [networkError, setNetworkError] = useState("");
   const [deleteError, setDeleteError] = useState(false);
 
   const handleFilter = () => {
@@ -133,85 +134,105 @@ function SubjectDetails() {
   }, [error]);
 
   // Fetch subjects data (example from previous part)
-  useEffect(() => {
-    const fetchSubjectsData = async () => {
-      setIsLoading(true);
-      try {
-        const { subjects } = await fetchSubjects(accessToken, _id);
-        setSubjectData(subjects);
-        // setQustions(totalQuestions);
-        setIsLoading(false); // Set loading to false after data is fetched
-      } catch (error) {
-        setIsLoading(false); // Set loading to false if there's an error
-        setNetworkError(error.message || "Network error occurred"); // Store the error message
-        toast.error(
-          "Error fetching subjects: " + (error.message || "Unknown error")
-        ); // Show error toast
-      }
-    };
+  // useEffect(() => {
+  //   const fetchSubjectsData = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const { subjects } = await fetchSubjects(accessToken, _id);
+  //       setSubjectData(subjects);
+  //       // setQustions(totalQuestions);
+  //       setIsLoading(false); // Set loading to false after data is fetched
+  //     } catch (error) {
+  //       setIsLoading(false); // Set loading to false if there's an error
+  //       setNetworkError(error.message || "Network error occurred"); // Store the error message
+  //       toast.error(
+  //         "Error fetching subjects: " + (error.message || "Unknown error")
+  //       ); // Show error toast
+  //     }
+  //   };
 
-    fetchSubjectsData();
-  }, [_id, accessToken]);
+  //   fetchSubjectsData();
+  // }, [_id, accessToken]);
 
-  // Get Questions function
-  const getQuestions = async () => {
-    setIsLoading(true); // Set loading to true before making the API call
-    try {
-      const data = await fetchQuestionsBySubject(
-        accessToken,
-        CurrentSubject?._id,
-        _id
-      );
-      if (!data) {
-        console.log("No data received", data);
-        return;
-      }
+  // // Get Questions function
+  // const getQuestions = async () => {
+  //   setIsLoading(true); // Set loading to true before making the API call
+  //   try {
+  //     const data = await fetchQuestionsBySubject(
+  //       accessToken,
+  //       CurrentSubject?._id,
+  //       _id
+  //     );
+  //     if (!data) {
+  //       console.log("No data received", data);
+  //       return;
+  //     }
 
-      const { Questions = [], subTopics = [] } = data;
-      setQustions(Questions);
-      setSubtopics(subTopics);
-      dispatch(CurrentQuestion(Questions));
+  //     const { Questions = [], subTopics = [] } = data;
+  //     setQustions(Questions);
+  //     setSubtopics(subTopics);
+  //     dispatch(CurrentQuestion(Questions));
 
-      const filteredData = subTopics.filter((subject) =>
-        CurrentSubject?.subTopics?.some(
-          (criteria) => subject._id === criteria._id
-        )
-      );
+  //     const filteredData = subTopics.filter((subject) =>
+  //       CurrentSubject?.subTopics?.some(
+  //         (criteria) => subject._id === criteria._id
+  //       )
+  //     );
 
-      if (filteredData.length > 0) {
-        setSelectedSubtopic(filteredData[0]);
-      } else {
-        console.log("No matching subtopics found");
-      }
-    } catch (err) {
-      console.error("Error fetching questions:", err);
-      setNetworkError(
-        `Error fetching questions: ${err.message || "Unknown error"}`
-      );
-      toast.error(err.message || "Error fetching questions");
-    } finally {
-      setIsLoading(false); // Set loading to false after the request is done
-    }
-  };
+  //     if (filteredData.length > 0) {
+  //       setSelectedSubtopic(filteredData[0]);
+  //     } else {
+  //       console.log("No matching subtopics found");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching questions:", err);
+  //     setNetworkError(
+  //       `Error fetching questions: ${err.message || "Unknown error"}`
+  //     );
+  //     toast.error(err.message || "Error fetching questions");
+  //   } finally {
+  //     setIsLoading(false); // Set loading to false after the request is done
+  //   }
+  // };
 
-  // Delete question function
-  const deleteQuestion = async () => {
-    setIsLoading(true); // Set loading to true while deleting the question
-    try {
-      const response = await deleteQuestion(accessToken, itemToDelete);
-      console.log("deleteQuestion response:", response);
-      toast.success(response.data.message);
-      getQuestions(); // Refresh the question list after deleting
-      setConfirm(false);
-      setItemToDelete(null);
-    } catch (error) {
-      console.error("Error deleting question:", error);
-      toast.error(error.message || "Failed to delete question");
-      setNetworkError(error.message || "Failed to delete question");
-    } finally {
-      setIsLoading(false); // Set loading to false after the request is done
-    }
-  };
+  // // Delete question function
+  // const deleteQuestion = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await deleteExistQuestion(accessToken, itemToDelete);
+
+  //     if (response.status === 200) {
+  //       console.log("deleteQuestion response:", response);
+  //       const successMessage =
+  //         response.data?.message || "Question deleted successfully.";
+  //       toast.success(successMessage);
+
+  //       // Call the function to refresh or get the updated list of questions
+  //       getQuestions();
+
+  //       // Close the confirmation dialog and reset the item to delete
+  //       setConfirm(false);
+  //       setItemToDelete(null);
+  //     } else {
+  //       // If the API doesn't return a success status, show an error message
+  //       toast.warn(response.data?.message || "Failed to delete question");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting question:", error);
+
+  //     // Handle different types of errors:
+  //     // - Network errors
+  //     // - API errors
+  //     toast.error(
+  //       error.response?.data?.message ||
+  //         error.message ||
+  //         "Failed to delete question"
+  //     );
+  //     setNetworkError(error.message || "Failed to delete question");
+  //   } finally {
+  //     setIsLoading(false); // Always set loading to false after the operation is done
+  //   }
+  // };
 
   // Sorting Questions based on filters
   const sortedQuestions = useMemo(() => {
@@ -254,11 +275,175 @@ function SubjectDetails() {
   }, [questions]);
 
   // When CurrentSubject or _id changes, fetch questions
-  useEffect(() => {
-    if (CurrentSubject?._id && _id) {
-      getQuestions();
+  // useEffect(() => {
+  //   if (CurrentSubject?._id && _id) {
+  //     getQuestions();
+  //   }
+  // }, [CurrentSubject?._id, _id]);
+
+  const debounceTimeoutRef = useRef(null);
+
+  // Debounced function to fetch subjects
+  const handleGetData = useCallback(async () => {
+    setIsLoading(true);
+    setNetworkError("");
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    try {
+      const { subjects } = await fetchSubjects(accessToken, _id, signal);
+
+      if (!subjects) {
+        console.log("No data received");
+        return;
+      }
+
+      setSubjectData(subjects);
+    } catch (error) {
+      if (error.name === "AbortError") {
+        console.log("Fetch aborted");
+      } else {
+        console.error("Failed to fetch subjects.", error);
+        setNetworkError(error.message || "Unknown error");
+        toast.error(
+          "Error fetching subjects: " + (error.message || "Unknown error")
+        );
+      }
+    } finally {
+      setIsLoading(false);
     }
-  }, [CurrentSubject?._id, _id]);
+
+    return () => {
+      controller.abort(); // Cleanup function to abort the fetch
+    };
+  }, [accessToken, _id]);
+
+  // Debounced function to fetch questions
+  const handleGetQuestions = useCallback(async () => {
+    setIsLoading(true);
+    setNetworkError("");
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    try {
+      const data = await fetchQuestionsBySubject(
+        accessToken,
+        CurrentSubject?._id,
+        _id,
+        signal
+      );
+
+      if (!data) {
+        console.log("No data received");
+        return;
+      }
+
+      const { Questions = [], subTopics = [] } = data;
+      setQustions(Questions);
+      setSubtopics(subTopics);
+
+      // Handle subtopics filtering based on the current subject
+      const filteredData = subTopics.filter((subject) =>
+        CurrentSubject?.subTopics?.some(
+          (criteria) => subject._id === criteria._id
+        )
+      );
+
+      if (filteredData.length > 0) {
+        setSelectedSubtopic(filteredData[0]);
+      } else {
+        console.log("No matching subtopics found");
+      }
+    } catch (err) {
+      if (err.name === "AbortError") {
+        console.log("Fetch aborted");
+      } else {
+        console.error("Error fetching questions:", err);
+        setNetworkError(
+          `Error fetching questions: ${err.message || "Unknown error"}`
+        );
+        toast.error(err.message || "Error fetching questions");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+
+    return () => {
+      controller.abort(); // Cleanup function to abort the fetch
+    };
+  }, [accessToken, _id, CurrentSubject]);
+
+  // Debounce logic: delay the API call
+  const debounceGetData = useCallback(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current); // Clear previous timeout
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      handleGetQuestions();
+    }, 500); // Adjust debounce delay (500ms)
+  }, [handleGetQuestions]);
+
+  // useEffect hook to trigger debounced API request on dependencies change for subjects
+  useEffect(() => {
+    handleGetData();
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current); // Cleanup on unmount
+      }
+    };
+  }, [handleGetData, accessToken, _id]);
+
+  // useEffect hook to trigger debounced API request on dependencies change for questions
+  useEffect(() => {
+    debounceGetData();
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current); // Cleanup on unmount
+      }
+    };
+  }, [debounceGetData, accessToken, _id, CurrentSubject]);
+
+  // Delete question function
+  const deleteQuestion = async () => {
+    setIsLoading(true); // Start loading state
+    try {
+      const response = await deleteExistQuestion(accessToken, itemToDelete);
+
+      if (response.status === 200) {
+        console.log("deleteQuestion response:", response);
+        const successMessage =
+          response.data?.message || "Question deleted successfully.";
+        toast.success(successMessage);
+
+        // Call the debounced function to refresh the questions list
+        debounceGetData();
+
+        // Close the confirmation dialog and reset the item to delete
+        setConfirm(false);
+        setItemToDelete(null);
+      } else {
+        // If the API doesn't return a success status, show an error message
+        toast.warn(response.data?.message || "Failed to delete question");
+      }
+    } catch (error) {
+      console.error("Error deleting question:", error);
+
+      // Handle different types of errors:
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to delete question"
+      );
+      setNetworkError(error.message || "Failed to delete question");
+    } finally {
+      setIsLoading(false); // Always set loading to false after the operation is done
+    }
+  };
 
   return (
     <>
@@ -372,7 +557,7 @@ function SubjectDetails() {
             <ConfirmationPage
               confirm={confirm}
               onDelete={deleteQuestion}
-              onCancel={() => {}}
+              onCancel={handleDelete}
             />
           </div>
 

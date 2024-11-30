@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -158,19 +158,21 @@ function EditQuestion() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    const [lang, field, option] = name.split("."); // Split the name to get the language, field, and option
-
+  
+    // Split the name to target the language, field, and option
+    const [lang, field, option] = name.split("."); // e.g., "englishQuestion.options.A"
+  
     // Check if the field is related to either English or Hindi questions
     if (lang === "englishQuestion" || lang === "hindiQuestion") {
       if (field === "options" && option) {
-        // If it's an option field (like A, B, C, D), update the specific option
+        // If it's an option field (like A, B, C, D), update the specific option (A, B, C, or D)
         setEditQuestion((prev) => ({
           ...prev,
           [lang]: {
             ...prev[lang],
             options: {
               ...prev[lang].options,
-              [option]: value, // Update the specific option (A, B, C, or D)
+              [option]: value, // Update the specific option
             },
           },
         }));
@@ -192,20 +194,20 @@ function EditQuestion() {
       }));
     }
   };
-
+  
   const handleTypeChange = (event) => {
-    setType(event.target.value);
-    setEditQuestion((prev) => ({ ...prev, type: event.target.value }));
+    const newType = event.target.value;
+    setType(newType);
+    setEditQuestion((prev) => ({ ...prev, type: newType }));
   };
-
+  
   const handleSubjectChange = (event) => {
     const { value } = event.target;
     setEditQuestion((prev) => ({ ...prev, subjectId: value._id }));
   };
-
+  
   const handleSubtopicChange = (event) => {
     const { value } = event.target;
-
     const uniqueValues = Array.from(new Set(value.map((item) => item._id)));
     setSelectedSubtopic(value);
     setEditQuestion((prev) => ({
@@ -213,6 +215,7 @@ function EditQuestion() {
       subtopicIds: uniqueValues,
     }));
   };
+  
 
   const addStatementQuestion = (language) => {
     const currentStatement =
@@ -303,74 +306,190 @@ function EditQuestion() {
     }));
   };
 
-  const handleAddPair = (language) => {
-    // Get the specific input values for the selected language
-    const { input1, input2 } = inputs[language];
 
-    // Check if both inputs are not empty
-    if (input1.trim() !== "" && input2.trim() !== "") {
-      const combinedValue = `${input1} - ${input2}`;
-      console.log(combinedValue);
-
-      // Update the pairQuestion array for the specific language in editQuestion state
-      setEditQuestion((prev) => ({
-        ...prev,
-        [language === "english" ? "englishQuestion" : "hindiQuestion"]: {
-          ...prev[language === "english" ? "englishQuestion" : "hindiQuestion"],
-          pairQuestion: [
-            ...prev[
-              language === "english" ? "englishQuestion" : "hindiQuestion"
-            ].pairQuestion,
-            combinedValue,
-          ],
-        },
-      }));
-
-      // Clear the input fields after adding
-      setInputs((prev) => ({
-        ...prev,
-        [language]: {
-          input1: "",
-          input2: "",
-        },
-      }));
-    } else {
-      toast.warn("Fill up empty space!");
+  const handleAddPair = (value, language) => {
+    if (!value?.rowData) {
+      console.log("No row data available");
+      return; // Exit early if rowData is undefined
     }
+  
+    const { pairA, pairB, id } = value.rowData;
+  
+    if (typeof pairA !== "string" || typeof pairB !== "string") {
+      console.log("Invalid input data: pairA or pairB is not a string");
+    }
+  
+    if (!pairA || !pairB) {
+      toast.warn("Invalid pair: Missing pairA or pairB");
+    }
+  
+    const combinedPair = `${pairA} --- ${pairB}`;
+  
+    const finalCombined = {
+      id: id,
+      combined: combinedPair,
+    };
+  
+    setEditQuestion((prev) => {
+      const updatedPairQuestion = prev[language + "Question"].pairQuestion.map(
+        (pair) => (pair.id === id ? { ...pair, ...finalCombined } : pair)
+      );
+  
+      if (!updatedPairQuestion.some((pair) => pair.id === id)) {
+        updatedPairQuestion.push(finalCombined);
+      }
+  
+      return {
+        ...prev,
+        [language + "Question"]: {
+          ...prev[language + "Question"],
+          pairQuestion: updatedPairQuestion,
+        },
+      };
+    });
   };
+  
+  // const handleAddPair = (value, language) => {
+  //   if (!value?.rowData) {
+  //     console.log("No row data available");
+  //     return; // Exit early if rowData is undefined
+  //   }
+  //   const { pairA, pairB, id } = value.rowData;
+
+  //   if (typeof pairA !== "string" || typeof pairB !== "string") {
+  //     console.log("Invalid input data: pairA or pairB is not a string");
+  //   }
+
+  //   if (!pairA || !pairB) {
+  //     toast.warn("Invalid pair: Missing pairA or pairB");
+  //   }
+
+  //   const combinedPair = `${pairA} --- ${pairB}`;
+
+  //   const finalCombined = {
+  //     id: id,
+  //     combined: combinedPair,
+  //   };
+
+  //   console.log("Final Combined Object:", finalCombined);
+
+  //   if (language === "englishQuestion") {
+  //     setEditQuestion((prev) => {
+  //       const updatedPairQuestion = prev.englishQuestion.pairQuestion.map(
+  //         (pair) => (pair.id === id ? { ...pair, ...finalCombined } : pair)
+  //       );
+
+  //       if (!updatedPairQuestion.some((pair) => pair.id === id)) {
+  //         updatedPairQuestion.push(finalCombined);
+  //       }
+
+  //       return {
+  //         ...prev,
+  //         englishQuestion: {
+  //           ...prev.englishQuestion,
+  //           pairQuestion: updatedPairQuestion,
+  //         },
+  //       };
+  //     });
+  //   } else if (language === "hindiQuestion") {
+  //     setEditQuestion((prev) => {
+  //       const updatedPairQuestion = prev.hindiQuestion.pairQuestion.map(
+  //         (pair) => (pair.id === id ? { ...pair, ...finalCombined } : pair)
+  //       );
+
+  //       if (!updatedPairQuestion.some((pair) => pair.id === id)) {
+  //         updatedPairQuestion.push(finalCombined);
+  //       }
+
+  //       console.log(updatedPairQuestion);
+
+  //       return {
+  //         ...prev,
+  //         hindiQuestion: {
+  //           ...prev.hindiQuestion,
+  //           pairQuestion: updatedPairQuestion,
+  //         },
+  //       };
+  //     });
+  //   }
+  // };
 
   useEffect(() => {
     console.log("EDIT QUESTION", editQuestion);
   }, [editQuestion]);
 
-  const handleGetData = async () => {
-    setIsLoading(true); // Set loading to true when fetching data
-    try {
-      const { subTopics } = await fetchQuestionsBySubject(
-        accessToken,
-        CurrentSubject?._id,
-        _id
-      );
-      const Subjectdata = await fetchData(accessToken, CurrentSubject?._id);
+  const debounceTimeoutRef = useRef(null);
 
-      if (!subTopics || !Subjectdata) {
-        console.log("No data received");
-        return;
+const handleGetData = useCallback(async () => {
+  setIsLoading(true);
+  setNetworkError("");
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  try {
+    const { subTopics } = await fetchQuestionsBySubject(
+      accessToken,
+      CurrentSubject?._id,
+      _id,
+      signal
+    );
+
+    const Subjectdata = await fetchData(accessToken, CurrentSubject?._id, signal);
+
+    if (!subTopics || !Subjectdata) {
+      console.log("No data received");
+      return;
+    }
+
+    const { subjects = [] } = Subjectdata;
+
+    // Set subtopics, subjectname, and selectedSubject only if data changes
+    setSubtopics((prevSubtopics) => {
+      if (JSON.stringify(prevSubtopics) !== JSON.stringify(subTopics)) {
+        return subTopics;
       }
-      const { subjects = [] } = Subjectdata;
-      console.log(subjects);
+      return prevSubtopics;
+    });
+    setSubjectname(subjects);
+    setSelectedSubject(subjects);
 
-      setSubtopics(subTopics);
-      setSubjectname(subjects);
-      setSelectedSubject(subjects);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Failed to fetch data.");
-      setIsLoading(false);
-    } finally {
-      setIsLoading(false);
+  } catch (error) {
+    if (error.name === "AbortError") {
+      console.log("Fetch aborted");
+    } else {
+      console.error("Failed to fetch data.", error);
+      setNetworkError(error.message);
+    }
+  } finally {
+    setIsLoading(false);
+  }
+
+  return () => {
+    controller.abort();
+  };
+}, [accessToken, CurrentSubject, _id]);
+
+const debounceGetData = useCallback(() => {
+  if (debounceTimeoutRef.current) {
+    clearTimeout(debounceTimeoutRef.current);
+  }
+
+  debounceTimeoutRef.current = setTimeout(() => {
+    handleGetData();
+  }, 500);
+}, [handleGetData]);
+
+useEffect(() => {
+  debounceGetData();
+
+  return () => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
     }
   };
+}, [debounceGetData]); // No need to depend on debounceTimeout as we are using useRef
+
 
   const isEmpty = () => {
     if (
@@ -430,17 +549,18 @@ function EditQuestion() {
       toast.error("An error occurred while editing the question.");
     }
   };
+
   useEffect(() => {
     if (questionType === "normal") {
       setEditQuestion((prevState) => ({
         ...prevState,
         englishQuestion: {
           ...prevState.englishQuestion,
-          lastQuestion: "", 
+          lastQuestion: "",
         },
         hindiQuestion: {
           ...prevState.hindiQuestion,
-          lastQuestion: "", 
+          lastQuestion: "",
         },
       }));
     } else {
@@ -456,14 +576,10 @@ function EditQuestion() {
         },
       }));
     }
-  }, [questionType]); 
+  }, [questionType]);
 
   useEffect(() => {
-    if (
-      !editQuestion ||
-      !editQuestion.englishQuestion ||
-      !editQuestion.hindiQuestion
-    ) {
+    if (!editQuestion || !editQuestion.englishQuestion || !editQuestion.hindiQuestion) {
       return; // Exit early if any of these objects are undefined
     }
 
@@ -486,94 +602,63 @@ function EditQuestion() {
     setOptions({
       AnswerOption: { ...newOptions.englishQuestion },
     });
-  }, [editQuestion.englishQuestion, editQuestion.hindiQuestion]);
-
-  useEffect(() => {
-    handleGetData();
-  }, [accessToken, CurrentSubject?._id]);
+  }, [editQuestion, editQuestion.englishQuestion, editQuestion.hindiQuestion, options]);
 
   useEffect(() => {
     if (currentQuestion) {
-      if (currentQuestion?.questionType === "normal") {
-        const newEditQuestion = {
-          questionId: currentQuestion._id,
-          subjectId: currentQuestion.subjectId,
-          classesId: currentQuestion.classesId,
-          subtopicIds: currentQuestion.subtopicIds,
-          questionBank: currentQuestion.questionBank,
-          type: currentQuestion.type,
-          questionType: currentQuestion.questionType,
-          englishQuestion: {
-            question: currentQuestion.englishQuestion.question,
-            options: currentQuestion.englishQuestion.options,
-            answer: currentQuestion.englishQuestion.answer,
-            solution: currentQuestion.englishQuestion.solution,
-            statementQuestion:
-              currentQuestion.englishQuestion.statementQuestion,
-            pairQuestion: currentQuestion.englishQuestion.pairQuestion || [],
-          },
-          hindiQuestion: {
-            question: currentQuestion.hindiQuestion.question,
-            options: currentQuestion.hindiQuestion.options,
-            answer: currentQuestion.hindiQuestion.answer,
-            solution: currentQuestion.hindiQuestion.solution,
-            statementQuestion: currentQuestion.hindiQuestion.statementQuestion,
-            pairQuestion: currentQuestion.hindiQuestion.pairQuestion || [],
-          },
-        };
-        setEditQuestion(newEditQuestion);
-      } else {
-        const newEditQuestion = {
-          questionId: currentQuestion._id,
-          subjectId: currentQuestion.subjectId,
-          classesId: currentQuestion.classesId,
-          subtopicIds: currentQuestion.subtopicIds,
-          questionBank: currentQuestion.questionBank,
-          type: currentQuestion.type,
-          questionType: currentQuestion.questionType,
-          englishQuestion: {
-            question: currentQuestion.englishQuestion.question,
-            options: currentQuestion.englishQuestion.options,
-            answer: currentQuestion.englishQuestion.answer,
-            solution: currentQuestion.englishQuestion.solution,
-            statementQuestion:
-              currentQuestion.englishQuestion.statementQuestion,
-            pairQuestion: currentQuestion.englishQuestion.pairQuestion || [],
-            lastQuestion:
-              currentQuestion.questionType !== "normal"
-                ? currentQuestion.englishQuestion.lastQuestion
-                : "",
-          },
-          hindiQuestion: {
-            question: currentQuestion.hindiQuestion.question,
-            options: currentQuestion.hindiQuestion.options,
-            answer: currentQuestion.hindiQuestion.answer,
-            solution: currentQuestion.hindiQuestion.solution,
-            statementQuestion: currentQuestion.hindiQuestion.statementQuestion,
-            pairQuestion: currentQuestion.hindiQuestion.pairQuestion || [],
-            lastQuestion:
-              currentQuestion.questionType !== "normal"
-                ? currentQuestion.hindiQuestion.lastQuestion
-                : "",
-          },
-        };
+      const newEditQuestion = {
+        questionId: currentQuestion._id,
+        subjectId: currentQuestion.subjectId,
+        classesId: currentQuestion.classesId,
+        subtopicIds: currentQuestion.subtopicIds,
+        questionBank: currentQuestion.questionBank,
+        type: currentQuestion.type,
+        questionType: currentQuestion.questionType,
+        englishQuestion: {
+          question: currentQuestion.englishQuestion.question,
+          options: currentQuestion.englishQuestion.options,
+          answer: currentQuestion.englishQuestion.answer,
+          solution: currentQuestion.englishQuestion.solution,
+          statementQuestion: currentQuestion.englishQuestion.statementQuestion,
+          pairQuestion: currentQuestion.englishQuestion.pairQuestion || [],
+          lastQuestion: currentQuestion.questionType !== "normal" ? currentQuestion.englishQuestion.lastQuestion : "",
+        },
+        hindiQuestion: {
+          question: currentQuestion.hindiQuestion.question,
+          options: currentQuestion.hindiQuestion.options,
+          answer: currentQuestion.hindiQuestion.answer,
+          solution: currentQuestion.hindiQuestion.solution,
+          statementQuestion: currentQuestion.hindiQuestion.statementQuestion,
+          pairQuestion: currentQuestion.hindiQuestion.pairQuestion || [],
+          lastQuestion: currentQuestion.questionType !== "normal" ? currentQuestion.hindiQuestion.lastQuestion : "",
+        },
+      };
+  
+      // Prevent unnecessary state updates
+      if (JSON.stringify(newEditQuestion) !== JSON.stringify(editQuestion)) {
         setEditQuestion(newEditQuestion);
       }
-
-      const existSubtopics = currentQuestion.subtopicIds
-        .map((subtopicId) => {
-          const matchedSubtopic = subtopics.find(
-            (subtopic) => subtopic._id === subtopicId
-          );
-          return matchedSubtopic ? matchedSubtopic : null;
-        })
-        .filter((subtopic) => subtopic !== null);
-
-      setSelectedSubtopic(existSubtopics);
       setType(currentQuestion.type || "");
       setQuestionType(currentQuestion.questionType || "");
     }
-  }, [currentQuestion, subjectname, subtopics]);
+  }, [currentQuestion, subtopics]);  // Ensure `subtopics` is included if it's used to filter `currentQuestion`
+  
+
+  useEffect(() => {
+    if (currentQuestion && currentQuestion.subtopicIds && Array.isArray(currentQuestion.subtopicIds)) {
+      const existSubtopics = currentQuestion.subtopicIds
+        .map((subtopicId) => {
+          const subtopic = subtopics.find((subtopic) => subtopic._id === subtopicId);
+          return subtopic ? subtopic : null;  
+        })
+        .filter((subtopic) => subtopic !== null); 
+  
+      setSelectedSubtopic(existSubtopics);
+    } else {
+      setSelectedSubtopic([]);
+    }
+  }, [currentQuestion, subtopics]);
+  
 
   return (
     <>

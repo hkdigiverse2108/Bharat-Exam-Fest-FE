@@ -34,93 +34,30 @@ const HindiQuestionPairForm = ({
           className="border-2 pl-4 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
           id="question"
           type="text"
-          placeholder="Add question"
+          placeholder="Enter question"
           name="hindiQuestion.question"
           value={addQuestion.hindiQuestion.question}
           onChange={handleChange}
         />
 
-        {/* Add Pair Button */}
-        {/* <div className="space-y-2 flex flex-col items-center">
-          <button
-            onClick={() => handleAddPair("hindi")}
-            className="inline-flex items-center space-x-2 rounded-lg px-6 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90"
-          >
-            <FaPlus className="font-bold text-white w-4 h-4" />
-            <p className="font-semibold">Add Pair</p>
-          </button>
 
-          <div className="grid grid-cols-2 items-center gap-x-2 w-full">
-            <div className="space-y-2 ">
-              <label
-                htmlFor="hindi.input1"
-                className="font-medium text-gray-900 dark:text-white text-md capitalize"
-              >
-                Question
-              </label>
-              <input
-                type="text"
-                placeholder="Enter answer"
-                id="hindi.input1"
-                name="input1"
-                onChange={(e) => handleInputChange("hindi", e)} // Call handler with "english"
-                className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-              />
-            </div>
-            <div className="space-y-2 ">
-              <label
-                htmlFor="hindi.input2"
-                className="font-medium text-gray-900 dark:text-white text-md capitalize"
-              >
-                Answer
-              </label>
-              <input
-                type="text"
-                placeholder="Enter answer"
-                id="hindi.input2"
-                name="input2"
-                onChange={(e) => handleInputChange("hindi", e)} // Call handler with "english"
-                className="border-2 pl-2 text-md border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-              />
-            </div>
-          </div>
-        </div> */}
-
-        {/* Pair Questions */}
-        {/* <div className="space-y-2">
-          {addQuestion.hindiQuestion?.pairQuestion?.length > 0 &&
-            addQuestion.hindiQuestion?.pairQuestion.map((pair, index) => {
-              const [question, answer] = pair.split(" - ");
-              return (
-                <div
-                  key={index}
-                  className="grid grid-cols-2 items-center gap-x-2 w-full"
-                >
-                  <span className="rounded-md border border-green-300 p-2 text-md text-justify font-normal text-gray-600 dark:text-gray-400">
-                    {question}
-                  </span>
-                  <span className="rounded-md border border-green-300 p-2 text-md text-justify font-normal text-gray-600 dark:text-gray-400">
-                    {answer}
-                  </span>
-                </div>
-              );
-            })}
-        </div> */}
         <div className="space-y-2">
           <FullTable
             pairQuestion={addQuestion.hindiQuestion.pairQuestion}
             language={"hindiQuestion"}
             handleChange={handleAddPair}
+          questionType={"pair"}
+
           />
         </div>
         <input
           className="border-2 pl-2 text-lg border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
           id="username"
           type="text"
-          placeholder="Enter suggestion"
-          value={currentStatement}
+          placeholder="Enter statement"
+          value={addQuestion.hindiQuestion.lastQuestion || currentStatement}
           onChange={handleStatementQuestionChange}
-          name="hindiQuestion.statementQuestion"
+          name="hindiQuestion.lastQuestion"
         />
 
         {/* Options A, B, C, D */}

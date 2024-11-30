@@ -1,6 +1,7 @@
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 import { MdStar } from "react-icons/md";
+import FullTable from "../../../../Ui/Table";
 
 const EnglishQueStatementBaseform = ({
   addQuestion,
@@ -35,43 +36,16 @@ const EnglishQueStatementBaseform = ({
         name="englishQuestion.question"
       />
 
-      {/* Button to add statement */}
-      <div className="flex items-center justify-end w-full">
-        <button
-          onClick={() => handleAddStatement("english")}
-          className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90"
-        >
-          <FaPlus className="font-bold text-white w-4 h-4" />
-          <p className="font-semibold">Add Statement</p>
-        </button>
-      </div>
+      
 
-      {/* Input for the statement */}
+      {/* Display list of statements */}
       <div className="space-y-2">
-        <input
-          className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
-          id="username"
-          type="text"
-          placeholder="Enter Statement"
-          value={currentStatement}
-          onChange={(e) => setCurrentStatement(e.target.value)}
-          name="englishQuestion.statementQuestion"
+        <FullTable
+          pairQuestion={addQuestion.englishQuestion.pairQuestion}
+          language={"englishQuestion"}
+          handleChange={handleAddStatement}
+          questionType={"statement"}
         />
-
-        {/* Display list of statements */}
-        <div className="space-y-2">
-          {addQuestion.englishQuestion?.statementQuestion?.length > 0 &&
-            addQuestion.englishQuestion.statementQuestion.map(
-              (value, index) => (
-                <div
-                  key={index}
-                  className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
-                >
-                  {value}
-                </div>
-              )
-            )}
-        </div>
       </div>
 
       {/* Input for suggestions */}
@@ -79,7 +53,7 @@ const EnglishQueStatementBaseform = ({
         className="border-2 pl-2 text-lg border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
         id="username"
         type="text"
-        placeholder="Enter suggestion"
+        placeholder="Enter question"
         value={addQuestion.englishQuestion.lastQuestion || ""}
         onChange={handleChange}
         name="englishQuestion.lastQuestion"

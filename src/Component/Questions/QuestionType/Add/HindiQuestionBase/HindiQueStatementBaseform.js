@@ -1,6 +1,7 @@
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 import { MdStar } from "react-icons/md";
+import FullTable from "../../../../Ui/Table";
 
 const HindiQueStatementBaseform = ({
   addQuestion,
@@ -34,7 +35,7 @@ const HindiQueStatementBaseform = ({
         />
 
         {/* Button to add statement */}
-        <div className="flex items-center justify-end w-full">
+        {/* <div className="flex items-center justify-end w-full">
           <button
             onClick={() => handleAddStatement("hindi")}
             className="inline-flex items-center space-x-2 rounded-lg p-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90"
@@ -42,11 +43,11 @@ const HindiQueStatementBaseform = ({
             <FaPlus className="font-bold text-white w-4 h-4" />
             <p className="font-semibold">Add Statement</p>
           </button>
-        </div>
+        </div> */}
 
         {/* Input for the statement */}
-        <div className="space-y-2">
-          <input
+        
+          {/* <input
             className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
             id="username"
             type="text"
@@ -54,30 +55,25 @@ const HindiQueStatementBaseform = ({
             value={currentStatement}
             onChange={(e) => setCurrentStatement(e.target.value)}
             name="hindiQuestion.statementQuestion"
-          />
+          /> */}
 
           {/* Display list of statements */}
           <div className="space-y-2">
-            {addQuestion.hindiQuestion?.statementQuestion?.length > 0 &&
-              addQuestion.hindiQuestion.statementQuestion.map(
-                (value, index) => (
-                  <div
-                    key={index}
-                    className="rounded-md border px-6 py-4 text-md text-justify font-normal text-gray-500 dark:text-gray-400 shadow-inner"
-                  >
-                    {value}
-                  </div>
-                )
-              )}
+            <FullTable
+              pairQuestion={addQuestion.hindiQuestion.pairQuestion}
+              language={"hindiQuestion"}
+              handleChange={handleAddStatement}
+              questionType={"statement"}
+            />
           </div>
-        </div>
+         
 
         {/* Input for suggestions */}
         <input
           className="border-2 pl-2 text-lg  border-gray-400 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline"
           id="username"
           type="text"
-          placeholder="Enter suggestion"
+          placeholder="Enter question"
           onChange={handleChange}
           name="hindiQuestion.lastQuestion"
         />
