@@ -143,7 +143,7 @@ export const fetchKycData = async (accessToken) => {
 
         return item;
       });
-      console.log(`Converted to ISC:`, updatedKycData);
+      // console.log(`Converted to ISC:`, updatedKycData);
 
       return { success: true, data: updatedKycData };
     } else {
