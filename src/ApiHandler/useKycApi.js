@@ -171,8 +171,8 @@ export const updateAndFetchKycStatus = async (accessToken, updateData) => {
     const fieldsToConvert = [
       "createdAt",
       "updatedAt",
-      "start_date",
-      "end_date",
+      "startDate",
+      "endDate",
       "updatedAt",
       "createdAt",
     ];

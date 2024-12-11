@@ -79,6 +79,9 @@ function AboutUs() {
     }
   };
 
+  if (loading) return <Loading />;
+
+
   return (
     <>
       <div className="bg-white overflow-hidden shadow rounded-2xl border">

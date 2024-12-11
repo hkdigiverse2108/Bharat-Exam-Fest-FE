@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { howtoplayList } from "../../Context/Action";
 import { toast } from "react-toastify";
 import { deleteSubtopic, fetchHowToPlayAPI } from "../../ApiHandler/InformationApi";
+import Loading from "../Loader/Loading";
 
 export default function HowToPlay() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function HowToPlay() {
   const [howToPlayList, setHowToPlayList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  const [Loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [status, setStatus] = useState(null); 
@@ -81,6 +82,9 @@ export default function HowToPlay() {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  if (loading) return <Loading />;
+
 
   return (
     <>

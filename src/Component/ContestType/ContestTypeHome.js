@@ -16,6 +16,7 @@ import {
   fetchContestTypes,
 } from "../../ApiHandler/GetContestType";
 import { deleteContestData } from "../../ApiHandler/contestService";
+import Loading from "../Loader/Loading";
 
 export default function ContestTypeHome() {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ export default function ContestTypeHome() {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [contest, setContest] = useState([]);
   const [contestDataShow, setContestDataShow] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const accessToken = useSelector(
     (state) =>
@@ -50,9 +52,13 @@ export default function ContestTypeHome() {
     setConfirm(!confirm);
   }
 
+
   const handleFetchContestTypes = async () => {
+    setLoading(true);
+
     try {
       const result = await fetchContestTypes(accessToken);
+
       if (result.success) {
         setContest(result.data);
         setContestDataShow(result.data.slice(0, itemsPerPage));
@@ -63,6 +69,8 @@ export default function ContestTypeHome() {
       }
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,6 +101,7 @@ export default function ContestTypeHome() {
   };
 
   const handleEditContestType = async () => {
+    setLoading(true);
     try {
       if (isEmpty()) {
         toast.warning("Fill up empty space");
@@ -109,83 +118,28 @@ export default function ContestTypeHome() {
         }
       }
     } catch (err) {
-      console.error("Error add contest:", err.message);
+      console.error("Error editing contest:", err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // const editContestType = async () => {
-  //   try {
-  //     if (isEmpty()) {
-  //       toast.warning("Fill up empty space");
-  //     } else {
-  //       let userData = JSON.stringify(input);
-
-  //       let config = {
-  //         method: "post",
-  //         maxBodyLength: Infinity,
-  //         url: "https://api-bef.hkdigiverse.com/contest-type/edit",
-  //         headers: {
-  //           Authorization: accessToken,
-  //           "Content-Type": "application/json",
-  //         },
-  //         data: userData,
-  //       };
-  //       const response = await axios.request(config);
-
-  //       const { status, data, message, error } = response.data;
-
-  //       if (status === 200) {
-  //         // console.log("Backend response", data);
-  //         handleShow();
-  //         toast.success(message);
-  //         dispatch(editContestTypeData());
-  //         handleFetchContestTypes();
-  //       } else {
-  //         console.warn("contest add failed:", error);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error("Error add contest:", err.message);
-  //   }
-  // };
-
-  // const deleteContestType = async () => {
-  //   try {
-  //     let config = {
-  //       method: "delete",
-  //       maxBodyLength: Infinity,
-  //       url: `https://api-bef.hkdigiverse.com/contest-type/delete/${itemToDelete}`,
-  //       headers: {
-  //         Authorization: accessToken,
-  //         "Content-Type": "application/json",
-  //       },
-  //     };
-
-  //     axios
-  //       .request(config)
-  //       .then((response) => {
-  //         // console.log(response.data);
-  //         toast.success(response.data.message);
-  //         handleDelete();
-  //         handleFetchContestTypes();
-  //       })
-  //       .catch((error) => {
-  //         console.error(error);
-  //       });
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
-
   const handleDeleteContestType = async (contestId) => {
-    const result = await deleteContestData(contestId, accessToken);
+    setLoading(true);
+    try {
+      const result = await deleteContestData(contestId, accessToken);
 
-    if (result.success) {
-      console.log("Contest deleted successfully:", result.message);
-      handleDelete();
-      handleFetchContestTypes();
-    } else {
-      console.error("Failed to delete contest:", result.message);
+      if (result.success) {
+        console.log("Contest deleted successfully:", result.message);
+        handleDelete();
+        handleFetchContestTypes();
+      } else {
+        console.error("Failed to delete contest:", result.message);
+      }
+    } catch (err) {
+      console.error("Error deleting contest:", err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -197,6 +151,8 @@ export default function ContestTypeHome() {
   useEffect(() => {
     handleFetchContestTypes();
   }, [accessToken]);
+
+  if (loading) return <Loading />;
 
   return (
     <>

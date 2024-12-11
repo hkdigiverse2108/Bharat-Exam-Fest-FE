@@ -10,7 +10,7 @@ export const fetchClassData = async (accessToken) => {
     const config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${BASE_URL}/classes/all?page=1&limit=10`, 
+      url: `${BASE_URL}/classes/all?page=1&limit=10`,
       headers: {
         Authorization: `${accessToken}`,
         "Content-Type": "application/json",
@@ -27,20 +27,20 @@ export const fetchClassData = async (accessToken) => {
       response.data.data.classes_data
     ) {
       // Convert any date fields from UTC to IST
+      const fieldsToConvert = [
+        "createdAt",
+        "updatedAt",
+        "startDate",
+        "endDate",
+      ];
+
       const classesData = response.data.data.classes_data.map((classItem) => {
-        // Convert UTC to IST for relevant date fields
-        if (classItem.start_date) {
-          classItem.start_date = convertUtcToIst(classItem.start_date);
-        }
-        if (classItem.end_date) {
-          classItem.end_date = convertUtcToIst(classItem.end_date);
-        }
-        if (classItem.createdAt) {
-          classItem.createdAt = convertUtcToIst(classItem.createdAt);
-        }
-        if (classItem.updatedAt) {
-          classItem.updatedAt = convertUtcToIst(classItem.updatedAt); 
-        }
+        fieldsToConvert.forEach((field) => {
+          // Check if the field exists and if it does, convert it
+          if (classItem[field]) {
+            classItem[field] = convertUtcToIst(classItem[field]);
+          }
+        });
         return classItem;
       });
 
@@ -60,19 +60,20 @@ export const fetchClassData = async (accessToken) => {
 
 export const handleAddClassData = async (input, accessToken) => {
   try {
-    if (input.start_date) {
-      input.start_date = convertIstToUtc(input.start_date);
-    }
-    if (input.end_date) {
-      input.end_date = convertIstToUtc(input.end_date);
-    }
-    if (input.createdAt) {
-      input.createdAt = convertIstToUtc(input.createdAt);
-    }
-    if (input.updatedAt) {
-      input.updatedAt = convertIstToUtc(input.updatedAt);
-    }
+    if (input) {
+      const fieldsToConvert = [
+        "createdAt",
+        "updatedAt",
+        "startDate",
+        "endDate",
+      ];
 
+      fieldsToConvert.forEach((field) => {
+        if (input[field]) {
+          input[field] = convertIstToUtc(input[field]);
+        }
+      });
+    }
     const data = JSON.stringify(input);
     console.log("Input Data:", input);
 
@@ -95,14 +96,12 @@ export const handleAddClassData = async (input, accessToken) => {
       return {
         success: true,
         message: response.data.message || "Class added successfully.",
-      }; 
-    }
-    else if (response.status === 500) {
+      };
+    } else if (response.status === 500) {
       const errorMessage = response.data?.message || "Internal Server Error";
       toast.error(errorMessage);
       return { success: false, message: errorMessage };
-    }
-    else {
+    } else {
       const errorMessage =
         response.data?.message || "An unexpected error occurred.";
       toast.error(errorMessage);

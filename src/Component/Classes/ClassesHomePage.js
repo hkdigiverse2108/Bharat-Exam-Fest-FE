@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { deleteClassData, fetchClassData } from "../../ApiHandler/getAllClassApi";
+import Loading from "../Loader/Loading";
 
 export default function ClassesHomePage() {
   // const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function ClassesHomePage() {
   const [confirm, setConfirm] = useState(false);
   const [data, setData] = useState([]);
   const [dataToDisplay, setDataToDisplay] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -42,23 +44,35 @@ export default function ClassesHomePage() {
 
 
   const getClassData = async () => {
+    setLoading(true); // Show loader while fetching
     try {
       const classesData = await fetchClassData(accessToken);
-      console.log("Fetched classes data:", classesData);
-      setData(classesData);
-      setDataToDisplay(classesData.slice(0, itemsPerPage));
+      // console.log("Fetched classes data:", classesData);
+      setData(classesData); // Store full data
+      setDataToDisplay(classesData.slice(0, itemsPerPage)); // Paginate data
     } catch (err) {
-      setError(err.message);
+      setError(err.message); // Handle error
+      toast.error("Failed to fetch class data");
+    } finally {
+      setLoading(false); // Hide loader when fetching is complete
     }
   };
 
+  // Handle class deletion
   const handleDelete = async (id) => {
+    setLoading(true); // Show loader while deleting
     try {
-      await deleteClassData(id, accessToken);
+      await deleteClassData(id, accessToken); // Call the API to delete class
       console.log(`Deleted class with id: ${id}`);
+      toast.success("Class deleted successfully");
+
+      // Refresh the class data after successful deletion
       await getClassData();
     } catch (err) {
       console.error(err.message);
+      toast.error(err.message || "Failed to delete class");
+    } finally {
+      setLoading(false); // Hide loader after deletion
     }
   };
 
@@ -70,6 +84,9 @@ export default function ClassesHomePage() {
   useEffect(() => {
     setDataToDisplay(data.slice(start, end));
   }, [currentPage, data, start, end]);
+
+  if (loading) return <Loading />;
+
 
 
   return (

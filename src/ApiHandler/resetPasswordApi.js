@@ -22,7 +22,7 @@ export const resetPasswordApiCall = async (currentUser, token) => {
 
     if (response.data) {
       // Convert relevant fields from ISC to UTC if they exist
-      const fieldsToConvert = ['createdAt', 'updatedAt', 'start_date', 'end_date', 'date'];
+      const fieldsToConvert = ['createdAt', 'updatedAt', 'startDate', 'endDate', 'date'];
 
       fieldsToConvert.forEach(field => {
         if (response.data[field]) {

@@ -86,6 +86,7 @@ function Legality() {
     }
   };
 
+  if (loading) return <Loading />;
 
 
   return (

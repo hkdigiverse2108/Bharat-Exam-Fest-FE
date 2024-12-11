@@ -18,6 +18,7 @@ import {
   deleteSubTopic,
   fetchSubjectData,
 } from "../../ApiHandler/subjectServiceApi";
+import Loading from "../Loader/Loading";
 
 function SubjectList() {
   const navigate = useNavigate();
@@ -156,64 +157,15 @@ function SubjectList() {
     }
   };
 
-  // const deleteSubject = async (value) => {
-  //   try {
-  //     let config = {
-  //       method: "delete",
-  //       maxBodyLength: Infinity,
-  //       url: `https://api-bef.hkdigiverse.com/subject/delete/${value}`,
-  //       headers: {
-  //         Authorization: accessToken,
-  //         "Content-Type": "application/json",
-  //       },
-  //     };
-
-  //     axios
-  //       .request(config)
-  //       .then((response) => {
-  //         navigate("/subject");
-  //         toast.success("Subject delete");
-  //         getSubjectData();
-  //       })
-  //       .catch((error) => {
-  //         console.error(error);
-  //       });
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
-
-  // const deleteSubtopic = async (value) => {
-  //   try {
-  //     let config = {
-  //       method: "delete",
-  //       maxBodyLength: Infinity,
-  //       url: `https://api-bef.hkdigiverse.com/sub-topic/delete/${value}`,
-  //       headers: {
-  //         Authorization: accessToken,
-  //         "Content-Type": "application/json",
-  //       },
-  //     };
-
-  //     axios
-  //       .request(config)
-  //       .then((response) => {
-  //         // console.log(response.data.data.subject_data);
-  //         navigate("/subject");
-  //         toast.success("Subject delete");
-  //       })
-  //       .catch((error) => {
-  //         console.error(error);
-  //       });
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
+  
 
   useEffect(() => {
     getSubjectData();
     getSubtopicsData();
   }, [accessToken]);
+
+  if (loading) return <Loading />;
+
 
   return (
     <>

@@ -49,6 +49,7 @@
     "install": "^0.13.0",
     "is-hotkey": "^0.2.0",
     "katex": "^0.16.11",
+    "moment-timezone": "^0.5.46",
     "npm": "^10.9.0",
     "primereact": "^10.8.4",
     "quill": "^2.0.2",
@@ -96,7 +97,10 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.13"
+    "tailwindcss": "^3.4.13",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
   },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "tailwind.config.js",
@@ -110,5 +114,6 @@
   "bugs": {
     "url": "https://github.com/DivyangRadadiya3/https---github.com-hkdigiverse2108-Bharat-Exam-Fest-FE/issues"
   },
-  "homepage": "/"
+  "homepage": "/",
+  "proxy": "https://dev-api-bef.bharatexamfest.com"
 }

@@ -120,12 +120,12 @@ export const addNewContest = async (contestData, accessToken) => {
   try {
     console.log("Original contest data:", contestData);
 
-    // Convert start_date, end_date, createdAt, and updatedAt from IST to UTC
-    if (contestData.start_date) {
-      contestData.start_date = convertIstToUtc(contestData.start_date);
+    // Convert startDate, endDate, createdAt, and updatedAt from IST to UTC
+    if (contestData.startDate) {
+      contestData.startDate = convertIstToUtc(contestData.startDate);
     }
-    if (contestData.end_date) {
-      contestData.end_date = convertIstToUtc(contestData.end_date);
+    if (contestData.endDate) {
+      contestData.endDate = convertIstToUtc(contestData.endDate);
     }
     if (contestData.createdAt) {
       contestData.createdAt = convertIstToUtc(contestData.createdAt);

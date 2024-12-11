@@ -45,6 +45,7 @@ export const updateProfile = async (token, formData) => {
           console.log(`Converted ${field} to UTC:`, response.data[field]);
         }
       });
+      
 
       return handleResponse(response); // Handle the response
     } else if (response.status === 204) {

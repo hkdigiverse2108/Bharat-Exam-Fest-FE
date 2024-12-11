@@ -11,10 +11,11 @@ import {
   handleAddClassData,
   handleEditClassData,
 } from "../../ApiHandler/getAllClassApi";
-import { imgUpload } from "../../ApiHandler/updateImage";
+import { imgUpload, uploadFile } from "../../ApiHandler/updateImage";
 import { editClassesPanel } from "../../Context/Action";
+import Loading from "../Loader/Loading";
 
-export default function EditClasses({ confirm, setConfirm, onClose }) 
+export default function EditClasses({ confirm, setConfirm, onClose }) {
   const [toggle, setToggle] = useState(false);
   const [show, setShow] = useState(false);
 
@@ -36,6 +37,8 @@ export default function EditClasses({ confirm, setConfirm, onClose })
     referralCode: "",
     image: "",
     email: "",
+    termsAndConditions: "",
+    privacyPolicy: "",
     password: "",
     ownerName: "",
     contact: {
@@ -56,32 +59,31 @@ export default function EditClasses({ confirm, setConfirm, onClose })
     return false;
   };
 
-  const handleImageUpload =
-    (async function (file) {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await imgUpload(file, accessToken);
-        if (response.status === 200) {
-          setInput((prevData) => ({
-            ...prevData,
-            image: response.data.data,
-          }));
-          toast.success(response.data.message);
-        } else {
-          console.error(response.data);
-          toast.error(response.data.message);
-        }
-      } catch (error) {
-        setError("Network error while uploading image. Please try again.");
-        toast.error("Failed to upload image. Please check your network.");
-        console.error(error);
-      } finally {
-        setIsLoading(false);
+  const handleImageUpload = async (event, file) => {
+    setIsLoading(true);
+    setError(null);
+  
+    try {
+      const response = await uploadFile(file, accessToken);
+      
+      if (response.success) {
+        setInput((prevData) => ({
+          ...prevData,
+          image: response.data, 
+        }));
+        toast.success(response.message); 
+      } else {
+        toast.error(response.message || 'Error uploading image'); 
       }
-    },
-    [accessToken]);
+    } catch (error) {
+      setError("Network error while uploading image. Please try again.");
+      toast.error("Failed to upload image. Please check your network.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
 
   const handleUpload = (value) => {
     handleImageUpload(value);
@@ -110,45 +112,54 @@ export default function EditClasses({ confirm, setConfirm, onClose })
   };
 
   const getClassData = async () => {
+    setIsLoading(true); 
     try {
       const classesData = await fetchClassData(accessToken);
       console.log("classesData", classesData);
       return classesData;
     } catch (err) {
-      setError(err.message);
+      setError(err.message); // Handle error
+      toast.error("Failed to fetch class data");
+    } finally {
+      setIsLoading(false); // Reset loading state after fetch is done
     }
   };
 
+  // Handle Edit
   const handleEdit = async () => {
+    setIsLoading(true); // Set loading state to true while performing the edit action
     try {
       if (isEmpty(input)) {
-        toast.warning("Fill up empty space");
+        toast.warning("Please fill up the empty space");
       } else {
         const result = await handleEditClassData(input, accessToken);
         if (result.success) {
           setTimeout(() => {
-            navigate("/classes");
-          }, 1500);
-          dispatch(editClassesPanel());
-          getClassData();
-          console.log("success", result);
+            navigate("/classes"); 
+          }, 1500); 
+
+          dispatch(editClassesPanel()); 
+          await getClassData(); 
+          toast.success("Class updated successfully");
         } else {
-          toast.error(result.message);
+          toast.error(result.message || "Failed to update class");
         }
       }
     } catch (err) {
       console.error(err.message);
-      toast.error(err.message);
+      toast.error(err.message || "An error occurred while editing class");
+    } finally {
+      setIsLoading(false); 
     }
   };
 
   useEffect(() => {
     getClassData();
-  }, [input]);
+  }, [accessToken]);
 
-//   useEffect(() => {
-//     console.log(input);
-//   }, [input]);
+  //   useEffect(() => {
+  //     console.log(input);
+  //   }, [input]);
 
   useEffect(() => {
     if (existData) {
@@ -157,6 +168,8 @@ export default function EditClasses({ confirm, setConfirm, onClose })
         name: existData.name || "",
         referralCode: existData.referralCode || "",
         image: existData.image || "",
+        termsAndConditions: existData.termsAndConditions || "",
+        privacyPolicy: existData.privacyPolicy || "",
         email: existData.email || "",
         password: existData.password || "",
         ownerName: existData.ownerName || "",
@@ -166,6 +179,9 @@ export default function EditClasses({ confirm, setConfirm, onClose })
       });
     }
   }, [existData]);
+
+  if (isLoading) return <Loading />;
+
 
   return (
     <>
@@ -299,17 +315,17 @@ export default function EditClasses({ confirm, setConfirm, onClose })
                 <div className="space-y-2">
                   <p
                     className="text-gray-800 font-semibold dark:text-gray-200 text-start"
-                    htmlFor="file_input"
+                    htmlFor="termsAndConditions"
                   >
                     Upload Tearm & Condition PDF
                   </p>
                   <input
                     type="file"
-                    id="file"
+                    id="termsAndConditions"
                     className="sr-only"
                     accept="application/pdf"
                     onChange={handleInputChange}
-                    name="tearm"
+                    name="termsAndConditions"
                   />
                   <label
                     htmlFor="file"
@@ -329,17 +345,17 @@ export default function EditClasses({ confirm, setConfirm, onClose })
                 <div className="space-y-2">
                   <p
                     className="text-gray-800 font-semibold dark:text-gray-200 text-start"
-                    htmlFor="file_input"
+                    htmlFor="privacyPolicy"
                   >
                     Upload Privacy Policy PDF
                   </p>
                   <input
                     type="file"
-                    id="file"
+                    id="privacyPolicy"
                     className="sr-only"
                     accept="application/pdf"
                     onChange={handleInputChange}
-                    name="privacy"
+                    name="privacyPolicy"
                   />
                   <label
                     htmlFor="file"

@@ -258,11 +258,11 @@ export const addOrEditPrivacyPolicy = async (editorContent, accessToken) => {
     if (editorContent.updatedAt) {
       editorContent.updatedAt = convertIstToUtc(editorContent.updatedAt);
     }
-    if (editorContent.start_date) {
-      editorContent.start_date = convertIstToUtc(editorContent.start_date);
+    if (editorContent.startDate) {
+      editorContent.startDate = convertIstToUtc(editorContent.startDate);
     }
-    if (editorContent.end_date) {
-      editorContent.end_date = convertIstToUtc(editorContent.end_date);
+    if (editorContent.endDate) {
+      editorContent.endDate = convertIstToUtc(editorContent.endDate);
     }
 
     let data;
@@ -313,11 +313,11 @@ export const addOrEditTearmAndCondition = async (editorContent, accessToken) => 
     if (editorContent.updatedAt) {
       editorContent.updatedAt = convertIstToUtc(editorContent.updatedAt);
     }
-    if (editorContent.start_date) {
-      editorContent.start_date = convertIstToUtc(editorContent.start_date);
+    if (editorContent.startDate) {
+      editorContent.startDate = convertIstToUtc(editorContent.startDate);
     }
-    if (editorContent.end_date) {
-      editorContent.end_date = convertIstToUtc(editorContent.end_date);
+    if (editorContent.endDate) {
+      editorContent.endDate = convertIstToUtc(editorContent.endDate);
     }
 
     let data;
@@ -368,11 +368,11 @@ export const addOrEditAboutUs = async (editorContent, accessToken) => {
     if (editorContent.updatedAt) {
       editorContent.updatedAt = convertIstToUtc(editorContent.updatedAt);
     }
-    if (editorContent.start_date) {
-      editorContent.start_date = convertIstToUtc(editorContent.start_date);
+    if (editorContent.startDate) {
+      editorContent.startDate = convertIstToUtc(editorContent.startDate);
     }
-    if (editorContent.end_date) {
-      editorContent.end_date = convertIstToUtc(editorContent.end_date);
+    if (editorContent.endDate) {
+      editorContent.endDate = convertIstToUtc(editorContent.endDate);
     }
 
     let data;
@@ -423,11 +423,11 @@ export const addOrEditLegality = async (editorContent, accessToken) => {
     if (editorContent.updatedAt) {
       editorContent.updatedAt = convertIstToUtc(editorContent.updatedAt);
     }
-    if (editorContent.start_date) {
-      editorContent.start_date = convertIstToUtc(editorContent.start_date);
+    if (editorContent.startDate) {
+      editorContent.startDate = convertIstToUtc(editorContent.startDate);
     }
-    if (editorContent.end_date) {
-      editorContent.end_date = convertIstToUtc(editorContent.end_date);
+    if (editorContent.endDate) {
+      editorContent.endDate = convertIstToUtc(editorContent.endDate);
     }
 
     let data;

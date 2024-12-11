@@ -22,11 +22,11 @@ export const fetchContestTypes = async (accessToken) => {
       const contestTypes = response.data.data.contest_type_data || [];
       const updatedContestTypes = contestTypes.map((contest) => {
         // Apply UTC to IST conversion to date fields if they exist
-        if (contest.start_date) {
-          contest.start_date = convertUtcToIst(contest.start_date);
+        if (contest.startDate) {
+          contest.startDate = convertUtcToIst(contest.startDate);
         }
-        if (contest.end_date) {
-          contest.end_date = convertUtcToIst(contest.end_date);
+        if (contest.endDate) {
+          contest.endDate = convertUtcToIst(contest.endDate);
         }
         if (contest.createdAt) {
           contest.createdAt = convertUtcToIst(contest.createdAt);
@@ -61,11 +61,11 @@ export const editContestType = async (input, accessToken) => {
     if (input.updatedAt) {
       input.updatedAt = convertIstToUtc(input.updatedAt);
     }
-    if (input.start_date) {
-      input.start_date = convertIstToUtc(input.start_date);
+    if (input.startDate) {
+      input.startDate = convertIstToUtc(input.startDate);
     }
-    if (input.end_date) {
-      input.end_date = convertIstToUtc(input.end_date);
+    if (input.endDate) {
+      input.endDate = convertIstToUtc(input.endDate);
     }
     if (input.date) {
       input.date = convertIstToUtc(input.date);

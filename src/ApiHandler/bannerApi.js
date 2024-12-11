@@ -19,10 +19,10 @@ export const fetchBannerData = async (accessToken) => {
     const response = await axios.request(config);
     const { status, data, message, error } = response.data;
 
-    if (status === 200) {
+    if (response.data.status === 200) {
       // console.log("Raw banner data:", data.banner_data);
 
-      const updatedBannerData = data.banner_data.map((banner) => {
+      const updatedBannerData = response.data.data.banner_data.map((banner) => {
         // Apply UTC to IST conversion to the required date fields
         if (banner.createdAt) {
           banner.createdAt = convertUtcToIst(banner.createdAt); // Convert to IST

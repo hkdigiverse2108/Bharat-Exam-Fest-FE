@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { imgUpload } from "../../ApiHandler/updateImage";
 import { AddNewQuestion } from "../../ApiHandler/InformationApi";
+import Loading from "../Loader/Loading";
 
 export default function AddIntroduction({ setConfirm }) {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function AddIntroduction({ setConfirm }) {
       state.authConfig.userInfo[0]?.data?.token ||
       state.authConfig.userInfo[0]?.token
   );
-  const [Loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [status, setStatus] = useState(null);
@@ -85,6 +86,9 @@ export default function AddIntroduction({ setConfirm }) {
       toast.error("An error occurred while adding the question.");
     }
   };
+
+  if (loading) return <Loading />;
+
 
   return (
     <section className="bg-white dark:bg-gray-900 overflow-y-auto rounded-lg border border-slate-300 font-sans">

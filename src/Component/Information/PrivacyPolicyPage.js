@@ -71,10 +71,7 @@ export default function PrivacyPolicyPage() {
     setLoading(true);
     setError(null);
     try {
-      const result = await addOrEditPrivacyPolicy(
-        editorContent,
-        accessToken
-      );
+      const result = await addOrEditPrivacyPolicy(editorContent, accessToken);
       if (result.success) {
         setSuccess(true);
         toast.success("Terms and Conditions saved successfully.");
@@ -93,21 +90,7 @@ export default function PrivacyPolicyPage() {
     }
   };
 
-  // useEffect(() => {
-  //   const getPrivacyPolicy = async () => {
-  //     try {
-  //       const data = await fetchPrivacyPolicy(accessToken);
-  //       setExistingPolicy(data);
-  //       setEditorContent(data.privacyPolicy || "");
-  //     } catch (err) {
-  //       console.error("Error fetching existing policy:", err);
-  //     }
-  //   };
-
-  //   getPrivacyPolicy();
-  // }, [accessToken]);
-
-
+  if (loading) return <Loading />;
 
   return (
     <>

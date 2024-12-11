@@ -82,58 +82,8 @@ export default function TermAndcondition() {
     }
   };
 
-  // const addOrEditTearmAndCondition = async () => {
-  //   try {
-  //     if (!editorText.termsCondition) {
-  //       toast.warning("Fill up empty space");
-  //     } else {
-  //       let data = JSON.stringify(editorText);
-  //       console.log(editorText);
+  if (loading) return <Loading />;
 
-  //       let config = {
-  //         method: "post",
-  //         url: `https://api-bef.hkdigiverse.com/terms-condition/add/edit`,
-  //         maxBodyLength: Infinity,
-  //         headers: {
-  //           Authorization: accessToken,
-  //           "Content-Type": "application/json",
-  //         },
-  //         data: data,
-  //       };
-  //       const response = await axios.request(config);
-
-  //       if (response.status === 200) {
-  //         // console.log("Backend response", response);
-  //         // dispatch(loginSuccess(data));
-  //         toast.success(response.data.message);
-  //         fetchTermsConditionAPI();
-  //       } else if (response.status === 400) {
-  //         console.log(response.data.message);
-  //       } else {
-  //         // console.warn("Login failed:", error);
-  //         console.log("Login failed: " + response.data.message);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
-
-  // const [formattedText, setFormattedText] = useState("");
-
-  // function handleGetPlainText(value) {
-  //   setFormattedText(value);
-  //   setEditorText({
-  //     termsCondition: value,
-  //   });
-  // }
-  // // useEffect(() => {
-  // //   console.log("editor", formattedText);
-  // // }, [formattedText]);
-
-  // useEffect(() => {
-  //   fetchTermsConditionAPI();
-  // }, []);
   return (
     <>
       <div className="bg-white overflow-hidden shadow rounded-2xl border">

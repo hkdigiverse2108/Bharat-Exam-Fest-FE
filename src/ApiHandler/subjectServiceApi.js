@@ -189,7 +189,7 @@ export const deleteSubTopic = async (subtopicId, accessToken) => {
 export const addNewSubject = async (input, accessToken) => {
   try {
     // Convert date fields from IST to UTC if they exist
-    const fieldsToConvert = ['createdAt', 'updatedAt', 'start_date', 'end_date', 'date'];
+    const fieldsToConvert = ['createdAt', 'updatedAt', 'startDate', 'endDate', 'date'];
 
     fieldsToConvert.forEach((field) => {
       if (input[field]) {
@@ -240,7 +240,7 @@ export const addNewSubject = async (input, accessToken) => {
 export const addNewSubTopic = async (input, accessToken) => {
   try {
     // Convert date fields from IST to UTC if they exist
-    const fieldsToConvert = ['createdAt', 'updatedAt', 'start_date', 'end_date', 'date'];
+    const fieldsToConvert = ['createdAt', 'updatedAt', 'startDate', 'endDate', 'date'];
 
     fieldsToConvert.forEach((field) => {
       if (input[field]) {
@@ -286,7 +286,7 @@ export const addNewSubTopic = async (input, accessToken) => {
 export const editSubject = async (input, accessToken) => {
   try {
     // Convert date fields from IST to UTC if they exist
-    const fieldsToConvert = ['createdAt', 'updatedAt', 'start_date', 'end_date', 'date'];
+    const fieldsToConvert = ['createdAt', 'updatedAt', 'startDate', 'endDate', 'date'];
 
     fieldsToConvert.forEach((field) => {
       if (input[field]) {
