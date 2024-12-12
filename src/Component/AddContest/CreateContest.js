@@ -39,7 +39,7 @@ export default function CreateContest() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [classData, setClassData] = useState(null);
+  const [classData, setClassData] = useState([]);
   const accessToken = useSelector(
     (state) =>
       state.authConfig.userInfo[0]?.data?.token ||
@@ -51,6 +51,7 @@ export default function CreateContest() {
     contestTypeId: "",
     startDate: "",
     endDate: "",
+    classesFees: 0,
     totalSpots: 0,
     fees: 0,
     winningAmountPerFee: 0,
@@ -73,13 +74,12 @@ export default function CreateContest() {
       contestTypeId,
       startDate,
       endDate,
+      classesFees,
       totalSpots,
       fees,
       winningAmountPerFee,
       winnerPercentage,
       totalQuestions,
-      totalTime,
-      totalMarks,
       classesId,
       ranks,
     } = contestData;
@@ -88,21 +88,26 @@ export default function CreateContest() {
       (rank) => rank.startPlace === "" && rank.price === 0
     );
 
-    return (
-      name === "" &&
-      contestTypeId === "" &&
-      startDate === "" &&
-      endDate === "" &&
-      totalSpots === 0 &&
-      fees === 0 &&
-      winningAmountPerFee === 0 &&
-      winnerPercentage === 0 &&
-      totalQuestions === 0 &&
-      totalTime === "" &&
-      totalMarks === 0 &&
-      classesId === "" &&
-      isRanksEmpty
-    );
+    if (
+      (name === "" &&
+        contestTypeId === "" &&
+        startDate === "" &&
+        endDate === "" &&
+        !/^\d+$/.test(classesFees.toString())) ||
+      classesFees === 0 ||
+      (classesFees === "" && !/^\d+$/.test(totalSpots.toString())) ||
+      totalSpots === 0 ||
+      fees === 0 ||
+      (fees === "" && !/^\d+$/.test(winningAmountPerFee.toString())) ||
+      winningAmountPerFee === 0 ||
+      winnerPercentage === 0 ||
+      (winnerPercentage === "" && !/^\d+$/.test(totalQuestions.toString())) ||
+      (classesId === "" && isRanksEmpty)
+    ) {
+      return true;
+    }
+
+    return false;
   };
 
   const handleChange = (e) => {
@@ -180,38 +185,64 @@ export default function CreateContest() {
   };
 
   useEffect(() => {
-    // console.log(startDate);
-    // console.log(endDate);
     console.log(contestData);
   }, [contestData]);
 
   const handleAddContest = async () => {
     try {
+      setLoading(true);
       if (isEmpty()) {
         toast.warning("Fill up empty space");
+        setLoading(false);
       } else {
-        const response = await addNewContest(contestData, accessToken);
-        if (response.status === 200) {
+        const result = await addNewContest(contestData, accessToken);
+        setLoading(false);
+        if (result.success) {
+          navigate("/addContest");
           toast.success("Contest added successfully");
           loadClassData();
-          dispatch(addClassesData(response.data));
-          navigate("/addContest");
-          toast.error("Failed to add contest: " + response.message);
+          dispatch(addClassesData(result.data));
+        } else {
+          toast.error("Failed to add contest: " + result.message);
         }
       }
     } catch (error) {
+      setLoading(false);
       console.error(error);
       console.error("An error occurred: " + error.message);
+      toast.error("An error occurred: " + error.message);
     }
   };
 
+  // const handleAddContest = async () => {
+  //   try {
+  //     if (isEmpty()) {
+  //       toast.warning("Fill up empty space");
+  //     } else {
+  //       const response = await addNewContest(contestData, accessToken);
+  //       if (response.status === 200) {
+  //         navigate("/addContest");
+  //         toast.success("Contest added successfully");
+  //         loadClassData();
+  //         dispatch(addClassesData(response.data));
+  //         toast.error("Failed to add contest: " + response.message);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     console.error("An error occurred: " + error.message);
+  //   }
+  // };
+
   const loadClassData = async () => {
-    setLoading(true); // Start loading
-    setError(null); // Reset previous error
+    setLoading(true);
+    setError(null);
 
     try {
       const result = await fetchClassData(accessToken);
       if (result.success) {
+        console.log(result.data);
+
         setClassData(result.data);
         setLoading(false);
       } else {
@@ -228,10 +259,8 @@ export default function CreateContest() {
     const getContestData = async () => {
       try {
         const result = await fetchContestTypes(accessToken);
-        console.log("Contest data fetched:", result);
 
         if (result && result.success) {
-          // Assuming the data has a success field indicating successful response
           setContesTypeData(result.data);
           setLoading(false); // Stop loading
         } else {
@@ -251,12 +280,12 @@ export default function CreateContest() {
 
   useEffect(() => {
     loadClassData();
-  }, []);
+  }, [accessToken]);
 
   return (
     <>
       <section className="bg-white dark:bg-gray-900  p-4 space-y-6 rounded-lg border border-slate-300 font-sans">
-        <div className="space-y-6 h-full ">
+        <div className="space-y-6 ">
           <div className="space-y-2">
             <p className="text-3xl tracking-tight font-medium text-left text-gray-900 dark:text-white capitalize">
               Contest Creation
@@ -309,7 +338,7 @@ export default function CreateContest() {
                     className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                     placeholder="Enter contest name"
                     value={contestData.name}
-                    onChange={handleChange} // Ensure this is present
+                    onChange={handleChange}
                   />
                 </li>
                 <li className="space-y-1">
@@ -364,6 +393,25 @@ export default function CreateContest() {
                 </li>
               </ul>
             </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="classesFees"
+                className="capitalize text-base font-medium text-gray-700 dark:text-white"
+              >
+                classesFees
+              </label>
+              <input
+                type="number"
+                id="classesFees"
+                name="classesFees"
+                className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                placeholder="Enter classes fee "
+                value={contestData.classesFees}
+                onChange={handleChange}
+              />
+            </div>
+
             <div className="space-y-3">
               <p className="text-xl tracking-tight font-medium text-left text-gray-700 dark:text-white capitalize">
                 Participation and Rewards
@@ -551,7 +599,7 @@ export default function CreateContest() {
       <ToastContainer
         draggable={false}
         autoClose={2000}
-        position={"top-center"}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

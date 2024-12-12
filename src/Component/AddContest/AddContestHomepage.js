@@ -19,8 +19,13 @@ export default function AddContestHomepage() {
   const [confirm, setConfirm] = useState(false);
   const [data, setData] = useState([]);
   const [dataToDisplay, setDataToDisplay] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
+  const [totalData, setTotalData] = useState(null);
+  const [pageLimit, setPageLimit] = useState(1);
   const itemsPerPage = 5;
 
   const accessToken = useSelector(
@@ -69,23 +74,35 @@ export default function AddContestHomepage() {
     );
   };
 
-  const getContestData = async () => {
+  const getContestData = async (value) => {
     try {
-      const data = await fetchContestData(accessToken);
+      setLoading(true);
+      const result = await fetchContestData(accessToken, {
+        page: 1,
+      });
+      setLoading(false);
+      console.log(result);
 
-      if (data && Array.isArray(data)) {
-        setData(data); 
-        setDataToDisplay(data.slice(0, itemsPerPage));
+      if (result?.contest_data && Array.isArray(result?.contest_data)) {
+        setData(result?.contest_data);
+        setDataToDisplay(result?.contest_data.slice(0, itemsPerPage));
+        setTotalData(result?.totalData);
+        setPageLimit(result?.state?.page_limit);
       } else {
-        console.log("No contest data available or invalid data:", data);
-        setError("No contest data available or the data format is invalid.");
+        console.log(
+          "No more contest data available or invalid data:",
+          result?.contest_data
+        );
+        setError(
+          "No more contest data available or the data format is invalid."
+        );
       }
     } catch (err) {
-      console.error("Error fetching contest data:", err.message);
-      setError(`Error fetching contest data: ${err.message}`);
+      setLoading(false);
+      console.error("Error fetching more contest data:", err.message);
+      setError(`Error fetching more contest data: ${err.message}`);
     }
   };
-  
   const handleDelete = async (id) => {
     try {
       const responseData = await deleteContestData(id, accessToken);
@@ -93,15 +110,19 @@ export default function AddContestHomepage() {
         console.log("Contest deleted successfully:", responseData.message);
         await getContestData();
       } else {
-        console.error("Failed to delete contest:", responseData.message || "Unknown error");
-        setError(`Failed to delete contest: ${responseData.message || "Unknown error"}`);
+        console.error(
+          "Failed to delete contest:",
+          responseData.message || "Unknown error"
+        );
+        setError(
+          `Failed to delete contest: ${responseData.message || "Unknown error"}`
+        );
       }
     } catch (err) {
       console.error("Error deleting contest:", err.message);
       setError(`Error deleting contest: ${err.message}`);
     }
   };
-  
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const start = (currentPage - 1) * itemsPerPage;
@@ -113,6 +134,15 @@ export default function AddContestHomepage() {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+    const totalPages = Math.ceil(totalData / itemsPerPage);
+    if (
+      pageNumber >= 1 &&
+      pageNumber <= totalPages &&
+      pageNumber !== currentPage
+    ) {
+      setPageLimit((prev) => prev + 1);
+
+    }
   };
 
   useEffect(() => {
@@ -121,7 +151,7 @@ export default function AddContestHomepage() {
 
   return (
     <>
-      <section className="shadow-md">
+      <section className="shadow-md h-full">
         <div className="relative w-full flex flex-col items-center rounded-t-xl px-4 py-2 overflow-hidden text-slate-700 bg-white  bg-clip-border">
           <p className="text-2xl text-left w-full font-semibold text-slate-800 uppercase">
             Contest

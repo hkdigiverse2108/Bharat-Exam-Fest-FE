@@ -79,7 +79,7 @@ export const imgUpload = async (file,  token,field) => {
 
 export const uploadFile = async (file, field, token) => {
   try {
-    // Validate if file exists
+
     if (!file) {
       toast.warning("No file selected");
       return { success: false, message: "No file selected" };
@@ -89,24 +89,23 @@ export const uploadFile = async (file, field, token) => {
     const formData = new FormData();
     let pdfType;
 
-    // File type handling
     if (fileType === "application/pdf") {
       if (field === "privacyPolicy") {
         pdfType = "privacy-policy";
-        formData.append("privacyPolicy", file); // Appending PDF for privacy policy
+        formData.append("privacyPolicy", file); 
         console.log(formData);
       } else if (field === "termsAndConditions") {
         pdfType = "terms-condition";
-        formData.append("termsAndConditions", file); // Appending PDF for terms and conditions
+        formData.append("termsAndConditions", file); 
         console.log(formData);
       } else {
         toast.warning("Unsupported field type for PDF");
         return;
       }
     } else if (fileType.startsWith("image/")) {
-      // Handle image-specific fields
+      
       if (field === "image") {
-        formData.append("image", file); // Appending image
+        formData.append("image", file); 
         console.log(formData);
       } else {
         toast.warning("Unsupported field type for image");
@@ -118,32 +117,31 @@ export const uploadFile = async (file, field, token) => {
     }
 
     // Prepare config for the request
-    // const config = {
-    //   method: "post",
-    //   url: `${BASE_URL}/upload`,
-    //   headers: {
-    //     Authorization: `Bearer ${token}`,
-    //     "Content-Type": "multipart/form-data",
-    //     pdfType: pdfType
-    //   },
-    //   data: formData,
-    // };
+    const config = {
+      method: "post",
+      url: `${BASE_URL}/upload`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+        pdfType: pdfType
+      },
+      data: formData,
+    };
 
-    // Send request to upload the file
-    // const response = await axios.request(config);
+    const response = await axios.request(config);
 
-    // if (response.status === 200) {
-    //   return {
-    //     success: true,
-    //     data: response.data.data, // Assuming the data contains the response data
-    //     message: response.data.message,
-    //   };
-    // } else {
-    //   return {
-    //     success: false,
-    //     message: response.data.message || `Error uploading ${field}`,
-    //   };
-    // }
+    if (response.status === 200) {
+      return {
+        success: true,
+        data: response.data.data, // Assuming the data contains the response data
+        message: response.data.message,
+      };
+    } else {
+      return {
+        success: false,
+        message: response.data.message || `Error uploading ${field}`,
+      };
+    }
   } catch (err) {
     console.error(`Error uploading ${field}:`, err);
     return {

@@ -18,14 +18,17 @@ import {
   editContest,
   fetchClassData,
   fetchContestData,
+  fetchContestDataById,
 } from "../../ApiHandler/contestService";
 import { fetchContestTypes } from "../../ApiHandler/GetContestType";
+import { convertIstToUtc, convertUtcToIst } from '../../Utils/timeUtils';
+
 
 export default function EditContest() {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [contestTypeData, setContesTypeData] = useState([]);
-  const [classData, setClassData] = useState(null);
+  const [classData, setClassData] = useState([]);
   const [date, setDate] = useState(false);
   const [dateRang, setDateRange] = useState("");
   const [time, setTime] = useState(false);
@@ -56,6 +59,7 @@ export default function EditContest() {
     contestTypeId: "",
     startDate: "",
     endDate: "",
+    classesFees: 0,
     totalSpots: 0,
     fees: 0,
     winningAmountPerFee: 0,
@@ -119,7 +123,6 @@ export default function EditContest() {
       [name]: value,
     }));
     console.log(contestData);
-    
   };
 
   const handleRankChange = (index, field, value) => {
@@ -131,7 +134,7 @@ export default function EditContest() {
   const handleAddRank = () => {
     setContestData((prevData) => ({
       ...prevData,
-      ranks: [...prevData.ranks, { startPlace: "", price: 0 }],
+      ranks: [...prevData.ranks, { startPlace: "", price: 0}],
     }));
   };
 
@@ -149,7 +152,7 @@ export default function EditContest() {
     id: classItem._id,
     label: classItem.name,
   }));
-  
+
   const [selectedValues, setSelectedValues] = useState([]);
 
   const handleCheckboxChange = (event) => {
@@ -192,6 +195,7 @@ export default function EditContest() {
 
   const getCombinedDate = (value) => {
     try {
+      
       if (!value || !value.startDate || !value.endDate) {
         console.error("Invalid date values");
       }
@@ -223,7 +227,7 @@ export default function EditContest() {
       if (result.success) {
         setClassData(result.data);
         console.log(result.data);
-        
+
         setLoading(false);
       } else {
         console.error("Error loading class data:", result.message);
@@ -280,67 +284,139 @@ export default function EditContest() {
         setLoading(false);
       }
     };
+    // const getContesData = async () => {
+    //   try {
+    //     const result = await fetchContestDataById(
+    //       accessToken,
+    //       contestFromRedux?._id
+    //     );
+
+    //     if (result.success) {
+    //       console.log(result.data);
+    //     } else {
+    //       setError(result.message || "Failed to fetch contest data");
+    //     }
+    //   } catch (err) {
+    //     console.error("Error fetching contest data:", err);
+    //     setError(
+    //       err.message || "An error occurred while fetching contest data"
+    //     );
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
 
     getContesTypeData();
+    // getContesData();
   }, [accessToken]);
 
   useEffect(() => {
     if (contestFromRedux) {
-      const {
-        _id,
-        name,
-        contestTypeId,
-        startDate,
-        endDate,
-        totalSpots,
-        fees,
-        winningAmountPerFee,
-        winnerPercentage,
-        ranks,
-        totalQuestions,
-        totalTime,
-        totalMarks,
-        classesId,
-      } = contestFromRedux;
+      const getContesData = async () => {
+        try {
+          const result = await fetchContestDataById(
+            accessToken,
+            contestFromRedux?._id
+          );
 
-      setContestData({
-        contestId: _id,
-        name,
-        contestTypeId,
-        startDate,
-        endDate,
-        totalSpots,
-        fees,
-        winningAmountPerFee,
-        winnerPercentage,
-        ranks: ranks.map((rank) => ({
-          startPlace: rank.startPlace || "",
-          endPlace: rank.endPlace || "1",
-          price: rank.price || 0,
-        })),
-        totalQuestions,
-        totalTime,
-        totalMarks,
-        classesId,
-      });
+          setContestData({
+            contestId: result._id || "",
+            name: result.name || "",
+            contestTypeId: result.contestTypeId || "",
+            classesFees: result.classesFees || 0,
+            startDate: result.startDate || "",
+            endDate: result.endDate || "",
+            totalSpots: result.totalSpots || 0,
+            fees: result.fees || 0,
+            winningAmountPerFee: result.winningAmountPerFee || 0,
+            winnerPercentage: result.winnerPercentage || 0,
+            ranks: result.ranks
+              ? result.ranks.map((rank) => ({
+                  startPlace: rank.startPlace || "",
+                  endPlace: rank.endPlace || "1",
+                  price: rank.price || 0,
+                }))
+              : [],
+            totalQuestions: result.totalQuestions || 0,
+            totalTime: result.totalTime || 0,
+            totalMarks: result.totalMarks || 0,
+            classesId: result.classesId || "",
+          });
 
-      // Set the selected class IDs (assuming contestFromRedux.classesId is an array)
-      setSelectedValues([classesId]);
+          setSelectedValues([result.classesId || ""]);
 
-      // Handle date range
-      if (startDate && endDate) {
-        const combinedDate = getCombinedDate(contestFromRedux);
-        setDateRange(combinedDate);
-      }
+          if (result.startDate && result.endDate) {
+            const combinedDate = getCombinedDate(result);
+            setDateRange(combinedDate);
+          } else {
+            setDateRange("");
+          }
 
-      // Find the matching contest type directly (using `find` for better performance)
-      const matchedContestType = contestTypeData.find(
-        (type) => type._id === contestTypeId
-      );
+          const matchedContestType = contestTypeData.find(
+            (type) => type._id === result.contestTypeId
+          );
 
-      setSelectedContestType(matchedContestType || null);
+          setSelectedContestType(matchedContestType || null);
+        } catch (err) {
+          console.error("Error fetching contest data:", err);
+          setError(
+            err.message || "An error occurred while fetching contest data"
+          );
+        } finally {
+          setLoading(false);
+        }
+      };
+      getContesData();
+      // const {
+      //   _id,
+      //   name,
+      //   contestTypeId,
+      //   startDate,
+      //   endDate,
+      //   totalSpots,
+      //   fees,
+      //   winningAmountPerFee,
+      //   winnerPercentage,
+      //   ranks,
+      //   totalQuestions,
+      //   totalTime,
+      //   totalMarks,
+      //   classesId,
+      // } = contestFromRedux;
+
+      // setContestData({
+      //   contestId: _id,
+      //   name,
+      //   contestTypeId,
+      //   startDate,
+      //   endDate,
+      //   totalSpots,
+      //   fees,
+      //   winningAmountPerFee,
+      //   winnerPercentage,
+      //   ranks: ranks.map((rank) => ({
+      //     startPlace: rank.startPlace || "",
+      //     endPlace: rank.endPlace || "1",
+      //     price: rank.price || 0,
+      //   })),
+      //   totalQuestions,
+      //   totalTime,
+      //   totalMarks,
+      //   classesId,
+      // });
+
+      // setSelectedValues([classesId]);
+      // if (startDate && endDate) {
+      //   const combinedDate = getCombinedDate(contestFromRedux);
+      //   setDateRange(combinedDate);
+      // }
+      // const matchedContestType = contestTypeData.find(
+      //   (type) => type._id === contestTypeId
+      // );
+
+      // setSelectedContestType(matchedContestType || null);
     }
-  }, [contestFromRedux, contestTypeData]);
+  }, [accessToken, contestFromRedux, contestTypeData]);
 
   useEffect(() => {
     loadClassData();
@@ -458,6 +534,23 @@ export default function EditContest() {
                   />
                 </li>
               </ul>
+            </div>
+            <div className="space-y-1">
+              <label
+                htmlFor="classesFees"
+                className="capitalize text-base font-medium text-gray-700 dark:text-white"
+              >
+                classesFees
+              </label>
+              <input
+                type="number"
+                id="classesFees"
+                name="classesFees"
+                className="block w-full p-2 border rounded-lg bg-white placeholder-gray-400 text-gray-600 border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                placeholder="Enter classes fee "
+                value={contestData.classesFees}
+                onChange={handleChange}
+              />
             </div>
             <div className="space-y-3">
               <p className="text-xl tracking-tight font-medium text-left text-gray-700 dark:text-white capitalize">
