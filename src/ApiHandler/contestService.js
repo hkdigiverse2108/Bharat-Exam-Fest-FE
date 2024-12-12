@@ -13,7 +13,7 @@ export const fetchContestData = async (accessToken, params) => {
     const config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${BASE_URL}/contest/all?page=${params.page}&limit=10`,
+      url: `${BASE_URL}/contest/all?page=1&limit=${params.page}`,
 
       headers: {
         Authorization: `${accessToken}`,

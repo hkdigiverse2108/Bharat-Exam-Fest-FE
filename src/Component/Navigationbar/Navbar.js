@@ -505,7 +505,7 @@ function Navbar() {
       <div
         className={`lg:hidden ${
           navbarOpen ? "block" : "hidden"
-        } w-full px-4 py-6 bg-slate-200 border-b shadow-default duration-300 ease-linear`}
+        } w-full max-h-56 bg-slate-200 border-b shadow-default transition duration-300 ease-in-out`}
       >
         <nav className="flex flex-col h-full overflow-y-auto duration-300 ease-linear">
           <ul className="mb-6 flex flex-col gap-1.5">

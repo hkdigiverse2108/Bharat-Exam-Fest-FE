@@ -78,7 +78,7 @@ export default function AddContestHomepage() {
     try {
       setLoading(true);
       const result = await fetchContestData(accessToken, {
-        page: 1,
+        page: totalData,
       });
       setLoading(false);
       console.log(result);
