@@ -41,13 +41,12 @@ export default function ProfilePage() {
       setIsLoading(true);
       setNetworkError(null);
 
-
       try {
         const response = await imgUpload(file, accessToken);
         if (response.status === 200) {
           setFormData((prevData) => ({
             ...prevData,
-            image: response.data.data, 
+            image: response.data.data,
           }));
           toast.success(response.data.message);
         } else {
@@ -102,36 +101,43 @@ export default function ProfilePage() {
     return false;
   };
 
+  const handleAction = () => {
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData || Object.keys(formData).length === 0) {
-      toast.warn("Please fill up the empty fields.");
+      toast.warn("Fill up the empty fields.");
       return;
     }
 
-    setIsLoading(true); // Set loading state
-    setNetworkError(null); // Reset network error before submission
+    setIsLoading(true);
+    setNetworkError(null);
 
     try {
-      // Make API call to update profile
-      const response = await updateProfile(accessToken, formData);
-
-      if (response?.data?.status === 200) {
-        toast.success("Profile updated successfully!");
-        console.log("User Data to be logged in:", response.data.data);
-        if (response.data.data) {
-          dispatch(loginAdmin(response.data.data));
-          setTimeout(() => {
-            navigate("/");
-          }, [1000]);
-        } else {
-          console.error("No user data found in the response.");
-        }
+      if (isEmpty()) {
+        toast.warn("Fill up the empty fields.");
       } else {
-        // Error response handling
-        console.error("Error response:", response?.error || "Unknown error");
-        toast.error(response?.error || "Unknown error occurred.");
+        const response = await updateProfile(accessToken, formData);
+
+        if (response?.data?.status === 200) {
+          toast.success("Profile updated successfully!");
+          console.log("User Data to be logged in:", response.data.data);
+          if (response.data.data) {
+            dispatch(loginAdmin(response.data.data));
+            handleAction();
+          } else {
+            console.error("No user data found in the response.");
+          }
+        } else {
+          // Error response handling
+          console.error("Error response:", response?.error || "Unknown error");
+          toast.error(response?.error || "Unknown error occurred.");
+        }
       }
     } catch (error) {
       // Handle network or other unexpected errors
@@ -335,7 +341,7 @@ export default function ProfilePage() {
 
       <ToastContainer
         position="top-right"
-        autoClose={2000}
+        autoClose={1000}
         hideProgressBar={false}
         closeOnClick={true}
         pauseOnHover={true}

@@ -1,7 +1,5 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import Axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -10,7 +8,7 @@ import { editBanner, updateImageData } from "../../Context/Action";
 import { imgUpload } from "../../ApiHandler/updateImage";
 import { EditBanner } from "../../ApiHandler/bannerApi";
 
-export default function ImgUpdatePage({ confirm, onClose }) {
+export default function EditImgPage({ confirm, onClose }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const accessToken = useSelector(
@@ -30,12 +28,6 @@ export default function ImgUpdatePage({ confirm, onClose }) {
   const [success, setSuccess] = useState(false);
   const [status, setStatus] = useState(null);
 
-  // const isEmpty = () => {
-  //   if (imgEdit.bannerId === "" || imgEdit.image === "") {
-  //     return true;
-  //   }
-  //   return false;
-  // };
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -55,69 +47,39 @@ export default function ImgUpdatePage({ confirm, onClose }) {
     dispatch(updateImageData());
     onClose();
   };
+
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-
     if (file) {
-      setLoading(true); // Set loading to true when starting the upload
-      setError(null); // Reset any previous error
+      setLoading(true);
+      setError(null);
 
       try {
         await imgUpload(file, accessToken);
       } catch (err) {
-        setError(err.message); // Capture any error message
+        setError(err.message); 
       } finally {
-        setLoading(false); // Set loading to false after the upload is complete
+        setLoading(false); 
       }
     } else {
       toast.warning("No file selected");
     }
   };
 
-  // const EditBanner = async () => {
-  //   try {
-  //     if (isEmpty()) {
-  //       toast.warning("Please fill up empty fields.");
-  //     }
-  //     let data = JSON.stringify(imgEdit);
-  //     console.log(imgEdit);
-
-  //     let config = {
-  //       method: "post",
-  //       maxBodyLength: Infinity,
-  //       url: `https://api-bef.hkdigiverse.com/banner/edit/${imgEdit.bannerId}`,
-  //       headers: {
-  //         Authorization: accessToken,
-  //         "Content-Type": "application/json",
-  //       },
-  //       data: data,
-  //     };
-
-  //     const response = await axios.request(config);
-  //     console.log(response.data);
-
-  //     if (response.status === 200) {
-  //       toast.success(response.data.data.message);
-  //       dispatch(editBanner(imgEdit), updateImageData(null));
-  //       onClose();
-  //     } else if (response.status === 500) {
-  //       toast.error(response.data.data.message);
-  //     } else {
-  //       toast.error(response.message);
-  //     }
-  //   } catch (err) {
-  //     console.error(err.message);
-  //     console.error("An error occurred while adding the question.");
-  //   }
-  // };
+  const handleAction = () => {
+    setTimeout(() => {
+      onClose();
+    }, 1000);
+  };
 
   const handleEditBanner = async () => {
     try {
       const result = await EditBanner(bannerData, accessToken);
       if (result.success) {
+        toast.success(result.message);
         setStatus("Banner edited successfully");
         dispatch(editBanner(imgEdit), updateImageData(null));
-        onClose();
+        handleAction();
       } else {
         setStatus(`Error: ${result.message}`);
       }
@@ -248,8 +210,8 @@ export default function ImgUpdatePage({ confirm, onClose }) {
       </section>
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

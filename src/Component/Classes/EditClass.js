@@ -62,18 +62,18 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
   const handleImageUpload = async (event, file) => {
     setIsLoading(true);
     setError(null);
-  
+
     try {
       const response = await uploadFile(file, accessToken);
-      
+
       if (response.success) {
         setInput((prevData) => ({
           ...prevData,
-          image: response.data, 
+          image: response.data,
         }));
-        toast.success(response.message); 
+        toast.success(response.message);
       } else {
-        toast.error(response.message || 'Error uploading image'); 
+        toast.error(response.message || "Error uploading image");
       }
     } catch (error) {
       setError("Network error while uploading image. Please try again.");
@@ -83,7 +83,6 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
       setIsLoading(false);
     }
   };
-  
 
   const handleUpload = (value) => {
     handleImageUpload(value);
@@ -112,7 +111,7 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
   };
 
   const getClassData = async () => {
-    setIsLoading(true); 
+    setIsLoading(true);
     try {
       const classesData = await fetchClassData(accessToken);
       console.log("classesData", classesData);
@@ -125,6 +124,12 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
     }
   };
 
+  const handleAction = () => {
+    setTimeout(() => {
+      onClose();
+    }, 1000);
+  };
+
   // Handle Edit
   const handleEdit = async () => {
     setIsLoading(true); // Set loading state to true while performing the edit action
@@ -134,13 +139,9 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
       } else {
         const result = await handleEditClassData(input, accessToken);
         if (result.success) {
-          setTimeout(() => {
-            navigate("/classes"); 
-          }, 1500); 
-
-          dispatch(editClassesPanel()); 
-          await getClassData(); 
-          toast.success("Class updated successfully");
+          toast.success(result.message || "Class edited successfully");
+          handleAction();
+          dispatch(editClassesPanel());
         } else {
           toast.error(result.message || "Failed to update class");
         }
@@ -149,7 +150,7 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
       console.error(err.message);
       toast.error(err.message || "An error occurred while editing class");
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -157,9 +158,9 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
     getClassData();
   }, [accessToken]);
 
-  //   useEffect(() => {
-  //     console.log(input);
-  //   }, [input]);
+  useEffect(() => {
+    console.log(input);
+  }, [input]);
 
   useEffect(() => {
     if (existData) {
@@ -181,7 +182,6 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
   }, [existData]);
 
   if (isLoading) return <Loading />;
-
 
   return (
     <>
@@ -276,23 +276,6 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
                   value={input.name}
                   name="name"
                   placeholder="Enter classes name"
-                />
-              </div>
-              <div className="grid grid-cols-1 w-full">
-                <label
-                  htmlFor="code"
-                  className="text-gray-700 font-semibold dark:text-gray-200 "
-                >
-                  Referral Code
-                </label>
-                <input
-                  className="w-full block px-5 py-2 border rounded-lg shadow-sm bg-white placeholder-gray-400 text-gray-700 text-base p-2 border-[#808836] focus:outline-none focus:border-indigo-500 placeholder:text-gray-500"
-                  type="text"
-                  id="code"
-                  onChange={handleInputChange}
-                  value={input.referralCode}
-                  name="referralCode"
-                  placeholder="Enter referral code"
                 />
               </div>
             </div>
@@ -392,8 +375,8 @@ export default function EditClasses({ confirm, setConfirm, onClose }) {
 
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

@@ -114,6 +114,58 @@ export const handleAddClassData = async (input, accessToken) => {
   }
 };
 
+export const handleEditClassData = async (input, accessToken) => {
+  try {
+    if (!input.name) {
+      toast.warning("Fill up empty space");
+      return { success: false, message: "Fill up empty space" };
+    }
+
+    // Convert date fields from ISC to UTC
+    const fieldsToConvert = ["createdAt", "updatedAt", "startDate", "endDate"];
+    fieldsToConvert.forEach((field) => {
+      if (input[field]) {
+        input[field] = convertIstToUtc(input[field]);
+        console.log(`Converted ${field} to UTC:`, input[field]);
+      }
+    });
+
+    const data = JSON.stringify(input);
+    const config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `${BASE_URL}/classes/edit`,
+      headers: {
+        Authorization: accessToken,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const response = await axios.request(config);
+
+    if (response.status === 200) {
+      console.log("Success", response.data);
+      toast.success("User edited successfully");
+      return { success: true, data: response.data };
+    } else {
+      console.error("Failed", response);
+      toast.error("Failed to edit user");
+      return {
+        success: false,
+        message: response.data.message || "Failed to edit user",
+      };
+    }
+  } catch (error) {
+    console.error("Error editing user:", error);
+    const errorMessage =
+      error.response?.data?.message ||
+      "An error occurred while editing the user.";
+    toast.error(errorMessage);
+    return { success: false, message: errorMessage };
+  }
+};
+
 export const deleteClassData = async (id, accessToken) => {
   try {
     const config = {

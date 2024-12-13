@@ -82,7 +82,7 @@ export default function Adduser() {
     <>
       <section className=" p-6 space-y-6 border border-slate-300 bg-white rounded-xl h-full">
         <div className="text-left">
-          <p className="text-2xl font-semibold text-slate-800">Add User</p>
+          <p className="text-2xl font-semibold text-slate-800">Add Classes</p>
           <p className="text-lg text-left font-normal text-slate-600 ">
             Fill in the data for profile. It will take a couple of minutes.
           </p>
@@ -187,8 +187,8 @@ export default function Adduser() {
 
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

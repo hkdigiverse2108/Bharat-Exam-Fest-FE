@@ -265,29 +265,25 @@ function SideNavbar() {
               </li>
               <li>
                 <NavLink
-                  to="/userDetails"
+                  to="/students"
                   className="
                    flex space-x-3"
                 >
                   <span
                     className={`${
-                      pathname === "/userDetails" ||
-                      pathname === "/addUser" ||
-                      pathname === "/editUser"
+                      pathname === "/students" 
                         ? "border-l-4 border-orange-500"
                         : "border-none"
                     } rounded-r-lg `}
                   ></span>
                   <span
                     className={`${
-                      pathname === "/userDetails" ||
-                      pathname === "/addUser" ||
-                      pathname === "/editUser"
+                      pathname === "/students"
                         ? "text-white bg-orange-500"
                         : "text-black"
                     } group w-full outline-none rounded-md duration-300 ease-in-out capitalize hover:text-white hover:bg-gray-600 py-2 px-4 font-medium `}
                   >
-                    user
+                    students
                   </span>
                 </NavLink>
               </li>
@@ -297,8 +293,8 @@ function SideNavbar() {
       </aside>
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

@@ -63,29 +63,28 @@ export default function EditSubject() {
   };
 
   const handleFileChange = async (event) => {
-    setLoading(true); // Set loading to true when starting the upload
-    setError(null); // Reset any previous error
+    setLoading(true);
+    setError(null);
     try {
       const file = event.target.files[0];
 
-      const result = await imgUpload(file, accessToken); // Get the result from imgUpload
+      const result = await imgUpload(file, accessToken);
 
       if (result.success) {
-        // Assuming the response contains the uploaded image URL or relevant data
         setInput((prev) => ({
           ...prev,
           image: result.data.imageUrl || file.name,
         }));
         console.log("Image uploaded successfully");
       } else {
-        setError(result.message); // Capture any error message from the result
-        toast.error(result.message); // Show error message to the user
+        setError(result.message);
+        toast.error(result.message);
       }
     } catch (err) {
-      setError(err.message); // Capture any error message
-      toast.error(err.message); // Show error message to the user
+      setError(err.message);
+      toast.error(err.message);
     } finally {
-      setLoading(false); // Set loading to false after the upload is complete
+      setLoading(false);
     }
   };
 
@@ -104,40 +103,11 @@ export default function EditSubject() {
     console.log("EDIT", input);
   }, [input]);
 
-  // const editSubject = async () => {
-  //   try {
-  //     if (isEmpty()) {
-  //       toast.warning("Fill up empty space");
-  //     } else {
-  //       let data = JSON.stringify(input);
-  //       console.log(input);
-
-  //       let config = {
-  //         method: "post",
-  //         maxBodyLength: Infinity,
-  //         url: "https://api-bef.hkdigiverse.com/subject/edit",
-  //         headers: {
-  //           Authorization: accessToken,
-  //           "Content-Type": "application/json",
-  //         },
-  //         data: data,
-  //       };
-
-  //       const response = await axios.request(config);
-
-  //       if (response.status === 200) {
-  //         console.log("success", response.data);
-  //         toast.success(response.message);
-  //         navigate("/subject");
-  //       } else {
-  //         console.log("failed", response);
-  //         console.log("msg", response.message);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
+  const handleAction = () => {
+    setTimeout(() => {
+      navigate("/subject");
+    }, 1000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -149,6 +119,9 @@ export default function EditSubject() {
 
     if (result.success) {
       console.log("Success", result.data);
+      toast.success(result.message);
+
+      handleAction();
       navigate("/subject");
     } else {
       console.error("Failed to edit subject:", result.message);
@@ -166,11 +139,10 @@ export default function EditSubject() {
         image: existData.image,
         subTopicIds: existData.subTopicIds,
       });
-      // setSubtopics(existSubtopicList);
-      const filteredSubtopics = subtopics.filter((value) =>
-        existData.subTopicIds.includes(value._id)
+      const filteredData = subtopics.filter((item) =>
+        item.subTopicIds.some((id) => existData.subTopicIds.includes(id))
       );
-      setSelectedSubtopic(filteredSubtopics);
+      setSelectedSubtopic(filteredData);
     }
   }, [existData]);
 
@@ -248,8 +220,8 @@ export default function EditSubject() {
       </section>
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

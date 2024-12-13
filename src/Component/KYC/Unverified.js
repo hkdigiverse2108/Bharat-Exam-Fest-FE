@@ -48,7 +48,7 @@ export default function Unverified({ unverifiedData }) {
 
   function transformKycData(originalData) {
     return {
-      kycId: originalData._id, // Assuming kycId corresponds to the _id field
+      kycId: originalData._id, 
       idProof: originalData.idProof,
       frontSideImage: originalData.frontSideImage,
       backSideImage: originalData.backSideImage,
@@ -64,15 +64,15 @@ export default function Unverified({ unverifiedData }) {
 
     if (updatedUsers.length === 0) {
       console.log("No users to update.");
-      toast.info("No users to update."); // Inform the user
+      toast.info("No users to update."); 
       return;
     }
 
     const formData = transformKycData(updatedUsers[0]);
     console.log("Form Data to be submitted:", formData);
 
-    setLoading(true); // Start loading state
-    setError(null); // Reset any previous error
+    setLoading(true); 
+    setError(null); 
 
     try {
       const updatedEntries = await updateAndFetchKycStatus(
@@ -89,7 +89,7 @@ export default function Unverified({ unverifiedData }) {
     } catch (error) {
       console.error("Error updating KYC status:", error);
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false); 
     }
   };
 
@@ -139,7 +139,14 @@ export default function Unverified({ unverifiedData }) {
                 } = user;
 
                 const fullName = `${userInfo.firstName} ${userInfo.lastName}`;
-                const dob = new Date(userInfo.dob).toLocaleDateString();
+                 const dob = new Date(user.dob);
+                const formattedDob = `${String(dob.getDate()).padStart(
+                  2,
+                  "0"
+                )}/${String(dob.getMonth() + 1).padStart(
+                  2,
+                  "0"
+                )}/${dob.getFullYear()}`;
                 const mobile = `${userInfo.contact.countryCode} ${userInfo.contact.mobile}`;
 
                 return (
@@ -150,7 +157,7 @@ export default function Unverified({ unverifiedData }) {
                     >
                       <td className="p-2  whitespace-nowra">{idNumber}</td>
                       <td className="p-3 whitespace-nowrap">{fullName}</td>
-                      <td className="p-3 whitespace-nowrap">{dob}</td>
+                      <td className="p-3 whitespace-nowrap">{formattedDob}</td>
                       <td className="p-3 whitespace-nowrap">
                         {userInfo.email}
                       </td>

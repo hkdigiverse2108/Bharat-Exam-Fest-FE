@@ -7,7 +7,7 @@ import {
   updateAndFetchKycStatus,
 } from "../../ApiHandler/useKycApi";
 
-export default function Verified({ verifiedData,onUpdateKycStatus }) {
+export default function Verified({ verifiedData, onUpdateKycStatus }) {
   const [verifiedList, setVerifiedList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -37,8 +37,8 @@ export default function Verified({ verifiedData,onUpdateKycStatus }) {
   };
 
   const handleStatusUpdate = (userId) => {
-    const updateData = { id: userId, status: 'updated' }; 
-    onUpdateKycStatus(updateData); 
+    const updateData = { id: userId, status: "updated" };
+    onUpdateKycStatus(updateData);
   };
 
   const handleStatusChange = (userId, newStatus) => {
@@ -82,7 +82,7 @@ export default function Verified({ verifiedData,onUpdateKycStatus }) {
     setError(null);
 
     const handleStatusUpdate = (userId) => {
-      const updateData = { id: userId, status: 'updated' }; 
+      const updateData = { id: userId, status: "updated" };
       onUpdateKycStatus(updateData);
     };
     try {
@@ -149,7 +149,14 @@ export default function Verified({ verifiedData,onUpdateKycStatus }) {
                 } = user;
 
                 const fullName = `${userInfo.firstName} ${userInfo.lastName}`;
-                const dob = new Date(userInfo.dob).toLocaleDateString();
+                const dob = new Date(user.dob);
+                const formattedDob = `${String(dob.getDate()).padStart(
+                  2,
+                  "0"
+                )}/${String(dob.getMonth() + 1).padStart(
+                  2,
+                  "0"
+                )}/${dob.getFullYear()}`;
                 const mobile = `${userInfo.contact.countryCode} ${userInfo.contact.mobile}`;
 
                 return (
@@ -160,7 +167,7 @@ export default function Verified({ verifiedData,onUpdateKycStatus }) {
                     >
                       <td className="p-2  whitespace-nowra">{idNumber}</td>
                       <td className="p-3 whitespace-nowrap">{fullName}</td>
-                      <td className="p-3 whitespace-nowrap">{dob}</td>
+                      <td className="p-3 whitespace-nowrap">{formattedDob}</td>
                       <td className="p-3 whitespace-nowrap">
                         {userInfo.email}
                       </td>

@@ -520,7 +520,7 @@ function Navbar() {
               "/information",
               "/subject",
               "/banner",
-              "/userDetails",
+              "/students",
             ].map((path, index) => (
               <li key={index}>
                 <NavLink to={path} className="flex space-x-3">

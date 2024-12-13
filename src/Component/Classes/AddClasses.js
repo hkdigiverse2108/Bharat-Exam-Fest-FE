@@ -54,21 +54,18 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
   };
 
   const handleImageUpload = async (file, field) => {
-    setIsLoading(true); // Start loading
-    setError(null); // Reset any previous errors
-
+    setIsLoading(true);
+    setError(null);
+  
     try {
       if (!file) {
         toast.warning("Please select a file to upload.");
         return;
       }
       console.log("file", file);
-
       const fileType = file.type;
-      const formData = new FormData();
       let pdfType;
 
-      // File type handling
       if (fileType === "application/pdf") {
         if (field === "privacyPolicy") {
           pdfType = "privacy-policy";
@@ -79,32 +76,28 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
           return;
         }
       }
-      // console.log("formdata",formData);
-
-      // Call the generic upload function with the file and field name
-      const result = await imgUpload(file, accessToken, pdfType);
+  
+      const result = await imgUpload(file, accessToken, field, pdfType);
       console.log(result);
-
+  
       if (result.success) {
-        // If upload is successful, update the form state with the uploaded file data
         setInput((prevData) => ({
           ...prevData,
-          [field]: result.data,
+          [field]: result.data, 
         }));
         toast.success(result.message || `${field} uploaded successfully!`);
       } else {
-        // Handle failure: Show error message
         toast.error(result.message || `Error uploading ${field}`);
       }
     } catch (error) {
-      // Handle unexpected errors
       setError("Network error while uploading file. Please try again.");
-      toast.error("Failed to upload file. Please check your network.");
+      toast.error("Failed to upload file Or Please check your network.");
       console.error(error);
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
+  
 
   const handleUpload = (value, field) => {
     handleImageUpload(value, field);
@@ -135,16 +128,16 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
   }, [input]);
 
   const getClassData = async () => {
-    setIsLoading(true); // Set loading state before fetching data
+    setIsLoading(true);
     try {
       const classesData = await fetchClassData(accessToken);
       // console.log("classesData", classesData);
-      return classesData; // Save classes data in state
+      return classesData;
     } catch (err) {
-      setError(err.message); // Handle error if occurs during fetch
+      setError(err.message); 
       toast.error("Failed to fetch classes data");
     } finally {
-      setIsLoading(false); // Turn off loader once data fetching is complete
+      setIsLoading(false); 
     }
   };
 
@@ -409,8 +402,8 @@ export default function AddClasses({ confirm, setConfirm, onClose }) {
 
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

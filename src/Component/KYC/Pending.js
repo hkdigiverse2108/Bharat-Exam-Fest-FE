@@ -143,7 +143,14 @@ export default function Pending({ pendingData }) {
                   } = user;
 
                   const fullName = `${userInfo.firstName} ${userInfo.lastName}`;
-                  const dob = new Date(userInfo.dob).toLocaleDateString();
+                  const dob = new Date(user.dob);
+                  const formattedDob = `${String(dob.getDate()).padStart(
+                    2,
+                    "0"
+                  )}/${String(dob.getMonth() + 1).padStart(
+                    2,
+                    "0"
+                  )}/${dob.getFullYear()}`;
                   const mobile = `${userInfo.contact.countryCode} ${userInfo.contact.mobile}`;
 
                   return (
@@ -154,7 +161,9 @@ export default function Pending({ pendingData }) {
                       >
                         <td className="p-3 whitespace-nowrap">{idNumber}</td>
                         <td className="p-3 whitespace-nowrap">{fullName}</td>
-                        <td className="p-3 whitespace-nowrap">{dob}</td>
+                        <td className="p-3 whitespace-nowrap">
+                          {formattedDob}
+                        </td>
                         <td className="p-3 whitespace-nowrap">
                           {userInfo.email}
                         </td>

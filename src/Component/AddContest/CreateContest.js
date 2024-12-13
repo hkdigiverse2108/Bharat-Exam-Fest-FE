@@ -598,7 +598,7 @@ export default function CreateContest() {
       </div>
       <ToastContainer
         draggable={false}
-        autoClose={2000}
+        autoClose={1000}
         position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}

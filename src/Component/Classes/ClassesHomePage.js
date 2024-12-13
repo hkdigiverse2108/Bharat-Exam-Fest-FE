@@ -2,23 +2,32 @@ import React, { useEffect, useState } from "react";
 // import { LuPencilLine } from "react-icons/lu";
 // import { useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa6";
+import { LuPencilLine } from "react-icons/lu";
 import { AiOutlineDelete } from "react-icons/ai";
 import AddClasses from "./AddClasses";
 import Pagination from "../Pagination/Pagination";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { deleteClassData, fetchClassData } from "../../ApiHandler/getAllClassApi";
+import {
+  deleteClassData,
+  fetchClassData,
+} from "../../ApiHandler/getAllClassApi";
 import Loading from "../Loader/Loading";
+import { useNavigate } from "react-router-dom";
+import { editClassesPanel } from "../../Context/Action";
+import EditClasses from "./EditClass";
 
 export default function ClassesHomePage() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const accessToken = useSelector(
     (state) =>
       state.authConfig.userInfo[0]?.data?.token ||
       state.authConfig.userInfo[0]?.token
   );
   const [confirm, setConfirm] = useState(false);
+  const [page, setPage] = useState(null);
   const [data, setData] = useState([]);
   const [dataToDisplay, setDataToDisplay] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,16 +41,15 @@ export default function ClassesHomePage() {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-  
+
   const [input, setInput] = useState({
     classname: "",
     referralcode: "",
   });
 
-  function handleNavigate() {
-    setConfirm(!confirm);
-  }
-
+  const handleNavigate = (pageName) => {
+    setPage(pageName);
+  };
 
   const getClassData = async () => {
     setLoading(true); // Show loader while fetching
@@ -58,36 +66,36 @@ export default function ClassesHomePage() {
     }
   };
 
-  // Handle class deletion
-  const handleDelete = async (id) => {
-    setLoading(true); // Show loader while deleting
+  function handleEdit(value) {
+    setPage("edit");
+    dispatch(editClassesPanel(value));
+  }
+
+  async function handleDelete(id) {
+    setLoading(true);
     try {
-      await deleteClassData(id, accessToken); // Call the API to delete class
+      await deleteClassData(id, accessToken);
       console.log(`Deleted class with id: ${id}`);
       toast.success("Class deleted successfully");
 
-      // Refresh the class data after successful deletion
       await getClassData();
     } catch (err) {
       console.error(err.message);
       toast.error(err.message || "Failed to delete class");
     } finally {
-      setLoading(false); // Hide loader after deletion
+      setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
-    getClassData(); 
+    getClassData();
   }, [accessToken]);
-
 
   useEffect(() => {
     setDataToDisplay(data.slice(start, end));
   }, [currentPage, data, start, end]);
 
   if (loading) return <Loading />;
-
-
 
   return (
     <>
@@ -97,7 +105,7 @@ export default function ClassesHomePage() {
             classes
           </p>
           <button
-            onClick={handleNavigate}
+            onClick={() => handleNavigate("add")}
             className="inline-flex items-center space-x-2 rounded-lg px-2 py-2 text-md text-center text-white bg-orange-500 hover:bg-opacity-90  "
           >
             <svg className="font-bold text-white w-4 h-4" viewBox="0 0 16 16">
@@ -191,17 +199,33 @@ export default function ClassesHomePage() {
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50">
-                    <button
-                      onClick={() => handleDelete(value._id)}
-                      className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg  align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
-                      type="button"
-                    >
-                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
-                        <svg viewBox="0 0 16 16" className="w-6 h-6">
-                          <AiOutlineDelete />
-                        </svg>
-                      </span>
-                    </button>
+                    <div className="flex items-center justify-evenly  gap-2 font-sans text-md font-medium leading-none text-slate-800">
+                      <button
+                        className="relative h-10 w-10 select-none rounded-lg text-center align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        type="button"
+                        onClick={() => handleEdit(value)}
+                      >
+                        <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                          <svg viewBox="0 0 16 16" className="w-5 h-5">
+                            <LuPencilLine />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        className="relative h-10 w-10 select-none rounded-lg text-center align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                        type="button"
+                      >
+                        <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
+                          <svg
+                            viewBox="0 0 16 16"
+                            className="w-6 h-6"
+                            onClick={() => handleDelete(value._id)}
+                          >
+                            <AiOutlineDelete />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -209,14 +233,22 @@ export default function ClassesHomePage() {
           </table>
         </div>
         <Pagination
-         totalPages={totalPages}
-         currentPage={currentPage}
-         onPageChange={handlePageChange}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
         />
       </section>
-      <div className={`${confirm === true ? "block" : "hidden"}`}>
-        <AddClasses confirm={confirm} onClose={handleNavigate} />
-      </div>
+      {page === "add" && (
+        <div className="block">
+          <AddClasses onClose={() => setPage(null)} />
+        </div>
+      )}
+
+      {page === "edit" && (
+        <div className="block">
+          <EditClasses onClose={() => setPage(null)} />
+        </div>
+      )}
     </>
   );
 }

@@ -34,35 +34,7 @@ export default function AddSubject() {
     subTopicIds: null,
   });
 
-  // const imgUpload = async (file) => {
-  //   try {
-  //     if (!file) {
-  //       toast.warning("No file selected");
-  //       return;
-  //     }
 
-  //     const formData = new FormData();
-  //     formData.append("image", file); // Append the file to FormData
-
-  //     const config = {
-  //       method: "post",
-  //       url: "https://api-bef.hkdigiverse.com/upload",
-  //       headers: {
-  //         Authorization: accessToken,
-  //         // 'Content-Type': 'multipart/form-data', // Do not set Content-Type; axios will set it automatically
-  //       },
-  //       data: formData, // Use FormData as the data
-  //     };
-
-  //     const response = await axios.request(config); // Use await to wait for the response
-  //     console.log("Upload response:", response.data);
-  //     setInput({ ...input, image: response.data.data });
-  //     toast.success("Image uploaded successfully!");
-  //   } catch (err) {
-  //     console.error(err.message);
-  //     toast.error("Failed to upload image.");
-  //   }
-  // };
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -104,44 +76,6 @@ export default function AddSubject() {
     }
   };
 
-  // const addNewSubject = async () => {
-  //   try {
-  //     if (!input.name || !input.image || !input.subTopicIds) {
-  //       toast.warning("Fill up empty space");
-  //     } else {
-  //       let data = JSON.stringify(input);
-  //       console.log(input);
-
-  //       let config = {
-  //         method: "post",
-  //         maxBodyLength: Infinity,
-  //         url: "https://api-bef.hkdigiverse.com/subject/add",
-  //         headers: {
-  //           Authorization: accessToken,
-  //           "Content-Type": "application/json",
-  //         },
-  //         data: data,
-  //       };
-
-  //       axios
-  //         .request(config)
-  //         .then((response) => {
-  //           if (response.status === 200) {
-  //             console.log("success", response.data);
-  //             navigate("/subject");
-  //             toast.success("Subject add");
-  //           } else {
-  //             console.log("failed", response);
-  //           }
-  //         })
-  //         .catch((error) => {
-  //           console.error(error);
-  //         });
-  //     }
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -240,8 +174,8 @@ export default function AddSubject() {
       </section>
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

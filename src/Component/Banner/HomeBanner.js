@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ResultBanner from "./ResultBanner";
-import ImgUpdatePage from "./ImgUpdatePage";
+import ImgUpdatePage from "./EditImagePage";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { LuPencilLine } from "react-icons/lu";
@@ -58,6 +58,6 @@ export default function HomeBanner() {
         <BannerData home={bannerData}/>
         <ResultBanner result={resultData} />
       </section>
-    </>
+    </> 
   );
 }

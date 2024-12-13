@@ -19,7 +19,7 @@ const MenuProps = {
 export default function MultipleSelect({ label, value, onChange, options }) {
   return (
     <>
-      <FormControl className="container h-full">9724936136
+      <FormControl className="container h-full">
         <InputLabel id={`${label}-label`} size="small">
           {label}
         </InputLabel>

@@ -16,7 +16,7 @@ import ContestHome from "./Component/ContestType/ContestTypeHome";
 import ClassesHomePage from "./Component/Classes/ClassesHomePage";
 import InformationHome from "./Component/Information/InformationHome";
 import AddUser from "./Component/UserData/AddUser";
-import EditUser from "./Component/UserData/Edituser";
+import EditClasses from "./Component/Classes/EditClass";
 import ReportHomePage from "./Component/Report/ReportHomePage";
 import KYCHomePage from "./Component/KYC/KYCHomePage";
 import ContestEarningHome from "./Component/ContestEarning/ContestEarningHome";
@@ -24,9 +24,7 @@ import Incomeboard from "./Component/IncomeExpense/Incomeboard";
 import PasswordUpdate from "./Component/NewPassword/PasswordUpdate";
 import CreateContest from "./Component/AddContest/CreateContest";
 import AddContestHomepage from "./Component/AddContest/AddContestHomepage";
-import EditSubTopic from "./Component/Subjects/AddSubTopic.js";
 import EditContest from "./Component/AddContest/EditContest.js";
-import ProfilePage from "./Component/ProfilePage/ProfilePage.js";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -68,9 +66,9 @@ function App() {
             <Route path="/addSubject" element={<AddSubject />} />
             <Route path="/editSubject" element={<EditSubject />} />
             <Route path="/banner" element={<HomeBanner />} />
-            <Route path="/userDetails" element={<UserList />} />
+            <Route path="/students" element={<UserList />} />
             <Route path="/addUser" element={<AddUser />} />
-            <Route path="/editUser" element={<EditUser />} />
+            {/* <Route path="/editUser" element={<EditClasses />} /> */}
             <Route path="/resetpassword" element={<PasswordUpdate />} />
             <Route path="*" element={<PageNotfound />} />
           </Routes>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { bannerDataList, updateImageData } from "../../Context/Action/index"; // Adjust the import based on your file structure
+import { bannerDataList, updateImageData } from "../../Context/Action/index";
 import Pagination from "../Pagination/Pagination"; // Ensure you have a Pagination component
-import ImgUpdatePage from "./ImgUpdatePage"; // Ensure you have this component
+import EditImgPage from "./EditImagePage"; // Ensure you have this component
 import AddImagePage from "./AddImagePage"; // Ensure you have this component
 import { FaPlus } from "react-icons/fa";
 import { LuPencilLine } from "react-icons/lu";
@@ -53,7 +53,6 @@ function BannerData({ home }) {
   return (
     <>
       <div className="mx-auto space-y-6">
-        {/* Home Banner */}
         <div className="relative w-full flex flex-col items-center rounded-t-xl overflow-hidden text-slate-700 bg-white bg-clip-border">
           <div className="flex items-center justify-between gap-2 px-4 py-2 w-full">
             <h3 className="text-2xl text-left font-semibold text-slate-800">
@@ -127,15 +126,15 @@ function BannerData({ home }) {
         </div>
       </div>
       {toggleUpdate && (
-        <ImgUpdatePage confirm={toggleUpdate} onClose={handleToggleUpdate} />
+        <EditImgPage confirm={toggleUpdate} onClose={handleToggleUpdate} />
       )}
       {toggleAdd && (
         <AddImagePage confirm={toggleAdd} onClose={handleToggleAdd} />
       )}
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

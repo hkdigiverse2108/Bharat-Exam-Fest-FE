@@ -114,7 +114,7 @@ export default function EditUser() {
       <section className=" p-6  border border-slate-300 bg-white rounded-xl h-full">
         <div className="space-y-6">
           <div className="text-left space-y-2">
-            <p className=" text-3xl font-semibold text-gray-900">Edit User</p>
+            <p className=" text-3xl font-semibold text-gray-900">Edit Classes</p>
             <p className=" text-md text-gray-600">
               Fill in the data for profile. It will take a couple of minutes.
             </p>
@@ -286,8 +286,8 @@ export default function EditUser() {
 
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

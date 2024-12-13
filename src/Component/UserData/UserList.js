@@ -10,7 +10,8 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ClassesCredential from "./ClassesCredential";
-import { fetchUserList } from "../../ApiHandler/userListApi";
+import { editStudentData, fetchUserList } from "../../ApiHandler/userListApi";
+import { isBlock } from "slate";
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -28,22 +29,20 @@ const UserList = () => {
       state.authConfig.userInfo[0]?.token
   );
 
-  useEffect(() => {
-    const loadSubjects = async () => {
-      setLoading(true);
-      try {
-        const { subjectData, totalData } = await fetchUserList(accessToken);
-        setUsers(subjectData);
-        setTotalUsers(totalData);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const { subjectData, totalData } = await fetchUserList(accessToken);
+      console.log("data :", subjectData);
 
-    loadSubjects();
-  }, [accessToken, currentPage]);
+      setUsers(subjectData);
+      setTotalUsers(totalData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const SimpleDate = ({ dateString }) => {
     const date = new Date(dateString);
@@ -68,13 +67,68 @@ const UserList = () => {
     setCurrentPage(pageNumber);
   };
 
+  const EditUserData = async (updatedUser) => {
+    try {
+      const result = await editStudentData(accessToken, updatedUser);
+      if (result.success) {
+        toast.success(result.message);
+        // navigate("/subjectDetails");
+        loadData();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (err) {
+      console.error("Error during data edit:", err.message);
+      toast.error("An error occurred while editing the data.");
+    }
+  };
+
+  const handleIsBlock = (userId) => {
+    dataToDisplay.map((user) => {
+      if (user._id === userId) {
+        const updatedUser = { ...user, isBlocked: !user.isBlocked };
+
+        const userDataToSend = {
+          userId: updatedUser._id,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          email: updatedUser.email,
+          gender: updatedUser.gender,
+          dob: updatedUser.dob,
+          city: updatedUser.city,
+          language: updatedUser.language,
+          classesShow: updatedUser.classesShow,
+          contact: {
+            countryCode: updatedUser.contact.countryCode,
+            mobile: updatedUser.contact.mobile,
+          },
+          upscNumber: updatedUser.upscNumber,
+          password: updatedUser.password,
+          isBlocked: updatedUser.isBlocked,
+          profileImage:
+            updatedUser.profileImage === null
+              ? "string"
+              : updatedUser.profileImage,
+        };
+        console.log(userDataToSend);
+
+        EditUserData(userDataToSend);
+        return userDataToSend;
+      }
+    });
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [accessToken, currentPage]);
+
   return (
     <>
       <section className=" space-y-6 pb-4">
         <div className="shadow-md">
           <div className="relative rounded-t-xl px-4 py-2 overflow-hidden text-slate-700 bg-white  bg-clip-border">
             <div className="flex items-center justify-between ">
-              <p className="text-2xl font-medium text-slate-800">Mobile User</p>
+              <p className="text-2xl font-medium text-slate-800">Students</p>
 
               <button className="flex space-x-2 bg-orange-500 hover:bg-grey text-grey-darkest font-bold py-2 px-4 rounded items-center">
                 <svg
@@ -85,7 +139,7 @@ const UserList = () => {
                 </svg>
                 <div className="text-left flex flex-col">
                   <span className="font-semibold  text-sm capitalize text-gray-100">
-                    total users application
+                    total students application
                   </span>
                   <p className="text-xl text-gray-100 font-medium ">
                     {totalUser}
@@ -251,13 +305,22 @@ const UserList = () => {
                     </td>
                     <td className="p-4 border-b border-blue-gray-50 text-center w-[50px]">
                       <button
-                        className="relative h-10 w-10 select-none rounded-lg cursor-not-allowed align-middle font-sansfont-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none "
+                        className={` ${
+                          user.isBlocked
+                            ? "hover:bg-red-100"
+                            : "hover:bg-green-100"
+                        } relative h-10 w-10 select-none rounded-lg align-middle font-sansfont-medium uppercase  transition-all  active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none `}
                         type="button"
+                        onClick={() => handleIsBlock(user._id)}
                       >
                         <span className="absolute transform -translate-x-1/2 -translate-y-1/2">
                           <svg
                             viewBox="0 0 16 16"
-                            className="w-6 h-6 text-gray-800"
+                            className={` ${
+                              user.isBlocked
+                                ? "text-red-600 "
+                                : "text-green-600"
+                            } w-6 h-6 text-gray-800 `}
                           >
                             <MdBlock />
                           </svg>
@@ -275,8 +338,6 @@ const UserList = () => {
             onPageChange={handlePageChange}
           />
         </div>
-
-        <ClassesCredential />
       </section>
     </>
   );

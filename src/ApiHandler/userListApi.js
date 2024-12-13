@@ -206,3 +206,50 @@ export const editUser = async (input, accessToken) => {
     return { success: false, message: errorMessage };
   }
 };
+
+export const editStudentData = async (accessToken, userData) => {
+  try {
+    if (userData) {
+      if (userData.createdAt) {
+        userData.createdAt = convertIstToUtc(userData.createdAt);
+      }
+      if (userData.updatedAt) {
+        userData.updatedAt = convertIstToUtc(userData.updatedAt);
+      }
+      if (userData.dob) {
+        userData.dob = convertIstToUtc(userData.dob);
+      }
+    }
+    console.log("Updated userData data with UTC:", userData);
+
+    const data = JSON.stringify(userData);
+
+    const config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `${BASE_URL}/user/edit`,
+      headers: {
+        Authorization: `${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const response = await axios.request(config);
+    console.log(response);
+
+    if (response.status === 200) {
+      toast.success(response.data.message);
+      return {
+        success: true,
+        dataList: response.data.data,
+      };
+    } else {
+      toast.success(response.data.message);
+      throw new Error(`Error fetching user list: ${response.data.message}`);
+    }
+  } catch (err) {
+    console.error("Error fetching user list:", err.message);
+    throw new Error(err.message);
+  }
+};

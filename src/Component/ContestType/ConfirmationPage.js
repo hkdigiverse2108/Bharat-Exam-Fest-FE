@@ -80,8 +80,8 @@ export default function ConfirmationPage({ confirm, onCancel, onDelete }) {
       </div>
       <ToastContainer
         draggable={false}
-        autoClose={2000}
-        position={"top-center"}
+        autoClose={1000}
+        position={"top-right"}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick={false}

@@ -23,18 +23,17 @@ export const fetchBannerData = async (accessToken) => {
       // console.log("Raw banner data:", data.banner_data);
 
       const updatedBannerData = response.data.data.banner_data.map((banner) => {
-        // Apply UTC to IST conversion to the required date fields
         if (banner.createdAt) {
-          banner.createdAt = convertUtcToIst(banner.createdAt); // Convert to IST
+          banner.createdAt = convertUtcToIst(banner.createdAt); 
         }
         if (banner.updatedAt) {
-          banner.updatedAt = convertUtcToIst(banner.updatedAt); // Convert to IST
+          banner.updatedAt = convertUtcToIst(banner.updatedAt); 
         }
         if (banner.startDate) {
-          banner.startDate = convertUtcToIst(banner.startDate); // Convert to IST
+          banner.startDate = convertUtcToIst(banner.startDate); 
         }
         if (banner.endDate) {
-          banner.endDate = convertUtcToIst(banner.endDate); // Convert to IST
+          banner.endDate = convertUtcToIst(banner.endDate); 
         }
 
         return banner;
@@ -54,13 +53,11 @@ export const fetchBannerData = async (accessToken) => {
 
 export const AddBanner = async (imgEdit, accessToken) => {
   try {
-    // Ensure the image data is not empty
     if (!imgEdit || Object.keys(imgEdit).length === 0) {
       toast.warn("Image data is required.");
       return { success: false, message: "Image data is required." };
     }
 
-    // Apply UTC conversion for date fields if they exist
     if (imgEdit.createdAt) {
       imgEdit.createdAt = convertIstToUtc(imgEdit.createdAt);
     }
@@ -74,11 +71,9 @@ export const AddBanner = async (imgEdit, accessToken) => {
       imgEdit.endDate = convertIstToUtc(imgEdit.endDate);
     }
 
-    // Prepare the data and log it for debugging
     const data = JSON.stringify(imgEdit);
     console.log("Image Edit Data:", imgEdit);
 
-    // Configure the API request
     const config = {
       method: "post",
       maxBodyLength: Infinity,
@@ -90,21 +85,19 @@ export const AddBanner = async (imgEdit, accessToken) => {
       data: data,
     };
 
-    // Make the API request
     const response = await axios.request(config);
     console.log("Response Data:", response.data);
 
-    // Handle success and error based on response status
     if (response.status === 200) {
-      toast.success(response.data.data.message);
-      return { success: true, message: response.data.data.message };
+      toast.success(response.data.message);
+      return { success: true, message: response.data.message };
     } else if (response.status === 500) {
-      const errorMessage =
-        response.data.data.message || "Internal Server Error";
+      const errorMessage = response.data.message || "Internal Server Error";
       toast.error(errorMessage);
       return { success: false, message: errorMessage };
     } else {
-      const errorMessage = response.message || "An unexpected error occurred.";
+      const errorMessage =
+        response.data.message || "An unexpected error occurred.";
       toast.error(errorMessage);
       return { success: false, message: errorMessage };
     }
@@ -153,14 +146,14 @@ export const EditBanner = async (value, accessToken) => {
     console.log(response.data);
 
     if (response.status === 200) {
-      toast.success(response.data.data.message);
-      return { success: true, message: response.data.data.message };
+      toast.success(response.data.message);
+      return { success: true, message: response.data.message };
     } else if (response.status === 500) {
       toast.error(response.data.data.message);
-      return { success: false, message: response.data.data.message };
+      return { success: false, message: response.data.message };
     } else {
-      toast.error(response.message);
-      return { success: false, message: response.message };
+      toast.error(response.data.message);
+      return { success: false, message: response.data.message };
     }
   } catch (err) {
     console.error("Error:", err.message);
